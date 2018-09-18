@@ -15,12 +15,6 @@
         <version>1</version>
     </parent>
 
-    <scm>
-        <url>https://github.com/wso2/carbon-apimgt.git</url>
-        <developerConnection>scm:git:https://github.com/wso2/carbon-apimgt.git</developerConnection>
-        <connection>scm:git:https://github.com/wso2/carbon-apimgt.git</connection>
-        <tag>v6.4.50</tag>
-    </scm>
 
     <modules>
         <module>service-stubs/apimgt</module>
@@ -81,18 +75,6 @@
                     <groupId>io.swagger</groupId>
                     <artifactId>swagger-codegen-maven-plugin</artifactId>
                     <version>${io.swagger.codegen.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <configuration>
-                        <preparationGoals>clean install</preparationGoals>
-                        <autoVersionSubmodules>true</autoVersionSubmodules>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-deploy-plugin</artifactId>
                 </plugin>
                 <plugin>
                     <groupId>org.wso2.maven</groupId>
