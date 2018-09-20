@@ -1193,19 +1193,23 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
                         if (apiVersionUsageDTO.getVersion().equals(fault.getApiVersion())) {
                             long requestCount = apiVersionUsageDTO.getCount();
                             double faultPercentage =
-                                    ((double) requestCount - fault.getFaultCount()) / requestCount * 100;
+                                    ((double) fault.getFaultCount()) / (requestCount + fault.getFaultCount()) * 100;
                             DecimalFormat twoDForm = new DecimalFormat("#.##");
                             NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
                             try {
-                                faultPercentage =
-                                        100 - numberFormat.parse(twoDForm.format(faultPercentage)).doubleValue();
+                                faultPercentage = numberFormat.parse(twoDForm.format(faultPercentage)).doubleValue();
                             } catch (ParseException e) {
                                 handleException("Parse exception while formatting time");
                             }
                             faultyDTO.setFaultPercentage(faultPercentage);
-                            faultyDTO.setTotalRequestCount(requestCount);
+                            faultyDTO.setTotalRequestCount(requestCount + fault.getFaultCount());
                             break;
                         }
+                    }
+                    //if no success request within that period, fault percentage is 100%
+                    if (apiVersionUsageList.isEmpty()) {
+                        faultyDTO.setFaultPercentage(100);
+                        faultyDTO.setTotalRequestCount(fault.getFaultCount());
                     }
                     faultyCount.add(faultyDTO);
                 }
@@ -1358,16 +1362,16 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
             throws APIMgtUsageQueryServiceClientException {
         List<APIResponseFaultCount> faultUsage = new ArrayList<APIResponseFaultCount>();
         try {
-            String granularity = APIUsageStatisticsClientConstants.MINUTES_GRANULARITY;//default granularity
+            String granularity = APIUsageStatisticsClientConstants.HOURS_GRANULARITY;//default granularity
 
             Map<String, Integer> durationBreakdown = this.getDurationBreakdown(fromDate, toDate);
 
             if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_YEARS) > 0) {
-                granularity = APIUsageStatisticsClientConstants.MONTHS_GRANULARITY;
+                granularity = APIUsageStatisticsClientConstants.YEARS_GRANULARITY;
             } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_MONTHS) > 0) {
-                granularity = APIUsageStatisticsClientConstants.DAYS_GRANULARITY;
+                granularity = APIUsageStatisticsClientConstants.MONTHS_GRANULARITY;
             } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_DAYS) > 0) {
-                granularity = APIUsageStatisticsClientConstants.HOURS_GRANULARITY;
+                granularity = APIUsageStatisticsClientConstants.DAYS_GRANULARITY;
             }
             String query =
                     "from " + tableName + " within " + getTimestamp(fromDate) + "L, " + getTimestamp(toDate) + "L per '"
