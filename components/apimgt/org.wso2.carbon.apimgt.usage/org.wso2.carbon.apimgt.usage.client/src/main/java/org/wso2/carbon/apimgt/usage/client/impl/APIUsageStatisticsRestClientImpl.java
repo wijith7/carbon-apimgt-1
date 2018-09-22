@@ -462,7 +462,8 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
 
                 if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_YEARS) > 0) {
                     granularity = APIUsageStatisticsClientConstants.MONTHS_GRANULARITY;
-                } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_MONTHS) > 0) {
+                } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_MONTHS) > 0
+                        || durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_WEEKS) > 0) {
                     granularity = APIUsageStatisticsClientConstants.DAYS_GRANULARITY;
                 } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_DAYS) > 0) {
                     granularity = APIUsageStatisticsClientConstants.HOURS_GRANULARITY;
@@ -1383,7 +1384,8 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
                             + APIUsageStatisticsClientConstants.API_NAME + ", "
                             + APIUsageStatisticsClientConstants.API_VERSION + ", "
                             + APIUsageStatisticsClientConstants.API_CREATOR + ", "
-                            + APIUsageStatisticsClientConstants.API_CONTEXT + ";";
+                            + APIUsageStatisticsClientConstants.API_CONTEXT + "  order by " 
+                            + APIUsageStatisticsClientConstants.API_NAME + " ASC ;";
             JSONObject jsonObj = APIUtil
                     .executeQueryOnStreamProcessor(APIUsageStatisticsClientConstants.APIM_FAULT_SUMMARY_SIDDHI_APP,
                             query);
@@ -1968,7 +1970,8 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
 
             if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_YEARS) > 0) {
                 granularity = APIUsageStatisticsClientConstants.MONTHS_GRANULARITY;
-            } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_MONTHS) > 0) {
+            } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_MONTHS) > 0
+                    || durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_WEEKS) > 0) {
                 granularity = APIUsageStatisticsClientConstants.DAYS_GRANULARITY;
             } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_DAYS) > 0) {
                 granularity = APIUsageStatisticsClientConstants.HOURS_GRANULARITY;
@@ -2042,7 +2045,8 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
 
             if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_YEARS) > 0) {
                 granularity = APIUsageStatisticsClientConstants.MONTHS_GRANULARITY;
-            } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_MONTHS) > 0) {
+            } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_MONTHS) > 0
+                    || durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_WEEKS) > 0) {
                 granularity = APIUsageStatisticsClientConstants.DAYS_GRANULARITY;
             } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_DAYS) > 0) {
                 granularity = APIUsageStatisticsClientConstants.HOURS_GRANULARITY;
@@ -2230,7 +2234,8 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
 
                 if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_YEARS) > 0) {
                     granularity = APIUsageStatisticsClientConstants.MONTHS_GRANULARITY;
-                } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_MONTHS) > 0) {
+                } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_MONTHS) > 0
+                        || durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_WEEKS) > 0) {
                     granularity = APIUsageStatisticsClientConstants.DAYS_GRANULARITY;
                 } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_DAYS) > 0) {
                     granularity = APIUsageStatisticsClientConstants.HOURS_GRANULARITY;
@@ -2492,6 +2497,7 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
         durationBreakdown.put(APIUsageStatisticsClientConstants.DURATION_YEARS, numOfYears);
         durationBreakdown.put(APIUsageStatisticsClientConstants.DURATION_MONTHS, numOfMonths);
         durationBreakdown.put(APIUsageStatisticsClientConstants.DURATION_DAYS, numOfDays);
+        durationBreakdown.put(APIUsageStatisticsClientConstants.DURATION_WEEKS, numOfWeeks);
         durationBreakdown.put(APIUsageStatisticsClientConstants.DURATION_HOURS, numOfHours);
         durationBreakdown.put(APIUsageStatisticsClientConstants.DURATION_MINUTES, numOfMinutes);
         durationBreakdown.put(APIUsageStatisticsClientConstants.DURATION_SECONDS, numOfSeconds);
