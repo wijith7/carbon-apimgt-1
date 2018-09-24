@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
@@ -94,6 +95,7 @@ import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -104,6 +106,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
@@ -2006,7 +2009,7 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
                     JSONArray recordArray = (JSONArray) record;
                     if (recordArray.size() == 3) {
                         timeStamp = (Long) recordArray.get(0);
-                        time = new DateTime(timeStamp).toString(formatter);
+                        time = new DateTime(timeStamp).withZone(DateTimeZone.UTC).toString(formatter);
                         successRequestCount = (Long) recordArray.get(1);
                         throttledOutCount = (Long) recordArray.get(2);
                         throttlingData.add(new APIThrottlingOverTimeDTO(apiName, provider, (int) successRequestCount,
@@ -2276,7 +2279,7 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
                         executionTimeOfAPIValues.setApiPublisher((String) recordArray.get(2));
                         executionTimeOfAPIValues.setVersion((String) recordArray.get(3));
                         timeStamp = (Long) recordArray.get(4);
-                        DateTime time = new DateTime(timeStamp);
+                        DateTime time = new DateTime(timeStamp).withZone(DateTimeZone.UTC);
                         executionTimeOfAPIValues.setYear(time.getYear());
                         executionTimeOfAPIValues.setMonth(time.getMonthOfYear());
                         executionTimeOfAPIValues.setDay(time.getDayOfMonth());
@@ -2504,10 +2507,18 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
         return durationBreakdown;
     }
 
-    private long getTimestamp(String date) {
-        DateTimeFormatter formatter = DateTimeFormat
-                .forPattern(APIUsageStatisticsClientConstants.TIMESTAMP_PATTERN);
-        DateTime dateTime = formatter.parseDateTime(date);
-        return dateTime.getMillis();
+    private long getTimestamp(String date) throws APIMgtUsageQueryServiceClientException {
+       
+        SimpleDateFormat formatter = new SimpleDateFormat(APIUsageStatisticsClientConstants.TIMESTAMP_PATTERN);
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        long time = 0;
+        Date parsedDate = null;
+        try {
+            parsedDate = formatter.parse(date);
+            time = parsedDate.getTime();
+        } catch (ParseException e) {
+            handleException("Error while parsing the date ", e);
+        }
+        return time;
     }
 }
