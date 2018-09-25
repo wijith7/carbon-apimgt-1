@@ -147,8 +147,8 @@ function developerFilter(){
 var drawApiTime = function(from, to) {
     jagg.post("/site/blocks/stats/apis-time/ajax/stats.jag" + window.location.search,
         {
-           "fromDate": from,
-           "toDate": to,
+           "fromDate": convertTimeStringUTC(from),
+           "toDate": convertTimeStringUTC(to),
            "developer": $('#developerSelect').val(),
            "apiFilter": apiFilter
         },
