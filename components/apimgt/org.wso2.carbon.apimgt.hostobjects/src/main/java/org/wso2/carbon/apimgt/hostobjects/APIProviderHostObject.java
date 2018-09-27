@@ -301,6 +301,17 @@ public class APIProviderHostObject extends ScriptableObject {
                         config.getFirstProperty(APIConstants.SHOW_API_STORE_URL_FROM_PUBLISHER));
             }
             if (authorized) {
+                //Add default API LC if it is not there
+                if (!CommonUtil.lifeCycleExists(APIConstants.API_LIFE_CYCLE,
+                        registryService.getConfigSystemRegistry(tenantId))) {
+                    String defaultLifecyclePath = CommonUtil.getDefaltLifecycleConfigLocation() + File.separator
+                            + APIConstants.API_LIFE_CYCLE + APIConstants.XML_EXTENSION;
+                    String content = FileUtils.readFileToString(new File(defaultLifecyclePath));
+                    if (content != null) {
+                        CommonUtil.addLifecycle(content, registryService.getConfigSystemRegistry(tenantId),
+                                CommonUtil.getRootSystemRegistry(tenantId));
+                    }
+                }                
                 row.put("user", row, usernameWithDomain);
                 row.put("sessionId", row, sessionCookie);
                 row.put("isSuperTenant", row, isSuperTenant);
