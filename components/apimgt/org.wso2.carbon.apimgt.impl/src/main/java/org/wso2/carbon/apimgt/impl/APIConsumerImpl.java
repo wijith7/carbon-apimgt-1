@@ -3214,6 +3214,17 @@ class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
         Application application = apiMgtDAO.getApplicationById(id);
         String userId = application.getSubscriber().getName();
         checkAppAttributes(application, userId);
+        if (Boolean.getBoolean(APIConstants.MIGRATION_MODE)) {
+            Application applicationWithKeys = apiMgtDAO.getApplicationById(id);
+            if (applicationWithKeys != null) {
+                Set<APIKey> keys = getApplicationKeys(applicationWithKeys.getId());
+
+                for (APIKey key : keys) {
+                    applicationWithKeys.addKey(key);
+                }
+            }
+            return applicationWithKeys;
+        }
         return apiMgtDAO.getApplicationById(id);
     }
 
