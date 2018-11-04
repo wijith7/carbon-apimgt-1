@@ -401,11 +401,9 @@ public class APIKeyMgtSubscriberService extends AbstractAdmin {
                     serviceProvider.setApplicationName(applicationName);
                     serviceProvider.setDescription("Service Provider for application " + applicationName);
                     ServiceProviderProperty[] serviceProviderPropertiesArray = serviceProvider.getSpProperties();
-                    ArrayList<ServiceProviderProperty> serviceProviderProperties =
-                            new ArrayList<ServiceProviderProperty>();
+                    ArrayList<ServiceProviderProperty> serviceProviderProperties = new ArrayList<>();
                     if (serviceProviderPropertiesArray != null) {
-                        serviceProviderProperties =
-                                new ArrayList<ServiceProviderProperty>(Arrays.asList(serviceProviderPropertiesArray));
+                        serviceProviderProperties = new ArrayList<>(Arrays.asList(serviceProviderPropertiesArray));
                     }
                     boolean displayNameExist = false;
                     //check displayName property and modify if found
