@@ -26,8 +26,8 @@
     var security = require("oidc");
     var oidcRelyingParty = new security.OIDCRelyingParty(site.oidcConfiguration.issuer);
 
-    if (site.oidcConfiguration.username == null || site.oidcConfiguration.username != "") {
-        oidcRelyingParty.setProperty("username", site.oidcConfiguration.username);
+    if (site.oidcConfiguration.usernameclaim == null || site.oidcConfiguration.usernameclaim != "") {
+        oidcRelyingParty.setProperty("usernameclaim", site.oidcConfiguration.usernameclaim);
     }
 
     var sessionId = session.getId();
