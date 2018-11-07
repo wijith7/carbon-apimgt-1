@@ -26,6 +26,9 @@
     var security = require("oidc");
     var oidcRelyingParty = new security.OIDCRelyingParty(site.oidcConfiguration.issuer);
 
+    if (site.oidcConfiguration.username == null || site.oidcConfiguration.username != "") {
+        oidcRelyingParty.setProperty("username", site.oidcConfiguration.username);
+    }
 
     var sessionId = session.getId();
     var requestedURI = session.get("STORE_REDIRECT_URI");
