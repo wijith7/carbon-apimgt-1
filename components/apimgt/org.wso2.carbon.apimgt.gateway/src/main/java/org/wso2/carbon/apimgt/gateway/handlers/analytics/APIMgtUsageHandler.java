@@ -22,6 +22,7 @@ import org.apache.synapse.MessageContext;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.rest.AbstractHandler;
 import org.wso2.carbon.apimgt.gateway.APIMgtGatewayConstants;
+import org.wso2.carbon.apimgt.gateway.MethodStats;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerAnalyticsConfiguration;
 import org.wso2.carbon.apimgt.usage.publisher.APIMgtUsageDataPublisher;
@@ -37,6 +38,7 @@ public class APIMgtUsageHandler extends AbstractHandler {
 
     protected volatile APIMgtUsageDataPublisher publisher;
 
+    @MethodStats
     public boolean handleRequest(MessageContext mc) {
 
         boolean enabled = getApiManagerAnalyticsConfiguration().isAnalyticsEnabled();
@@ -61,6 +63,7 @@ public class APIMgtUsageHandler extends AbstractHandler {
         return DataPublisherUtil.getApiManagerAnalyticsConfiguration();
     }
 
+    @MethodStats
     public boolean handleResponse(MessageContext mc) {
         return true;
     }
