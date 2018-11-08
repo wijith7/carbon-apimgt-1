@@ -388,7 +388,7 @@ public class OIDCRelyingPartyObject extends ScriptableObject {
 
         JsonObject jsonResponse = jsonRoot.getAsJsonObject();
 
-        String usernameProperty = relyingPartyObject.getOIDCProperty("usernameclaim");
+        String usernameProperty = relyingPartyObject.getOIDCProperty("usernameClaim");
         if (StringUtils.isEmpty(usernameProperty)) {
             usernameProperty = "preferred_username";
         }
