@@ -137,7 +137,7 @@ import javax.wsdl.Definition;
  * class which is visible to them. These extensions may add additional features like
  * security to this class.
  */
-class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
+public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
 
     private static final Log log = LogFactory.getLog(APIConsumerImpl.class);
     public static final char COLON_CHAR = ':';
@@ -3240,6 +3240,17 @@ class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
         Application application = apiMgtDAO.getApplicationById(id);
         String userId = application.getSubscriber().getName();
         checkAppAttributes(application, userId);
+        if (Boolean.getBoolean(APIConstants.MIGRATION_MODE)) {
+            Application applicationWithKeys = apiMgtDAO.getApplicationById(id);
+            if (applicationWithKeys != null) {
+                Set<APIKey> keys = getApplicationKeys(applicationWithKeys.getId());
+
+                for (APIKey key : keys) {
+                    applicationWithKeys.addKey(key);
+                }
+            }
+            return applicationWithKeys;
+        }
         return apiMgtDAO.getApplicationById(id);
     }
 
