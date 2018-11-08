@@ -51,7 +51,7 @@ public class OIDCRelyingPartyObjectTest {
         Assert.assertEquals("When the property for username is not defined, extraction of username failed",
                 preferredUserName, OIDCRelyingPartyObject.getUserName(jsonObject.toString(), oidcRelyingPartyObject));
 
-        oidcConfigProperties.setProperty("username", "email");
+        oidcConfigProperties.setProperty("usernameClaim", "email");
         oidcConfigPropertiesField.set(oidcRelyingPartyObject, oidcConfigProperties);
         Assert.assertEquals("When the property for username is defined, extraction of username does not honour "
                         + "the defined property", email,
