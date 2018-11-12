@@ -51,6 +51,14 @@ public interface KeyManager {
     OAuthApplicationInfo updateApplication(OAuthAppRequest appInfoDTO) throws APIManagementException;
 
     /**
+     * Update an oAuth application owner
+     *
+     * @param appInfoDTO accept an appinfoDTO object
+     * @return OAuthApplicationInfo this object will  contain all the properties of updated oAuth application
+     */
+    OAuthApplicationInfo updateApplicationOwner(OAuthAppRequest appInfoDTO) throws APIManagementException;
+
+    /**
      * Delete auth application
      *
      * @param consumerKey - will take consumer key as parameter

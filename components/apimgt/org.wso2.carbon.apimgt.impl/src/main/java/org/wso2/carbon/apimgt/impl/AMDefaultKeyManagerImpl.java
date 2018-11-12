@@ -208,6 +208,35 @@ public class AMDefaultKeyManagerImpl extends AbstractKeyManager {
         return null;
     }
 
+    @Override
+    public OAuthApplicationInfo  updateApplicationOwner(OAuthAppRequest appInfoDTO) throws APIManagementException {
+        OAuthApplicationInfo oAuthApplicationInfo = appInfoDTO.getOAuthApplicationInfo();
+
+        try {
+            String applicationName = oAuthApplicationInfo.getClientName().substring((oAuthApplicationInfo.
+                    getClientName().indexOf("_") + 1));
+            String[] grantTypes = null;
+            if (oAuthApplicationInfo.getParameter(ApplicationConstants.OAUTH_CLIENT_GRANT) != null) {
+                grantTypes = ((String)oAuthApplicationInfo.getParameter(ApplicationConstants.OAUTH_CLIENT_GRANT))
+                        .split(",");
+            }
+            org.wso2.carbon.apimgt.api.model.xsd.OAuthApplicationInfo applicationInfo = updateOAuthApplication(
+                    oAuthApplicationInfo.getAppOwner(), applicationName,
+                    oAuthApplicationInfo.getCallBackURL(),oAuthApplicationInfo.getClientId(), grantTypes);
+            OAuthApplicationInfo newAppInfo = new OAuthApplicationInfo();
+            newAppInfo.setAppOwner(applicationInfo.getAppOwner());
+            newAppInfo.setClientId(applicationInfo.getClientId());
+            newAppInfo.setCallBackURL(applicationInfo.getCallBackURL());
+            newAppInfo.setClientSecret(applicationInfo.getClientSecret());
+            newAppInfo.setJsonString(applicationInfo.getJsonString());
+
+            return newAppInfo;
+        } catch (Exception e) {
+            handleException("Error occurred while updating OAuth application owner : ", e);
+        }
+        return null;
+    }
+
 
     @Override
     public void deleteApplication(String consumerKey) throws APIManagementException {

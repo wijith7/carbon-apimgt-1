@@ -446,6 +446,11 @@ public class APIKeyMgtSubscriberService extends AbstractAdmin {
                     log.debug("Name of the OAuthApplication is set to : " + applicationName);
                 }
 
+                if (userId != null && !userId.isEmpty()) {
+                    oAuthConsumerAppDTO.setUsername(userName);
+                    log.debug("Username of the OAuthApplication is set to : " + userName);
+                }
+
                 if (grantTypes != null && grantTypes.length > 0) {
                     StringBuilder builder = new StringBuilder();
                     for (String grantType : grantTypes) {
