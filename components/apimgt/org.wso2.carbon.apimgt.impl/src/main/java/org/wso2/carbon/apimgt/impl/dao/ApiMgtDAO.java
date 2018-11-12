@@ -4131,31 +4131,23 @@ public class ApiMgtDAO {
                                                                      String searchOwner, String searchApplication,
                                                                      String sortColumn, String sortOrder)
             throws APIManagementException {
-
         Connection connection = null;
         PreparedStatement prepStmt = null;
         ResultSet rs = null;
         Application applications = null;
         String sqlQuery = null;
-
         List<Application> applicationList = new ArrayList<>();
-
         sqlQuery = SQLConstantManagerFactory.getSQlString("GET_APPLICATIONS_BY_TENANT_ID");
-
-
         try {
             connection = APIMgtDBUtil.getConnection();
             sqlQuery = sqlQuery.replace("$1", sortColumn);
             sqlQuery = sqlQuery.replace("$2", sortOrder);
-
-
             prepStmt = connection.prepareStatement(sqlQuery);
             prepStmt.setInt(1, tenantId);
             prepStmt.setString(2, "%" + searchOwner + "%");
             prepStmt.setString(3, "%" + searchApplication + "%");
             prepStmt.setInt(4, start);
             prepStmt.setInt(5, offset);
-
             rs = prepStmt.executeQuery();
             Application application;
             while (rs.next()) {
@@ -4171,7 +4163,6 @@ public class ApiMgtDAO {
                 application.setOwner(subscriberName);
                 applicationList.add(application);
             }
-
         } catch (SQLException e) {
             handleException("Error while obtaining details of the Application : " + tenantId, e);
         } finally {
@@ -4182,12 +4173,10 @@ public class ApiMgtDAO {
 
     public int getApplicationCount(int tenantId, String searchOwner, String searchApplication) throws
             APIManagementException {
-
         Connection connection = null;
         PreparedStatement prepStmt = null;
         ResultSet resultSet = null;
         String sqlQuery = null;
-
         try {
             connection = APIMgtDBUtil.getConnection();
             sqlQuery = SQLConstants.GET_APPLICATIONS_COUNT;
@@ -4195,10 +4184,7 @@ public class ApiMgtDAO {
             prepStmt.setInt(1, tenantId);
             prepStmt.setString(2, "%" + searchOwner + "%");
             prepStmt.setString(3, "%" + searchApplication + "%");
-
-
             resultSet = prepStmt.executeQuery();
-
             int applicationCount = 0;
             if (resultSet != null) {
                 while (resultSet.next()) {
@@ -4213,7 +4199,6 @@ public class ApiMgtDAO {
         } finally {
             APIMgtDBUtil.closeAllConnections(prepStmt, connection, resultSet);
         }
-
         return 0;
     }
 
@@ -11991,24 +11976,19 @@ public class ApiMgtDAO {
         PreparedStatement prepStmt = null;
         ResultSet rs = null;
         int applicationId = 0;
-
         Application application = null;
         try {
             connection = APIMgtDBUtil.getConnection();
             String query = SQLConstants.GET_APPLICATION_BY_SUBSCRIBERID_AND_NAME_SQL;
-
             prepStmt = connection.prepareStatement(query);
             prepStmt.setInt(1, subscriberId);
             prepStmt.setString(2, applicationName);
-
             rs = prepStmt.executeQuery();
             if (rs.next()) {
                 String subscriberName = rs.getString("USER_ID");
-
                 Subscriber subscriber = new Subscriber(subscriberName);
                 subscriber.setId(subscriberId);
                 application = new Application(applicationName, subscriber);
-
                 application.setDescription(rs.getString("DESCRIPTION"));
                 application.setStatus(rs.getString("APPLICATION_STATUS"));
                 application.setCallbackUrl(rs.getString("CALLBACK_URL"));
@@ -12019,13 +11999,11 @@ public class ApiMgtDAO {
                 application.setTier(rs.getString("APPLICATION_TIER"));
                 application.setTokenType(rs.getString("TOKEN_TYPE"));
                 subscriber.setId(rs.getInt("SUBSCRIBER_ID"));
-
                 if (multiGroupAppSharingEnabled) {
                     if (application.getGroupId().isEmpty()) {
                         application.setGroupId(getGroupId(application.getId()));
                     }
                 }
-
                 Timestamp createdTime = rs.getTimestamp("CREATED_TIME");
                 application.setCreatedTime(createdTime == null ? null : String.valueOf(createdTime.getTime()));
                 try {

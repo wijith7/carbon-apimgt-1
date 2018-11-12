@@ -3736,10 +3736,8 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
 
     @Override
     public boolean updateApplicationOwner(String userId, Application application) throws APIManagementException {
-
         boolean isAppUpdated = false;
         String roleProduction, roleSandbox;
-
         try {
             RealmService realmService = ServiceReferenceHolder.getInstance().getRealmService();
             String oldUserName = application.getSubscriber().getName();
@@ -3759,35 +3757,37 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
                 List<String> roleList = new ArrayList<String>();
                 /* To get the role names of email users */
                 if (oldUserName.replace("@" + newTenantDomain, "").contains("@")) {
-                    roleProduction = "Application/"+oldUserName.replace("@" + newTenantDomain, "").
-                            replace(oldUserName.substring(oldUserName.indexOf("@"),oldUserName.indexOf("@")+1),
-                                    "-AT-")+"_"+
-                            application.getName()+"_"+((APIKey) ((ArrayList) application.getKeys()).get(0)).getType();
+                    roleProduction = "Application/" + oldUserName.replace("@" + newTenantDomain, "").
+                            replace(oldUserName.substring(oldUserName.indexOf("@"), oldUserName.indexOf("@") + 1),
+                                    "-AT-") + "_" +
+                            application.getName() + "_" + ((APIKey) ((ArrayList) application.getKeys()).get(0))
+                            .getType();
                     if (application.getKeys().size() > 1) {
                         roleSandbox = "Application/" + oldUserName.replace("@" + newTenantDomain, "").
-                                replace(oldUserName.substring(oldUserName.indexOf("@"),oldUserName.indexOf("@")+1),
+                                replace(oldUserName.substring(oldUserName.indexOf("@"), oldUserName.indexOf("@") + 1),
                                         "-AT-") +
                                 "_" + application.getName() + "_" + ((APIKey) ((ArrayList) application.getKeys()).
                                 get(1)).getType();
-                        if ( APIUtil.isRoleNameExist(oldUserName, roleSandbox)) {
+                        if (APIUtil.isRoleNameExist(oldUserName, roleSandbox)) {
                             roleList.add(roleSandbox);
                         }
                     }
-                    if ( APIUtil.isRoleNameExist(oldUserName, roleProduction)) {
+                    if (APIUtil.isRoleNameExist(oldUserName, roleProduction)) {
                         roleList.add(roleProduction);
                     }
                 } else {
-                    roleProduction = "Application/"+oldUserName.replace("@" + newTenantDomain, "")+"_"
-                            + application.getName()+"_"+((APIKey) ((ArrayList) application.getKeys()).get(0)).getType();
+                    roleProduction = "Application/" + oldUserName.replace("@" + newTenantDomain, "")
+                            + "_" + application.getName() + "_" + ((APIKey) ((ArrayList) application.getKeys()).get(0))
+                            .getType();
                     if (application.getKeys().size() > 1) {
                         roleSandbox = "Application/" + oldUserName.replace("@" + newTenantDomain, "")
                                 + "_" + application.getName() + "_" + ((APIKey) ((ArrayList) application.getKeys()).
                                 get(1)).getType();
-                        if ( APIUtil.isRoleNameExist(oldUserName, roleSandbox)) {
+                        if (APIUtil.isRoleNameExist(oldUserName, roleSandbox)) {
                             roleList.add(roleSandbox);
                         }
                     }
-                    if ( APIUtil.isRoleNameExist(oldUserName, roleProduction)) {
+                    if (APIUtil.isRoleNameExist(oldUserName, roleProduction)) {
                         roleList.add(roleProduction);
                     }
                 }
@@ -3801,7 +3801,7 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
                     OAuthApplicationInfo oAuthApplicationInfo = keyManager.
                             retrieveApplication(consumerKeys[i].toString());
                     OAuthAppRequest oauthAppRequest = ApplicationUtils.createOauthAppRequest(oAuthApplicationInfo.
-                            getParameter(ApplicationConstants.OAUTH_CLIENT_NAME).toString(), null,
+                                    getParameter(ApplicationConstants.OAUTH_CLIENT_NAME).toString(), null,
                             oAuthApplicationInfo.getCallBackURL(), null,
                             null, application.getTokenType());
 
@@ -3820,7 +3820,6 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
             handleException("Error when getting the tenant's UserStoreManager or when getting roles of user ", e);
         }
         //todo update Outh application once the oauth component supports to update the owner
-
         return isAppUpdated;
     }
 
