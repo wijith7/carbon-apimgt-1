@@ -3734,84 +3734,141 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
         return apiMgtDAO.getApplicationsByOwner(userId);
     }
 
+    public boolean isSubscriberValid(String userId)
+            throws APIManagementException {
+
+        boolean isSubscribeValid = false;
+        if (apiMgtDAO.getSubscriber(userId) != null) {
+            isSubscribeValid = true;
+        } else {
+            throw new APIManagementException(userId +
+                    " is not a subscriber");
+        }
+        return isSubscribeValid;
+
+    }
+
     @Override
     public boolean updateApplicationOwner(String userId, Application application) throws APIManagementException {
         boolean isAppUpdated = false;
-        String roleProduction, roleSandbox;
+        String roleName, consumerKey;
         try {
             RealmService realmService = ServiceReferenceHolder.getInstance().getRealmService();
             String oldUserName = application.getSubscriber().getName();
             String oldTenantDomain = MultitenantUtils.getTenantDomain(oldUserName);
             String newTenantDomain = MultitenantUtils.getTenantDomain(userId);
             if (oldTenantDomain.equals(newTenantDomain)) {
-                isAppUpdated = true;
-                if (isAppUpdated) {
-                    isAppUpdated = apiMgtDAO.updateApplicationOwner(userId, application);
-                }
-                int tenantId = ServiceReferenceHolder.getInstance().getRealmService().getTenantManager()
-                        .getTenantId(MultitenantUtils.getTenantDomain(username + "@" + oldTenantDomain));
-                UserStoreManager userStoreManager = realmService.getTenantUserRealm(tenantId).getUserStoreManager();
-                int applicationId = application.getId();
-                Set<String> consumerKey = apiMgtDAO.getConsumerKeysOfApplication(applicationId);
-                Object[] consumerKeys = consumerKey.toArray();
-                List<String> roleList = new ArrayList<String>();
+                if (isSubscriberValid(userId)) {
+                    if (!APIUtil.isApplicationExist(userId, application.getName(), application.getGroupId())) {
+                        isAppUpdated = true;
+                        if (isAppUpdated) {
+                            isAppUpdated = apiMgtDAO.updateApplicationOwner(userId, application);
+                        }
+                        int tenantId = ServiceReferenceHolder.getInstance().getRealmService().getTenantManager()
+                                .getTenantId(MultitenantUtils.getTenantDomain(username + "@" + oldTenantDomain));
+                        UserStoreManager userStoreManager = realmService.getTenantUserRealm(tenantId).getUserStoreManager();
+//                int applicationId = application.getId();
+//                Set<String> consumerKey = apiMgtDAO.getConsumerKeysOfApplication(applicationId);
+//                Object[] consumerKeys = consumerKey.toArray();
+                        List<String> roleList = new ArrayList<String>();
                 /* To get the role names of email users */
-                if (oldUserName.replace("@" + newTenantDomain, "").contains("@")) {
-                    roleProduction = "Application/" + oldUserName.replace("@" + newTenantDomain, "").
-                            replace(oldUserName.substring(oldUserName.indexOf("@"), oldUserName.indexOf("@") + 1),
-                                    "-AT-") + "_" +
-                            application.getName() + "_" + ((APIKey) ((ArrayList) application.getKeys()).get(0))
-                            .getType();
-                    if (application.getKeys().size() > 1) {
-                        roleSandbox = "Application/" + oldUserName.replace("@" + newTenantDomain, "").
-                                replace(oldUserName.substring(oldUserName.indexOf("@"), oldUserName.indexOf("@") + 1),
-                                        "-AT-") +
-                                "_" + application.getName() + "_" + ((APIKey) ((ArrayList) application.getKeys()).
-                                get(1)).getType();
-                        if (APIUtil.isRoleNameExist(oldUserName, roleSandbox)) {
-                            roleList.add(roleSandbox);
-                        }
-                    }
-                    if (APIUtil.isRoleNameExist(oldUserName, roleProduction)) {
-                        roleList.add(roleProduction);
-                    }
-                } else {
-                    roleProduction = "Application/" + oldUserName.replace("@" + newTenantDomain, "")
-                            + "_" + application.getName() + "_" + ((APIKey) ((ArrayList) application.getKeys()).get(0))
-                            .getType();
-                    if (application.getKeys().size() > 1) {
-                        roleSandbox = "Application/" + oldUserName.replace("@" + newTenantDomain, "")
-                                + "_" + application.getName() + "_" + ((APIKey) ((ArrayList) application.getKeys()).
-                                get(1)).getType();
-                        if (APIUtil.isRoleNameExist(oldUserName, roleSandbox)) {
-                            roleList.add(roleSandbox);
-                        }
-                    }
-                    if (APIUtil.isRoleNameExist(oldUserName, roleProduction)) {
-                        roleList.add(roleProduction);
-                    }
-                }
-                /* updating the new owner's role with the old owner's role */
-                String[] roleArr = roleList.toArray(new String[roleList.size()]);
-                userStoreManager.updateRoleListOfUser(userId.replace("@" + newTenantDomain, ""),
-                        null, roleArr);
-                for (int i = 0; i < consumerKeys.length; i++) {
-                    KeyManager keyManager = KeyManagerHolder.getKeyManagerInstance();
-                    /* retrieving OAuth application information for specific consumer key */
-                    OAuthApplicationInfo oAuthApplicationInfo = keyManager.
-                            retrieveApplication(consumerKeys[i].toString());
-                    OAuthAppRequest oauthAppRequest = ApplicationUtils.createOauthAppRequest(oAuthApplicationInfo.
-                                    getParameter(ApplicationConstants.OAUTH_CLIENT_NAME).toString(), null,
-                            oAuthApplicationInfo.getCallBackURL(), null,
-                            null, application.getTokenType());
 
-                    oauthAppRequest.getOAuthApplicationInfo().setAppOwner(userId);
-                    oauthAppRequest.getOAuthApplicationInfo().setClientId(consumerKeys[i].toString());
+
+                        for (int i=0; i < application.getKeys().size(); i++) {
+                            if (StringUtils.countMatches(oldUserName,"@") >1) {
+                                roleName = "Application/" + oldUserName.replace("@" + newTenantDomain, "").
+                                        replace(oldUserName.substring(oldUserName.indexOf("@"), oldUserName.indexOf("@") + 1),
+                                                "-AT-") + "_" +
+                                        application.getName() + "_" + ((APIKey) ((ArrayList) application.getKeys()).get(i))
+                                        .getType();
+                            } else {
+                                roleName = "Application/" + oldUserName.replace("@" + newTenantDomain, "")
+                                        + "_" + application.getName() + "_" + ((APIKey) ((ArrayList) application.getKeys()).get(i))
+                                        .getType();
+                            }
+                            if (APIUtil.isRoleNameExist(oldUserName, roleName)) {
+                                roleList.add(roleName);
+                            }
+                        }
+//                if (oldUserName.replace("@" + newTenantDomain, "").contains("@")) {
+//                    roleProduction = "Application/" + oldUserName.replace("@" + newTenantDomain, "").
+//                            replace(oldUserName.substring(oldUserName.indexOf("@"), oldUserName.indexOf("@") + 1),
+//                                    "-AT-") + "_" +
+//                            application.getName() + "_" + ((APIKey) ((ArrayList) application.getKeys()).get(0))
+//                            .getType();
+//                    if (application.getKeys().size() > 1) {
+//                        roleSandbox = "Application/" + oldUserName.replace("@" + newTenantDomain, "").
+//                                replace(oldUserName.substring(oldUserName.indexOf("@"), oldUserName.indexOf("@") + 1),
+//                                        "-AT-") +
+//                                "_" + application.getName() + "_" + ((APIKey) ((ArrayList) application.getKeys()).
+//                                get(1)).getType();
+//                        if (APIUtil.isRoleNameExist(oldUserName, roleSandbox)) {
+//                            roleList.add(roleSandbox);
+//                        }
+//                    }
+//                    if (APIUtil.isRoleNameExist(oldUserName, roleProduction)) {
+//                        roleList.add(roleProduction);
+//                    }
+//                } else {
+//                    roleProduction = "Application/" + oldUserName.replace("@" + newTenantDomain, "")
+//                            + "_" + application.getName() + "_" + ((APIKey) ((ArrayList) application.getKeys()).get(0))
+//                            .getType();
+//                    if (application.getKeys().size() > 1) {
+//                        roleSandbox = "Application/" + oldUserName.replace("@" + newTenantDomain, "")
+//                                + "_" + application.getName() + "_" + ((APIKey) ((ArrayList) application.getKeys()).
+//                                get(1)).getType();
+//                        if (APIUtil.isRoleNameExist(oldUserName, roleSandbox)) {
+//                            roleList.add(roleSandbox);
+//                        }
+//                    }
+//                    if (APIUtil.isRoleNameExist(oldUserName, roleProduction)) {
+//                        roleList.add(roleProduction);
+//                    }
+//                }
+                /* updating the new owner's role with the old owner's role */
+                        String[] roleArr = roleList.toArray(new String[roleList.size()]);
+                        userStoreManager.updateRoleListOfUser(userId.replace("@" + newTenantDomain, ""),
+                                null, roleArr);
+                        for ( int i=0; i < application.getKeys().size(); i++) {
+                            KeyManager keyManager = KeyManagerHolder.getKeyManagerInstance();
+                    /* retrieving OAuth application information for specific consumer key */
+                            consumerKey = ((APIKey) ((ArrayList) application.getKeys()).get(i)).getConsumerKey();
+                            OAuthApplicationInfo oAuthApplicationInfo = keyManager.
+                                    retrieveApplication(consumerKey);
+                            OAuthAppRequest oauthAppRequest = ApplicationUtils.createOauthAppRequest(oAuthApplicationInfo.
+                                            getParameter(ApplicationConstants.OAUTH_CLIENT_NAME).toString(), null,
+                                    oAuthApplicationInfo.getCallBackURL(), null,
+                                    null, application.getTokenType());
+                            oauthAppRequest.getOAuthApplicationInfo().setAppOwner(userId);
+                            oauthAppRequest.getOAuthApplicationInfo().setClientId(consumerKey);
                     /* updating the owner of the OAuth application with userId */
-                    OAuthApplicationInfo updatedAppInfo = keyManager.updateApplicationOwner(oauthAppRequest);
+                            OAuthApplicationInfo updatedAppInfo = keyManager.updateApplicationOwner(oauthAppRequest);
+
+                        }
+//                for (int i = 0; i < consumerKeys.length; i++) {
+//                    KeyManager keyManager = KeyManagerHolder.getKeyManagerInstance();
+//                    /* retrieving OAuth application information for specific consumer key */
+//                    OAuthApplicationInfo oAuthApplicationInfo = keyManager.
+//                            retrieveApplication(consumerKeys[i].toString());
+//                    OAuthAppRequest oauthAppRequest = ApplicationUtils.createOauthAppRequest(oAuthApplicationInfo.
+//                                    getParameter(ApplicationConstants.OAUTH_CLIENT_NAME).toString(), null,
+//                            oAuthApplicationInfo.getCallBackURL(), null,
+//                            null, application.getTokenType());
+//
+//                    oauthAppRequest.getOAuthApplicationInfo().setAppOwner(userId);
+//                    oauthAppRequest.getOAuthApplicationInfo().setClientId(consumerKeys[i].toString());
+//                    /* updating the owner of the OAuth application with userId */
+//                    OAuthApplicationInfo updatedAppInfo = keyManager.updateApplicationOwner(oauthAppRequest);
+//                }
+                        audit.info("Successfully updated the owner of application " + application.getName() + " from " +
+                                oldUserName + " to " + userId);
+
+
+                } else {
+                    throw new APIManagementException("Unable to update application owner as " + userId +
+                            " has a application with the same name");
                 }
-                audit.info("Successfully updated the owner of application " + application.getName() + " from " +
-                        oldUserName + " to " + userId);
+            }
             } else {
                 throw new APIManagementException("Can not update application owner from " + oldUserName + " to " +
                         userId + " as both users are not in the same tenant domain");

@@ -86,6 +86,6 @@ public interface APIAdmin  {
      * @throws APIManagementException if failed to get application
      */
 
-    public int getApplicationCount(int tenantId, String searchOwner, String searchApplication)
+    public int getApplicationsCount(int tenantId, String searchOwner, String searchApplication)
             throws APIManagementException;
 }

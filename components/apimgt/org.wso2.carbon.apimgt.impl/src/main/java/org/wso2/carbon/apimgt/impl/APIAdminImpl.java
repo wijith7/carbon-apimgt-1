@@ -107,8 +107,8 @@ public class APIAdminImpl implements APIAdmin {
      * @throws APIManagementException if failed to get application
      */
 
-    public int getApplicationCount(int tenantId, String searchOwner, String searchApplication)
+    public int getApplicationsCount(int tenantId, String searchOwner, String searchApplication)
             throws APIManagementException {
-        return apiMgtDAO.getApplicationCount(tenantId, searchOwner, searchApplication);
+        return apiMgtDAO.getApplicationsCount(tenantId, searchOwner, searchApplication);
     }
 }

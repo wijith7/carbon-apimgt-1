@@ -3841,11 +3841,11 @@ public class ApiMgtDAO {
                 prepStmt.executeUpdate();
                 isAppUpdated = true;
             } else {
-                throw new APIManagementException(userName +" is not a valid subscriber");
+                String errorMessage = "Error when retrieving subscriber details for user " + userName;
+                handleException(errorMessage, new APIManagementException(errorMessage));
             }
         } catch (SQLException e) {
-            handleException(userName + " can not have two applications with same name. Update application owner " +
-                    "to another user ", e);
+            handleException("Error when updating application owner for user " + userName, e);
         } finally {
             APIMgtDBUtil.closeAllConnections(prepStmt, connection, null);
         }
@@ -4158,6 +4158,7 @@ public class ApiMgtDAO {
                 application.setName(applicationName);
                 application.setId(rs.getInt("APPLICATION_ID"));
                 application.setUUID(rs.getString("UUID"));
+                application.setGroupId(rs.getString("GROUP_ID"));
                 subscriber.setTenantId(rs.getInt("TENANT_ID"));
                 subscriber.setId(rs.getInt("SUBSCRIBER_ID"));
                 application.setOwner(subscriberName);
@@ -4171,7 +4172,7 @@ public class ApiMgtDAO {
         return applicationList;
     }
 
-    public int getApplicationCount(int tenantId, String searchOwner, String searchApplication) throws
+    public int getApplicationsCount(int tenantId, String searchOwner, String searchApplication) throws
             APIManagementException {
         Connection connection = null;
         PreparedStatement prepStmt = null;

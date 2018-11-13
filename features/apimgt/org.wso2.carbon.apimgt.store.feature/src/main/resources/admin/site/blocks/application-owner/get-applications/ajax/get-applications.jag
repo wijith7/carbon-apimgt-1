@@ -54,7 +54,7 @@ include("/jagg/jagg.jag");
         username = user.username;
         var tenantId = APIUtil.getTenantId(username);
         mod = jagg.module("application-owner");
-        var applicationCount = apiAdmin.getApplicationCount(tenantId, searchOwner, searchApplication);
+        var applicationCount = apiAdmin.getApplicationsCount(tenantId, searchOwner, searchApplication);
         var updateCondition = mod.getApplicationsByTenantIdWithPagination( start, offset, searchOwner, searchApplication, sortColumn, sortOrder);
         if (updateCondition.error) {
             obj = {

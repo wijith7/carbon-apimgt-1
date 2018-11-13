@@ -28,7 +28,7 @@ var changeOwner = function (action, newApplicationOwner, oldApplicationOwner, ap
             };
         }
     } catch (ex) {
-        var errorMessage = "Error occurred while updating application owner (Cause:" + ex.message.split(":")[1] + ")"; ;
+        var errorMessage = ex.message.split(":")[1];
         log.error(errorMessage);
         return {
             error: true,

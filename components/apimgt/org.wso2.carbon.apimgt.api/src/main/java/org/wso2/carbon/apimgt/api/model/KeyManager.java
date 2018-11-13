@@ -56,7 +56,10 @@ public interface KeyManager {
      * @param appInfoDTO accept an appinfoDTO object
      * @return OAuthApplicationInfo this object will  contain all the properties of updated oAuth application
      */
-    OAuthApplicationInfo updateApplicationOwner(OAuthAppRequest appInfoDTO) throws APIManagementException;
+    default OAuthApplicationInfo updateApplicationOwner(OAuthAppRequest appInfoDTO) throws APIManagementException {
+
+        throw new  APIManagementException("This is not supported");
+    }
 
     /**
      * Delete auth application
