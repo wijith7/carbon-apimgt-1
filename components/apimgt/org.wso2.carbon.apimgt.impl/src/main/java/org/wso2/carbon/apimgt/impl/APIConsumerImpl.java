@@ -3737,7 +3737,6 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
 
     public boolean isSubscriberValid(String userId)
             throws APIManagementException {
-
         boolean isSubscribeValid = false;
         if (apiMgtDAO.getSubscriber(userId) != null) {
             isSubscribeValid = true;
@@ -3746,7 +3745,6 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
                     " is not a subscriber");
         }
         return isSubscribeValid;
-
     }
 
     @Override
@@ -3798,10 +3796,10 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
                                     userAdminStub._getServiceClient());
                             userAdminStub.updateRolesOfUser(userId, roleArr);
                         }
-                /* updating the new owner's role with the old owner's role */
+                        /* updating the new owner's role with the old owner's role */
                         for (int i = 0; i < application.getKeys().size(); i++) {
                             KeyManager keyManager = KeyManagerHolder.getKeyManagerInstance();
-                    /* retrieving OAuth application information for specific consumer key */
+                             /* retrieving OAuth application information for specific consumer key */
                             consumerKey = ((APIKey) ((ArrayList) application.getKeys()).get(i)).getConsumerKey();
                             OAuthApplicationInfo oAuthApplicationInfo = keyManager.retrieveApplication(consumerKey);
                             OAuthAppRequest oauthAppRequest = ApplicationUtils.createOauthAppRequest(oAuthApplicationInfo.
@@ -3810,7 +3808,7 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
                                     null, application.getTokenType());
                             oauthAppRequest.getOAuthApplicationInfo().setAppOwner(userId);
                             oauthAppRequest.getOAuthApplicationInfo().setClientId(consumerKey);
-                    /* updating the owner of the OAuth application with userId */
+                             /* updating the owner of the OAuth application with userId */
                             OAuthApplicationInfo updatedAppInfo = keyManager.updateApplicationOwner(oauthAppRequest);
                         }
                         isAppUpdated = true;
@@ -3835,7 +3833,6 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
         } catch (UserAdminUserAdminException e) {
             handleException("Error when getting the tenant's UserStoreManager or when getting roles of user ", e);
         }
-        //todo update Outh application once the oauth component supports to update the owner
         return isAppUpdated;
     }
 
