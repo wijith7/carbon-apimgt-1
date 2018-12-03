@@ -11962,7 +11962,6 @@ public class ApiMgtDAO {
         }
     }
 
-
     /**
      * Retrieves the Application which is corresponding to the given UUID String
      *

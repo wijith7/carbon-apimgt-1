@@ -662,7 +662,6 @@ public interface APIManager {
      */
     void updateWsdl(String resourcePath, String wsdlDefinition) throws APIManagementException;
 
-
     /**
      * Returns the corresponding application given the subscriberId and application name
      *

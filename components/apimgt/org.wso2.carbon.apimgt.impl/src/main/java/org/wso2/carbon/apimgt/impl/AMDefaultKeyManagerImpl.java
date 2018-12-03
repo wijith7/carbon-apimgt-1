@@ -209,19 +209,18 @@ public class AMDefaultKeyManagerImpl extends AbstractKeyManager {
     }
 
     @Override
-    public OAuthApplicationInfo  updateApplicationOwner(OAuthAppRequest appInfoDTO) throws APIManagementException {
+    public OAuthApplicationInfo  updateApplicationOwner(OAuthAppRequest appInfoDTO, String owner) throws APIManagementException {
         OAuthApplicationInfo oAuthApplicationInfo = appInfoDTO.getOAuthApplicationInfo();
 
         try {
-            String applicationName = oAuthApplicationInfo.getClientName().substring((oAuthApplicationInfo.
-                    getClientName().indexOf("_") + 1));
+            String applicationName = oAuthApplicationInfo.getClientName();
             String[] grantTypes = null;
             if (oAuthApplicationInfo.getParameter(ApplicationConstants.OAUTH_CLIENT_GRANT) != null) {
                 grantTypes = ((String)oAuthApplicationInfo.getParameter(ApplicationConstants.OAUTH_CLIENT_GRANT))
                         .split(",");
             }
-            org.wso2.carbon.apimgt.api.model.xsd.OAuthApplicationInfo applicationInfo = updateOAuthApplication(
-                    oAuthApplicationInfo.getAppOwner(), applicationName,
+            org.wso2.carbon.apimgt.api.model.xsd.OAuthApplicationInfo applicationInfo = updateOAuthApplicationOwner(
+                    oAuthApplicationInfo.getAppOwner(), owner, applicationName,
                     oAuthApplicationInfo.getCallBackURL(),oAuthApplicationInfo.getClientId(), grantTypes);
             OAuthApplicationInfo newAppInfo = new OAuthApplicationInfo();
             newAppInfo.setAppOwner(applicationInfo.getAppOwner());
@@ -733,6 +732,19 @@ public class AMDefaultKeyManagerImpl extends AbstractKeyManager {
             keyMgtClient = SubscriberKeyMgtClientPool.getInstance().get();
             return keyMgtClient
                     .updateOAuthApplication(userId, applicationName, callBackURL, clientId, grantTypes);
+        } finally {
+            SubscriberKeyMgtClientPool.getInstance().release(keyMgtClient);
+        }
+
+    }
+
+    protected org.wso2.carbon.apimgt.api.model.xsd.OAuthApplicationInfo updateOAuthApplicationOwner(String userId, String owner,
+                                                                                               String applicationName, String callBackURL, String clientId, String[] grantTypes) throws Exception {
+        SubscriberKeyMgtClient keyMgtClient = null;
+        try {
+            keyMgtClient = SubscriberKeyMgtClientPool.getInstance().get();
+            return keyMgtClient
+                    .updateOAuthApplicationOwner(userId, owner, applicationName, callBackURL, clientId, grantTypes);
         } finally {
             SubscriberKeyMgtClientPool.getInstance().release(keyMgtClient);
         }
