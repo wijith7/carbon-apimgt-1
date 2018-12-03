@@ -3804,7 +3804,6 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
         return isAppUpdated;
     }
 
-
     public JSONObject resumeWorkflow(Object[] args) {
     	JSONObject row = new JSONObject();
 

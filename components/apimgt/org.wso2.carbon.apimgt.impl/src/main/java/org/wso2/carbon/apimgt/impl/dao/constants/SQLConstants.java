@@ -1312,7 +1312,8 @@ public class SQLConstants {
             " WHERE " +
             "   SUB.SUBSCRIBER_ID = APP.SUBSCRIBER_ID ";
 
-    public static final String GET_APPLICATIONS_COUNT = "SELECT " +
+    public static final String GET_APPLICATIONS_COUNT =
+            "SELECT " +
             "   count(*) count " +
             " FROM" +
             "   AM_APPLICATION APP, " +
