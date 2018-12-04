@@ -1,6 +1,5 @@
 $( document ).ready(function() {
     $('#get-app input').bind('keyup', function(e) {
-        console.log("$$$$$$$$$$");
         if(e.keyCode == 13) {
             table.search( this.value ).draw();
         }
@@ -30,10 +29,6 @@ $( document ).ready(function() {
                 {"data": "name"},
                 {"data": "owner"},
                 {"data": "name", "render": function ( data, type, rec, meta ) {
-                console.log(data);
-                console.log(type);
-                console.log(rec);
-                console.log(meta);
                   return application_actions(rec);
               }
             }

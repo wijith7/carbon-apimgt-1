@@ -503,8 +503,8 @@ public class APIKeyMgtSubscriberService extends AbstractAdmin {
      * @throws APIManagementException
      * @throws IdentityException
      */
-    public OAuthApplicationInfo updateOAuthApplicationOwner(String userId, String ownerId, String applicationName, String callbackUrl,
-                                                       String consumerKey, String[] grantTypes)
+    public OAuthApplicationInfo updateOAuthApplicationOwner(String userId, String ownerId, String applicationName,
+                                                            String callbackUrl, String consumerKey, String[] grantTypes)
             throws APIKeyMgtException, APIManagementException, IdentityException {
 
         if (userId == null || userId.isEmpty()) {
@@ -516,39 +516,11 @@ public class APIKeyMgtSubscriberService extends AbstractAdmin {
         String userName = MultitenantUtils.getTenantAwareUsername(userId);
         String ownerName = MultitenantUtils.getTenantAwareUsername(ownerId);
         String userNameForSP = userName;
-
-        if (log.isDebugEnabled()) {
-
-            StringBuilder message = new StringBuilder();
-            message.append("Updating OAuthApplication for ").append(userId).append(" with details : ");
-            if (consumerKey != null) {
-                message.append(" consumerKey = ").append(consumerKey);
-            }
-
-            if (callbackUrl != null) {
-                message.append(", callbackUrl = ").append(callbackUrl);
-            }
-
-            if (applicationName != null) {
-                message.append(", applicationName = ").append(applicationName);
-            }
-
-            if (grantTypes != null && grantTypes.length > 0) {
-                message.append(", grant Types = ");
-                for (String grantType : grantTypes) {
-                    message.append(grantType).append(" ");
-                }
-            }
-            log.debug(message.toString());
-        }
-
         PrivilegedCarbonContext.startTenantFlow();
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
-
         // Acting as the provided user. When creating Service Provider/OAuth App,
         // username is fetched from CarbonContext
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(userName);
-
         try {
 
             // Replace domain separator by "_" if user is coming from a secondary userstore.
@@ -556,7 +528,6 @@ public class APIKeyMgtSubscriberService extends AbstractAdmin {
             if (domain != null && !domain.isEmpty() && !UserCoreConstants.PRIMARY_DEFAULT_DOMAIN_NAME.equals(domain)) {
                 userNameForSP = userNameForSP.replace(UserCoreConstants.DOMAIN_SEPARATOR, "_");
             }
-
             if (applicationName != null && !applicationName.isEmpty()) {
                 // Append the username before Application name to make application name unique across two users.
                 String displayName;
@@ -566,7 +537,6 @@ public class APIKeyMgtSubscriberService extends AbstractAdmin {
                 } else {
                     displayName = applicationName;
                 }
-
                 // Get ServiceProvider Name by consumer Key.
                 ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
                 String appName = appMgtService.getServiceProviderNameByClientId(consumerKey, "oauth2", tenantDomain);
@@ -603,15 +573,10 @@ public class APIKeyMgtSubscriberService extends AbstractAdmin {
                     appMgtService.updateApplication(serviceProvider, tenantDomain, ownerName);
                     log.debug("Service Provider Name Updated to : " + applicationName);
                 }
-
             }
-
             OAuthAdminService oAuthAdminService = new OAuthAdminService();
             OAuthConsumerAppDTO oAuthConsumerAppDTO = oAuthAdminService.getOAuthApplicationData(consumerKey);
-
             if (oAuthConsumerAppDTO != null) {
-                // TODO: Make sure that App is only updated by the user who created it.
-                //if(userName.equals(oAuthConsumerAppDTO.getUsername()))
                 if (callbackUrl != null && !callbackUrl.isEmpty()) {
                     oAuthConsumerAppDTO.setCallbackUrl(callbackUrl);
                     log.debug("CallbackURL is set to : " + callbackUrl);
@@ -621,12 +586,10 @@ public class APIKeyMgtSubscriberService extends AbstractAdmin {
                     oAuthConsumerAppDTO.setApplicationName(applicationName);
                     log.debug("Name of the OAuthApplication is set to : " + applicationName);
                 }
-
                 if (userId != null && !userId.isEmpty()) {
                     oAuthConsumerAppDTO.setUsername(userName);
                     log.debug("Username of the OAuthApplication is set to : " + userName);
                 }
-
                 if (grantTypes != null && grantTypes.length > 0) {
                     StringBuilder builder = new StringBuilder();
                     for (String grantType : grantTypes) {
@@ -649,16 +612,12 @@ public class APIKeyMgtSubscriberService extends AbstractAdmin {
                     }
                     oAuthConsumerAppDTO.setGrantTypes(grantTypeString.toString().trim());
                 }
-
-
                 oAuthAdminService.updateConsumerApplication(oAuthConsumerAppDTO);
                 log.debug("Updated the OAuthApplication...");
-
                 oAuthConsumerAppDTO = oAuthAdminService.getOAuthApplicationData(consumerKey);
                 OAuthApplicationInfo oAuthApplicationInfo = createOAuthAppInfoFromDTO(oAuthConsumerAppDTO);
                 return oAuthApplicationInfo;
             }
-
         } catch (IdentityApplicationManagementException e) {
             APIUtil.handleException("Error occurred while creating ServiceProvider for app " + applicationName, e);
         } catch (Exception e) {

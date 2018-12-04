@@ -209,7 +209,8 @@ public class AMDefaultKeyManagerImpl extends AbstractKeyManager {
     }
 
     @Override
-    public OAuthApplicationInfo  updateApplicationOwner(OAuthAppRequest appInfoDTO, String owner) throws APIManagementException {
+    public OAuthApplicationInfo  updateApplicationOwner(OAuthAppRequest appInfoDTO, String owner)
+            throws APIManagementException {
         OAuthApplicationInfo oAuthApplicationInfo = appInfoDTO.getOAuthApplicationInfo();
 
         try {
@@ -724,7 +725,7 @@ public class AMDefaultKeyManagerImpl extends AbstractKeyManager {
 
     }
     
-    protected org.wso2.carbon.apimgt.api.model.xsd.OAuthApplicationInfo updateOAuthApplication(String userId, 
+    protected org.wso2.carbon.apimgt.api.model.xsd.OAuthApplicationInfo updateOAuthApplication(String userId,
                   String applicationName, String callBackURL, String clientId, String[] grantTypes) throws Exception {
         SubscriberKeyMgtClient keyMgtClient = null;
         try {
@@ -737,8 +738,9 @@ public class AMDefaultKeyManagerImpl extends AbstractKeyManager {
 
     }
 
-    protected org.wso2.carbon.apimgt.api.model.xsd.OAuthApplicationInfo updateOAuthApplicationOwner(String userId, String owner,
-                                                                                               String applicationName, String callBackURL, String clientId, String[] grantTypes) throws Exception {
+    protected org.wso2.carbon.apimgt.api.model.xsd.OAuthApplicationInfo updateOAuthApplicationOwner(
+            String userId, String owner, String applicationName, String callBackURL, String clientId,
+            String[] grantTypes) throws Exception {
         SubscriberKeyMgtClient keyMgtClient = null;
         try {
             keyMgtClient = SubscriberKeyMgtClientPool.getInstance().get();
