@@ -506,23 +506,22 @@ public class APIKeyMgtSubscriberService extends AbstractAdmin {
     public OAuthApplicationInfo updateOAuthApplicationOwner(String userId, String ownerId, String applicationName,
                                                             String callbackUrl, String consumerKey, String[] grantTypes)
             throws APIKeyMgtException, APIManagementException, IdentityException {
-
         if (userId == null || userId.isEmpty()) {
             return null;
         }
-
         String tenantDomain = MultitenantUtils.getTenantDomain(userId);
         String baseUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
         String userName = MultitenantUtils.getTenantAwareUsername(userId);
         String ownerName = MultitenantUtils.getTenantAwareUsername(ownerId);
         String userNameForSP = userName;
+        String authorizationCodeGrantType = "authorization_code";
+        String implicitGrantType = "implicit";
         PrivilegedCarbonContext.startTenantFlow();
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
         // Acting as the provided user. When creating Service Provider/OAuth App,
         // username is fetched from CarbonContext
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(userName);
         try {
-
             // Replace domain separator by "_" if user is coming from a secondary userstore.
             String domain = UserCoreUtil.extractDomainFromName(userNameForSP);
             if (domain != null && !domain.isEmpty() && !UserCoreConstants.PRIMARY_DEFAULT_DOMAIN_NAME.equals(domain)) {
@@ -604,7 +603,7 @@ public class APIKeyMgtSubscriberService extends AbstractAdmin {
 
                     for (String grantType : allowedGrantTypes) {
                         if (callbackUrl == null || callbackUrl.isEmpty()) {
-                            if ("authorization_code".equals(grantType) || "implicit".equals(grantType)) {
+                            if (authorizationCodeGrantType.equals(grantType) || implicitGrantType.equals(grantType)) {
                                 continue;
                             }
                         }
@@ -628,7 +627,6 @@ public class APIKeyMgtSubscriberService extends AbstractAdmin {
         }
         return null;
     }
-
     /**
      * Retrieve OAuth application for given consumer key
      * @param consumerKey
