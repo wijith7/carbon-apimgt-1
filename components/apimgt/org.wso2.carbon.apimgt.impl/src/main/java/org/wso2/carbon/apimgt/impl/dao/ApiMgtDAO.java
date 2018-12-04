@@ -4116,7 +4116,7 @@ public class ApiMgtDAO {
     }
 
     /**
-     *
+     * Returns applications within a tenant domain with pagination
      * @param tenantId   The tenantId.
      * @param start      The start index.
      * @param offset     The offset.
