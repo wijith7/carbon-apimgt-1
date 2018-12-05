@@ -30,21 +30,15 @@ public class ApplicationsApiServiceImpl extends ApplicationsApiService {
         try {
             apiConsumer = APIManagerFactory.getInstance().getAPIConsumer(owner);
             Application application = apiConsumer.getApplicationByUUID(applicationId);
-            if (application == null) {
-                RestApiUtil.handleInternalServerError("Application not found ", log);
+            boolean applicationUpdated = apiConsumer.updateApplicationOwner(owner, application);
+            if (applicationUpdated) {
+                return Response.ok().build();
             } else {
-                boolean applicationUpdated = apiConsumer.updateApplicationOwner(owner, application);
-                if (applicationUpdated) {
-                    return Response.ok().build();
-                } else {
-                    RestApiUtil.handleInternalServerError("Error while updating application owner " +
-                            applicationId, log);
-                }
+                RestApiUtil.handleInternalServerError("Error while updating application owner " + applicationId, log);
             }
 
         } catch (APIManagementException e) {
-            RestApiUtil.handleInternalServerError("Error while updating application owner " +
-                    applicationId, e, log);
+            RestApiUtil.handleInternalServerError("Error while updating application owner " + applicationId, e, log);
         }
 
         return null;
