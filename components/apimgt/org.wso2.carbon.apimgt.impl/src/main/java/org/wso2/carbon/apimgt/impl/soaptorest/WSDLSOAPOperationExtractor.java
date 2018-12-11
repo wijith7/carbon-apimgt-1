@@ -41,4 +41,12 @@ public interface WSDLSOAPOperationExtractor {
      * @throws APIMgtWSDLException
      */
     WSDLInfo getWsdlInfo() throws APIMgtWSDLException;
+
+    /**
+     * Returns whether this WSDL processor can process the provided WSDL content bytes or WSDL file path .
+     * To be called after calling {@link #init(byte[])} or  {@link #initPath(String)}.
+     *
+     * @return true if WSDL can be processed by this processor
+     */
+    boolean canProcess();
 }
