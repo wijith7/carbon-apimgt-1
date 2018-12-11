@@ -3739,8 +3739,7 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
         if (apiMgtDAO.getSubscriber(userId) != null) {
             isSubscribeValid = true;
         } else {
-            throw new APIManagementException(userId +
-                    " is not a subscriber.");
+            return false;
         }
         return isSubscribeValid;
     }
@@ -3778,6 +3777,8 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
                     throw new APIManagementException("Unable to update application owner to " + userId +
                             " as this user has an application with the same name. Update owner to another user.");
                 }
+            } else {
+                throw new APIManagementException(userId +" is not a subscriber");
             }
         } else {
             throw new APIManagementException("Unable to update application owner to " +
