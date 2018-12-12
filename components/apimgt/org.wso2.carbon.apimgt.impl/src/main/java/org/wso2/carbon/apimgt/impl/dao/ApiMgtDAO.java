@@ -4165,7 +4165,7 @@ public class ApiMgtDAO {
                 applicationList.add(application);
             }
         } catch (SQLException e) {
-            handleException("Error while obtaining details of the Application : " + tenantId, e);
+            handleException("Error while obtaining details of the Application for tenant id : " + tenantId, e);
         } finally {
             APIMgtDBUtil.closeAllConnections(prepStmt, connection, rs);
         }
@@ -4196,7 +4196,7 @@ public class ApiMgtDAO {
                 return applicationCount;
             }
         } catch (SQLException e) {
-            handleException("Failed to get application count : ", e);
+            handleException("Failed to get application count of tenant id : " + tenantId, e);
         } finally {
             APIMgtDBUtil.closeAllConnections(prepStmt, connection, resultSet);
         }
@@ -12019,8 +12019,8 @@ public class ApiMgtDAO {
                 application.setApplicationAttributes(applicationAttributes);
             }
         } catch (SQLException e) {
-            handleException("Error while obtaining details of the Application : " + subscriberId + " and " +
-                    applicationName, e);
+            handleException("Error while obtaining details of the Application : " + applicationName + " of " +
+                    subscriberId, e);
         } finally {
             APIMgtDBUtil.closeAllConnections(prepStmt, connection, rs);
         }
