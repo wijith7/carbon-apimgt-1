@@ -367,6 +367,29 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>aspectj-maven-plugin</artifactId>
+                <version>1.8</version>
+                <configuration>
+                    <!--Uncomment the following in order to debug the aspectJ weaving-->
+                    <!--<showWeaveInfo>true</showWeaveInfo>-->
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <complianceLevel>1.7</complianceLevel>
+                    <excludes>
+                        <!--The following class have been excluded from aspectj weaving, to avoid build failures-->
+                        <exclude>**/thrift/*Service.java</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
