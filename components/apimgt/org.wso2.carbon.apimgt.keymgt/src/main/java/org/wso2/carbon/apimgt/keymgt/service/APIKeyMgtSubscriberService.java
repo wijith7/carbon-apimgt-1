@@ -575,7 +575,9 @@ public class APIKeyMgtSubscriberService extends AbstractAdmin {
                     serviceProvider.setOwner(User.getUserFromUserName(userName));
                     serviceProvider.setDescription("Service Provider for application " + applicationName);
                     appMgtService.updateApplication(serviceProvider, tenantDomain, ownerName);
-                    log.debug("Service Provider Name Updated to : " + applicationName);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Service Provider Name Updated to : " + applicationName);
+                    }
                 }
             }
             OAuthAdminService oAuthAdminService = new OAuthAdminService();
@@ -583,16 +585,22 @@ public class APIKeyMgtSubscriberService extends AbstractAdmin {
             if (oAuthConsumerAppDTO != null) {
                 if (callbackUrl != null && !callbackUrl.isEmpty()) {
                     oAuthConsumerAppDTO.setCallbackUrl(callbackUrl);
-                    log.debug("CallbackURL is set to : " + callbackUrl);
+                    if (log.isDebugEnabled()) {
+                        log.debug("CallbackURL is set to : " + callbackUrl);
+                    }
                 }
                 oAuthConsumerAppDTO.setOauthConsumerKey(consumerKey);
                 if (applicationName != null && !applicationName.isEmpty()) {
                     oAuthConsumerAppDTO.setApplicationName(applicationName);
-                    log.debug("Name of the OAuthApplication is set to : " + applicationName);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Name of the OAuthApplication is set to : " + applicationName);
+                    }
                 }
                 if (userId != null && !userId.isEmpty()) {
                     oAuthConsumerAppDTO.setUsername(userName);
-                    log.debug("Username of the OAuthApplication is set to : " + userName);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Username of the OAuthApplication is set to : " + userName);
+                    }
                 }
                 if (grantTypes != null && grantTypes.length > 0) {
                     StringBuilder builder = new StringBuilder();
@@ -617,7 +625,9 @@ public class APIKeyMgtSubscriberService extends AbstractAdmin {
                     oAuthConsumerAppDTO.setGrantTypes(grantTypeString.toString().trim());
                 }
                 oAuthAdminService.updateConsumerApplication(oAuthConsumerAppDTO);
-                log.debug("Updated the OAuthApplication...");
+                if (log.isDebugEnabled()) {
+                    log.debug("Updated the OAuthApplication...");
+                }
                 oAuthConsumerAppDTO = oAuthAdminService.getOAuthApplicationData(consumerKey);
                 OAuthApplicationInfo oAuthApplicationInfo = createOAuthAppInfoFromDTO(oAuthConsumerAppDTO);
                 return oAuthApplicationInfo;
