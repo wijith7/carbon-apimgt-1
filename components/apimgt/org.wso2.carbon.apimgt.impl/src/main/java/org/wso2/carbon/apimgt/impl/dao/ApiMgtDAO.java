@@ -3626,6 +3626,50 @@ public class ApiMgtDAO {
         return false;
     }
 
+    /**
+     * Check whether the new user has an application
+     *
+     * @param appName  application name
+     * @param username subscriber
+     * @return true if application is available for the subscriber
+     * @throws APIManagementException if failed to get applications for given subscriber
+     */
+    public boolean doesUserOwnApplication(String appName, String username) throws APIManagementException {
+        if (username == null) {
+            return false;
+        }
+        Subscriber subscriber = getSubscriber(username);
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        int appId = 0;
+        String sqlQuery = SQLConstants.GET_APPLICATION_ID_PREFIX;
+        String whereClause = " AND SUB.USER_ID = ? ";
+        String whereClauseCaseInsensitive = " AND LOWER(SUB.USER_ID) = LOWER(?) ";
+        try {
+            connection = APIMgtDBUtil.getConnection();
+            if (forceCaseInsensitiveComparisons) {
+                sqlQuery += whereClauseCaseInsensitive;
+            } else {
+                sqlQuery += whereClause;
+            }
+            preparedStatement = connection.prepareStatement(sqlQuery);
+            preparedStatement.setString(1, appName);
+            preparedStatement.setString(2, subscriber.getName());
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                appId = resultSet.getInt("APPLICATION_ID");
+            }
+            if (appId > 0) {
+                return true;
+            }
+        } catch (SQLException e) {
+            handleException("Error while getting the id  of " + appName + " from the persistence store.", e);
+        } finally {
+            APIMgtDBUtil.closeAllConnections(preparedStatement, connection, resultSet);
+        }
+        return false;
+    }
 
     /**
      * @param username Subscriber
