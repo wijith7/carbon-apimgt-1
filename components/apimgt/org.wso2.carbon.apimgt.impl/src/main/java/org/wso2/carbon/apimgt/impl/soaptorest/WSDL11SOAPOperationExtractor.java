@@ -46,6 +46,7 @@ import org.wso2.carbon.apimgt.impl.soaptorest.model.WSDLParamDefinition;
 import org.wso2.carbon.apimgt.impl.soaptorest.model.WSDLSOAPOperation;
 import org.wso2.carbon.apimgt.impl.soaptorest.util.SOAPOperationBindingUtils;
 import org.wso2.carbon.apimgt.impl.soaptorest.util.SOAPToRESTConstants;
+import org.wso2.carbon.apimgt.impl.utils.APIFileUtil;
 import org.wso2.carbon.apimgt.impl.soaptorest.util.SwaggerFieldsExcludeStrategy;
 import org.wso2.carbon.apimgt.impl.utils.APIMWSDLReader;
 
@@ -512,6 +513,40 @@ public class WSDL11SOAPOperationExtractor implements WSDLSOAPOperationExtractor 
         xml.setNamespace(currentNode.getNamespaceURI());
         xml.setPrefix(currentNode.getPrefix());
         property.setXml(xml);
+    }
+
+    @Override
+    public boolean initPath(String path) throws APIMgtWSDLException {
+        pathToDefinitionMap = new HashMap<>();
+        try {
+            WSDLReader wsdlReader = APIMWSDLReader.getWsdlFactoryInstance().newWSDLReader();
+            // switch off the verbose mode
+            wsdlReader.setFeature(JAVAX_WSDL_VERBOSE_MODE, false);
+            wsdlReader.setFeature(JAVAX_WSDL_IMPORT_DOCUMENTS, false);
+            File folderToImport = new File(path);
+            Collection<File> foundWSDLFiles = APIFileUtil.searchFilesWithMatchingExtension(folderToImport, "wsdl");
+            if (log.isDebugEnabled()) {
+                log.debug("Found " + foundWSDLFiles.size() + " WSDL file(s) in path " + path);
+            }
+            for (File file : foundWSDLFiles) {
+                String absWSDLPath = file.getAbsolutePath();
+                if (log.isDebugEnabled()) {
+                    log.debug("Processing WSDL file: " + absWSDLPath);
+                }
+                Definition definition = wsdlReader.readWSDL(null, absWSDLPath);
+                pathToDefinitionMap.put(absWSDLPath, definition);
+            }
+            if (foundWSDLFiles.size() > 0) {
+                canProcess = true;
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully processed all WSDL files in path " + path);
+            }
+        } catch (WSDLException e) {
+            throw new APIMgtWSDLException(
+                    this.getClass().getName() + " was unable to process the WSDL Files for the path: " + path, e);
+        }
+        return canProcess;
     }
 
     @Override
