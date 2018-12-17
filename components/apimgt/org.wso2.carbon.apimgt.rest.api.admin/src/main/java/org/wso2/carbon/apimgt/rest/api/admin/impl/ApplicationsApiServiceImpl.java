@@ -9,6 +9,7 @@ import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.model.Application;
 import org.wso2.carbon.apimgt.impl.APIAdminImpl;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
+import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.apimgt.rest.api.admin.ApplicationsApiService;
 import org.wso2.carbon.apimgt.rest.api.admin.dto.ApplicationListDTO;
 import org.wso2.carbon.apimgt.rest.api.admin.utils.mappings.ApplicationMappingUtil;
