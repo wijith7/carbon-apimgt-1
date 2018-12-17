@@ -3760,7 +3760,7 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
                              /* retrieving OAuth application information for specific consumer key */
                         consumerKey = ((APIKey) ((ArrayList) application.getKeys()).get(i)).getConsumerKey();
                         OAuthApplicationInfo oAuthApplicationInfo = keyManager.retrieveApplication(consumerKey);
-                        if (oAuthApplicationInfo.getParameter(ApplicationConstants.OAUTH_CLIENT_NAME ) != null ) {
+                        if (oAuthApplicationInfo.getParameter(ApplicationConstants.OAUTH_CLIENT_NAME) != null) {
                             OAuthAppRequest oauthAppRequest = ApplicationUtils.createOauthAppRequest(oAuthApplicationInfo.
                                             getParameter(ApplicationConstants.OAUTH_CLIENT_NAME).toString(), null,
                                     oAuthApplicationInfo.getCallBackURL(), null,
@@ -3770,11 +3770,13 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
                              /* updating the owner of the OAuth application with userId */
                             OAuthApplicationInfo updatedAppInfo = keyManager.updateApplicationOwner(oauthAppRequest,
                                     oldUserName);
+                            isAppUpdated = true;
+                            audit.info("Successfully updated the owner of application " + application.getName() +
+                                    " from " + oldUserName + " to " + userId + ".");
+                        } else {
+                            throw new APIManagementException("Unable to retrieve OAuth application information.");
                         }
                     }
-                    isAppUpdated = true;
-                    audit.info("Successfully updated the owner of application " + application.getName() +
-                            " from " + oldUserName + " to " + userId+".");
                 } else {
                     throw new APIManagementException("Unable to update application owner to " + userId +
                             " as this user has an application with the same name. Update owner to another user.");
