@@ -4001,8 +4001,6 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
         }
         if (!docResourceMap.isEmpty()) {
             try {
-                ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
-                IOUtils.copy((InputStream) docResourceMap.get("Data"), arrayOutputStream);
                 String apiName = (String) apiDetails.get(API_NAME);
                 String apiVersion = (String) apiDetails.get(API_VERSION);
                 String apiProvider = (String) apiDetails.get(API_PROVIDER);
@@ -4038,7 +4036,7 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
                         wsdlContent = folderToImport.getCanonicalPath() + APIConstants.UPDATED_WSDL_ZIP;
                     }
                 } else {
-                    arrayOutputStream = new ByteArrayOutputStream();
+                    ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
                     IOUtils.copy((InputStream) docResourceMap.get("Data"), arrayOutputStream);
                     byte[] updatedWSDLContent = this.getUpdatedWSDLByEnvironment(resourceUrl,
                             arrayOutputStream.toByteArray(), environmentName, environmentType, apiName, apiVersion, apiProvider);
