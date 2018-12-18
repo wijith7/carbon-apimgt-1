@@ -395,7 +395,6 @@
 
 										<% if(session.get("wsdl") || ( api && api.wsdl )) {
 											var wsdl = session.get("wsdl");
-                                            var wsdlFile = session.get("wsdl-file");
 											if(api && api.wsdl){
 												wsdl = api.wsdl;
 											}
@@ -417,7 +416,7 @@
 												</label>
 												<div class="col-sm-6">
 													<div class="input-append">
-		                                                        <div id="wsdlurlInputSection">
+		                                               <div id="wsdlurlInputSection">
                                                             <input type="text" class="form-control validInput" id="wsdl" name="wsdl"  value="<%= encode.forHtmlAttribute(wsdl) %>" />
                                                             <div class="btn-group" id="test-uri-section">
                                                                  <button class="btn check_url_valid" url-type="wsdl" type="button"><%=i18n.localize("Test URI")%></button>

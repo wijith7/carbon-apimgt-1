@@ -29,7 +29,6 @@ public class WSDLArchiveInfo {
     private String fullAbsoluteFilePath;
 
     public WSDLArchiveInfo(String location, String fileName) {
-
         this.location = location;
         this.fileName = fileName;
         fullAbsoluteFilePath = location + File.separator + fileName;
