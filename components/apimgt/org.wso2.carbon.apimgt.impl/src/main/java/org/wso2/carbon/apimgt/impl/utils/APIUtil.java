@@ -1238,6 +1238,20 @@ public final class APIUtil {
             documentation.setId(artifact.getId());
             documentation.setSummary(artifact.getAttribute(APIConstants.DOC_SUMMARY));
 
+            String visibilityAttr = artifact.getAttribute(APIConstants.DOC_VISIBILITY);
+            Documentation.DocumentVisibility documentVisibility = Documentation.DocumentVisibility.API_LEVEL;
+
+            if (visibilityAttr != null) {
+                if (visibilityAttr.equals(Documentation.DocumentVisibility.API_LEVEL.name())) {
+                    documentVisibility = Documentation.DocumentVisibility.API_LEVEL;
+                } else if (visibilityAttr.equals(Documentation.DocumentVisibility.PRIVATE.name())) {
+                    documentVisibility = Documentation.DocumentVisibility.PRIVATE;
+                } else if (visibilityAttr.equals(Documentation.DocumentVisibility.OWNER_ONLY.name())) {
+                    documentVisibility = Documentation.DocumentVisibility.OWNER_ONLY;
+                }
+            }
+            documentation.setVisibility(documentVisibility);
+
             Documentation.DocumentSourceType docSourceType = Documentation.DocumentSourceType.INLINE;
             String artifactAttribute = artifact.getAttribute(APIConstants.DOC_SOURCE_TYPE);
 
@@ -5642,6 +5656,19 @@ public final class APIUtil {
     public static boolean isApplicationExist(String subscriber, String applicationName, String groupId)
             throws APIManagementException {
         return ApiMgtDAO.getInstance().isApplicationExist(applicationName, subscriber, groupId);
+    }
+
+    /**
+     * Check whether the new user has an application
+     *
+     * @param subscriber      subscriber name
+     * @param applicationName application name
+     * @return true if application is available for the subscriber
+     * @throws APIManagementException if failed to get applications for given subscriber
+     */
+    public static boolean isApplicationOwnedBySubscriber(String subscriber, String applicationName)
+            throws APIManagementException {
+        return ApiMgtDAO.getInstance().isApplicationOwnedBySubscriber(applicationName, subscriber);
     }
 
     public static String getHostAddress() {
