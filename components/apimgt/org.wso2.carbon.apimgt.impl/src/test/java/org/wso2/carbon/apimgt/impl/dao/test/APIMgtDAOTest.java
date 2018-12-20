@@ -980,8 +980,6 @@ public class APIMgtDAOTest {
                 .getName(), subscriber.getName(), clientIdSandbox);
         int appIdProduction = insertConsumerApp(clientIdProduction, application.getName(), subscriber.getName());
         int appIdSandBox = insertConsumerApp(clientIdSandbox, application.getName(), subscriber.getName());
-        log.info("appIdProd : " + appIdProduction);
-        log.info("appIdSandBox : " + appIdSandBox);
         String tokenProduction = UUID.randomUUID().toString();
         String tokenSandBox = UUID.randomUUID().toString();
         String tokenIdProduction = insertAccessTokenForApp(appIdProduction, subscriber.getName(), tokenProduction);
