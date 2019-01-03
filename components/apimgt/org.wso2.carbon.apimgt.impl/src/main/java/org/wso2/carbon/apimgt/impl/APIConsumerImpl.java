@@ -4064,9 +4064,8 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
 
     private void getZipFileFromFileList(String zipFile, Collection<File> fileList) throws APIManagementException {
         byte[] buffer = new byte[1024];
-        try {
-            FileOutputStream fos = new FileOutputStream(zipFile);
-            ZipOutputStream zos = new ZipOutputStream(fos);
+        try (FileOutputStream fos = new FileOutputStream(zipFile);
+                ZipOutputStream zos = new ZipOutputStream(fos)) {
             for (File file : fileList) {
                 String path = file.getAbsolutePath().substring(
                         file.getAbsolutePath().indexOf(APIConstants.API_WSDL_EXTRACTED_DIRECTORY)
@@ -4080,8 +4079,6 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
                     }
                 }
             }
-            zos.closeEntry();
-            zos.close();
         } catch (IOException e) {
             handleException("Error occurred while creating the ZIP file: " + zipFile, e);
         }
