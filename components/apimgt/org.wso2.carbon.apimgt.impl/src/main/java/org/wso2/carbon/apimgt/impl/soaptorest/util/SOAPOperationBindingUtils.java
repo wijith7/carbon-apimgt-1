@@ -286,7 +286,8 @@ public class SOAPOperationBindingUtils {
                         && operation.getInputParameterModel().size() <= 1) {
 
                     Map<String, Property> properties = null;
-                    if (operation.getInputParameterModel().size() > 0 && operation.getInputParameterModel().get(0) != null) {
+                    if (operation.getInputParameterModel().size() > 0
+                            && operation.getInputParameterModel().get(0) != null) {
                         properties = operation.getInputParameterModel().get(0).getProperties();
                     }
                     if (properties == null) {

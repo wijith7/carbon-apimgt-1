@@ -133,13 +133,14 @@ public class WSDL11SOAPOperationExtractor implements WSDLSOAPOperationExtractor 
             }
 
             if (typeList != null) {
-                for (Object ext : typeList)
+                for (Object ext : typeList) {
                     if (ext instanceof Schema) {
                         Schema schema = (Schema) ext;
                         Map importedSchemas = schema.getImports();
                         Element schemaElement = schema.getElement();
                         NodeList schemaNodes = schemaElement.getChildNodes();
                         schemaNodeList.addAll(SOAPOperationBindingUtils.list(schemaNodes));
+                        //gets types from imported schemas from the parent wsdl. Nested schemas will not be imported.
                         if (importedSchemas != null) {
                             for (Object importedSchemaObj : importedSchemas.keySet()) {
                                 String schemaUrl = (String) importedSchemaObj;
@@ -186,6 +187,7 @@ public class WSDL11SOAPOperationExtractor implements WSDLSOAPOperationExtractor 
                                     .getDocumentBaseURI());
                         }
                     }
+                }
                 if (schemaNodeList != null) {
                     for (Node node : schemaNodeList) {
                         WSDLParamDefinition wsdlParamDefinition = new WSDLParamDefinition();
