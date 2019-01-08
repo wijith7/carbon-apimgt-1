@@ -155,26 +155,19 @@ public class WSDL11SOAPOperationExtractor implements WSDLSOAPOperationExtractor 
                                                     schemaNodeList.addAll(SOAPOperationBindingUtils
                                                             .list(referencedSchema.getElement().getChildNodes()));
                                                 } else {
-                                                    if (log.isDebugEnabled()) {
-                                                        log.debug("The referenced schema : " + schemaUrl
-                                                                + " doesn't have any defined types");
-                                                    }
+                                                    log.warn("The referenced schema : " + schemaUrl
+                                                            + " doesn't have any defined types");
                                                 }
                                             } else {
-                                                if (log.isDebugEnabled()) {
-                                                    log.debug(
-                                                            "Cannot access referenced schema for the schema defined at: "
-                                                                    + schemaUrl);
-                                                }
+                                                log.warn("Cannot access referenced schema for the schema defined at: "
+                                                        + schemaUrl);
                                             }
                                         }
                                     }
                                 }
                             }
                         } else {
-                            if (log.isDebugEnabled()) {
-                                log.debug("No any imported schemas found in the given wsdl.");
-                            }
+                            log.info("No any imported schemas found in the given wsdl.");
                         }
                         if (log.isDebugEnabled()) {
                             Gson gson = new GsonBuilder().setExclusionStrategies(new SwaggerFieldsExcludeStrategy())
