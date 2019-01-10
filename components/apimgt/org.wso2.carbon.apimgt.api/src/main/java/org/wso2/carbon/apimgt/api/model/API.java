@@ -132,6 +132,9 @@ public class API implements Serializable {
     // API security at the gateway level.
     private String apiSecurity = "oauth2";
 
+    private static final String NULL_VALUE = "NULL";
+    private static final String EMPTY_STRING = "";
+
     public void setEnvironmentList(Set<String> environmentList) {
         this.environmentList = environmentList;
     }
@@ -756,10 +759,10 @@ public class API implements Serializable {
     }
 
     public void setType(String type) {
-        if (type != null && type != "") {
-            this.type = type.toUpperCase();
-        } else {
+        if (type == null || EMPTY_STRING.equals(type.trim()) || NULL_VALUE.equalsIgnoreCase(type.trim())) {
             this.type = "HTTP";
+        } else {
+            this.type = type.trim().toUpperCase();
         }
     }
 
