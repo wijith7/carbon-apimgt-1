@@ -132,71 +132,73 @@ public class WSDL11SOAPOperationExtractor implements WSDLSOAPOperationExtractor 
                 typeList = types.getExtensibilityElements();
             }
 
-            if (typeList != null) {
-                for (Object ext : typeList) {
-                    if (ext instanceof Schema) {
-                        Schema schema = (Schema) ext;
-                        Map importedSchemas = schema.getImports();
-                        Element schemaElement = schema.getElement();
-                        NodeList schemaNodes = schemaElement.getChildNodes();
-                        schemaNodeList.addAll(SOAPOperationBindingUtils.list(schemaNodes));
-                        //gets types from imported schemas from the parent wsdl. Nested schemas will not be imported.
-                        if (importedSchemas != null) {
-                            for (Object importedSchemaObj : importedSchemas.keySet()) {
-                                String schemaUrl = (String) importedSchemaObj;
-                                if (importedSchemas.get(schemaUrl) != null) {
-                                    Vector vector = (Vector) importedSchemas.get(schemaUrl);
-                                    for (Object schemaVector : vector) {
-                                        if (schemaVector instanceof SchemaImport) {
-                                            Schema referencedSchema = ((SchemaImport) schemaVector)
-                                                    .getReferencedSchema();
-                                            if (referencedSchema != null && referencedSchema.getElement() != null) {
-                                                if (referencedSchema.getElement().hasChildNodes()) {
-                                                    schemaNodeList.addAll(SOAPOperationBindingUtils
-                                                            .list(referencedSchema.getElement().getChildNodes()));
-                                                } else {
-                                                    log.warn("The referenced schema : " + schemaUrl
-                                                            + " doesn't have any defined types");
-                                                }
-                                            } else {
-                                                log.warn("Cannot access referenced schema for the schema defined at: "
-                                                        + schemaUrl);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            log.info("No any imported schemas found in the given wsdl.");
-                        }
-                        if (log.isDebugEnabled()) {
-                            Gson gson = new GsonBuilder().setExclusionStrategies(new SwaggerFieldsExcludeStrategy())
-                                    .create();
-                            log.debug("swagger definition model map from the wsdl: " + gson.toJson(parameterModelMap));
-                        }
-
-                        if (schemaNodeList == null) {
-                            log.warn("No schemas found in the type element for target namespace:" + schema
-                                    .getDocumentBaseURI());
-                        }
-                    }
+            if (typeList == null) {
+                return canProcess;
+            }
+            for (Object ext : typeList) {
+                if (!(ext instanceof Schema)) {
+                    continue;
                 }
-                if (schemaNodeList != null) {
-                    for (Node node : schemaNodeList) {
-                        WSDLParamDefinition wsdlParamDefinition = new WSDLParamDefinition();
-                        ModelImpl model = new ModelImpl();
-                        Property currentProperty = null;
-                        traverseTypeElement(node, null, model, currentProperty);
-                        if (StringUtils.isNotBlank(model.getName())) {
-                            parameterModelMap.put(model.getName(), model);
+                Schema schema = (Schema) ext;
+                Map importedSchemas = schema.getImports();
+                Element schemaElement = schema.getElement();
+                NodeList schemaNodes = schemaElement.getChildNodes();
+                schemaNodeList.addAll(SOAPOperationBindingUtils.list(schemaNodes));
+                //gets types from imported schemas from the parent wsdl. Nested schemas will not be imported.
+                if (importedSchemas != null) {
+                    for (Object importedSchemaObj : importedSchemas.keySet()) {
+                        String schemaUrl = (String) importedSchemaObj;
+                        if (importedSchemas.get(schemaUrl) == null) {
+                            continue;
                         }
-                        if (wsdlParamDefinition.getDefinitionName() != null) {
-                            wsdlParamDefinitions.add(wsdlParamDefinition);
+                        Vector vector = (Vector) importedSchemas.get(schemaUrl);
+                        for (Object schemaVector : vector) {
+                            if (!(schemaVector instanceof SchemaImport)) {
+                                continue;
+                            }
+                            Schema referencedSchema = ((SchemaImport) schemaVector).getReferencedSchema();
+                            if (referencedSchema != null && referencedSchema.getElement() != null) {
+                                if (referencedSchema.getElement().hasChildNodes()) {
+                                    schemaNodeList.addAll(SOAPOperationBindingUtils
+                                            .list(referencedSchema.getElement().getChildNodes()));
+                                } else {
+                                    log.warn(
+                                            "The referenced schema : " + schemaUrl + " doesn't have any defined types");
+                                }
+                            } else {
+                                log.warn("Cannot access referenced schema for the schema defined at: " + schemaUrl);
+                            }
                         }
                     }
                 } else {
-                    log.info("No schema is defined in the wsdl document");
+                    log.info("No any imported schemas found in the given wsdl.");
                 }
+                if (log.isDebugEnabled()) {
+                    Gson gson = new GsonBuilder().setExclusionStrategies(new SwaggerFieldsExcludeStrategy()).create();
+                    log.debug("swagger definition model map from the wsdl: " + gson.toJson(parameterModelMap));
+                }
+
+                if (schemaNodeList == null) {
+                    log.warn(
+                            "No schemas found in the type element for target namespace:" + schema.getDocumentBaseURI());
+                }
+
+            }
+            if (schemaNodeList != null) {
+                for (Node node : schemaNodeList) {
+                    WSDLParamDefinition wsdlParamDefinition = new WSDLParamDefinition();
+                    ModelImpl model = new ModelImpl();
+                    Property currentProperty = null;
+                    traverseTypeElement(node, null, model, currentProperty);
+                    if (StringUtils.isNotBlank(model.getName())) {
+                        parameterModelMap.put(model.getName(), model);
+                    }
+                    if (wsdlParamDefinition.getDefinitionName() != null) {
+                        wsdlParamDefinitions.add(wsdlParamDefinition);
+                    }
+                }
+            } else {
+                log.info("No schema is defined in the wsdl document");
             }
             if (log.isDebugEnabled()) {
                 log.debug("Successfully initialized an instance of " + this.getClass().getSimpleName()

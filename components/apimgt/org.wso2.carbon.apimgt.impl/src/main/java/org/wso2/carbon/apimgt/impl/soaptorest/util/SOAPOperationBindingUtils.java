@@ -102,7 +102,7 @@ public class SOAPOperationBindingUtils {
                 Operation op = new Operation();
                 List<ModelImpl> inputParameterModel = operation.getInputParameterModel();
                 List<ModelImpl> outputParameterModel = operation.getOutputParameterModel();
-                if (HTTPConstants.HTTP_METHOD_GET.equals(operation.getHttpVerb())) {
+                if (HTTPConstants.HTTP_METHOD_GET.equals(operation.getHttpVerb()) && inputParameterModel != null) {
                     for (ModelImpl input : inputParameterModel) {
                         if (input != null && operation.getName().equalsIgnoreCase(input.getName())) {
                             Map<String, Property> properties = input.getProperties();
@@ -159,11 +159,13 @@ public class SOAPOperationBindingUtils {
                     inputModel.setName(operation.getName() + SOAPToRESTConstants.Swagger.INPUT_POSTFIX);
                     inputModel.setType(ObjectProperty.TYPE);
                     Map<String, Property> inputPropertyMap = new HashMap<>();
-                    for (ModelImpl input : inputParameterModel) {
-                        RefProperty inputRefProp = new RefProperty();
-                        if (input != null) {
-                            inputRefProp.set$ref(SOAPToRESTConstants.Swagger.DEFINITIONS_ROOT + input.getName());
-                            inputPropertyMap.put(input.getName(), inputRefProp);
+                    if (inputParameterModel != null) {
+                        for (ModelImpl input : inputParameterModel) {
+                            RefProperty inputRefProp = new RefProperty();
+                            if (input != null) {
+                                inputRefProp.set$ref(SOAPToRESTConstants.Swagger.DEFINITIONS_ROOT + input.getName());
+                                inputPropertyMap.put(input.getName(), inputRefProp);
+                            }
                         }
                     }
                     inputModel.setProperties(inputPropertyMap);
@@ -175,11 +177,13 @@ public class SOAPOperationBindingUtils {
                 outputModel.setName(operation.getName() + SOAPToRESTConstants.Swagger.OUTPUT_POSTFIX);
                 outputModel.setType(ObjectProperty.TYPE);
                 Map<String, Property> outputPropertyMap = new HashMap<>();
-                for (ModelImpl output : outputParameterModel) {
-                    RefProperty outputRefProp = new RefProperty();
-                    if (output != null) {
-                        outputRefProp.set$ref(SOAPToRESTConstants.Swagger.DEFINITIONS_ROOT + output.getName());
-                        outputPropertyMap.put(output.getName(), outputRefProp);
+                if (outputParameterModel != null) {
+                    for (ModelImpl output : outputParameterModel) {
+                        RefProperty outputRefProp = new RefProperty();
+                        if (output != null) {
+                            outputRefProp.set$ref(SOAPToRESTConstants.Swagger.DEFINITIONS_ROOT + output.getName());
+                            outputPropertyMap.put(output.getName(), outputRefProp);
+                        }
                     }
                 }
                 outputModel.setProperties(outputPropertyMap);
