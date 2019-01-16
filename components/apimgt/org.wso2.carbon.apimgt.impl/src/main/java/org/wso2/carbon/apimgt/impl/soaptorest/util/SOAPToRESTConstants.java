@@ -79,8 +79,8 @@ public class SOAPToRESTConstants {
         public static final String INDENT_PROPERTY = "{http://xml.apache.org/xslt}indent-amount";
         public static final String INDENT_VALUE = "2";
 
-        public static final String SOAP_TO_REST_IN_RESOURCE = "/soap_to_rest/in";
-        public static final String SOAP_TO_REST_OUT_RESOURCE = "/soap_to_rest/out";
+        public static final String SOAP_TO_REST_IN_RESOURCE = "soap_to_rest/in";
+        public static final String SOAP_TO_REST_OUT_RESOURCE = "soap_to_rest/out";
         public static final String XML_FILE_EXTENSION = ".xml";
         public static final String XML_FILE_RESOURCE_PREFIX = "\\.xml";
         public static final String RESOURCE_METHOD_SEPERATOR = "_";
