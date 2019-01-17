@@ -3757,9 +3757,8 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
     }
 
     public boolean updateApplicationOwner(String userId, Application application) throws APIManagementException {
-        boolean isAppUpdated = false;
+        boolean isAppUpdated;
         String consumerKey;
-        RealmService realmService = ServiceReferenceHolder.getInstance().getRealmService();
         String oldUserName = application.getSubscriber().getName();
         String oldTenantDomain = MultitenantUtils.getTenantDomain(oldUserName);
         String newTenantDomain = MultitenantUtils.getTenantDomain(userId);
@@ -3800,10 +3799,9 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
             throw new APIManagementException("Unable to update application owner to " +
                     userId + " as this user does not belong to " + oldTenantDomain + " domain.");
         }
-        if (isAppUpdated) {
+
             isAppUpdated = apiMgtDAO.updateApplicationOwner(userId, application);
-        }
-        return isAppUpdated;
+            return isAppUpdated;
     }
 
     public JSONObject resumeWorkflow(Object[] args) {
