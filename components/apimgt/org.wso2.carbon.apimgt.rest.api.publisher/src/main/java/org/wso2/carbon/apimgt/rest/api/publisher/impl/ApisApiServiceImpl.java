@@ -22,6 +22,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,6 +56,7 @@ import org.wso2.carbon.apimgt.impl.definitions.APIDefinitionFromOpenAPISpec;
 import org.wso2.carbon.apimgt.impl.factory.KeyManagerHolder;
 import org.wso2.carbon.apimgt.impl.soaptorest.SequenceGenerator;
 import org.wso2.carbon.apimgt.impl.soaptorest.util.SOAPOperationBindingUtils;
+import org.wso2.carbon.apimgt.impl.soaptorest.util.SequenceUtils;
 import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.apimgt.rest.api.publisher.ApisApiService;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.APIDetailedDTO;
@@ -80,6 +82,10 @@ import org.wso2.carbon.registry.api.Resource;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -93,11 +99,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-
 import static org.wso2.carbon.apimgt.rest.api.util.utils.RestApiUtil.getErrorDTO;
 
 /**
@@ -917,6 +918,149 @@ public class ApisApiServiceImpl extends ApisApiService {
         return null;
     }
 
+    /**
+     * Get the conversion policies(inflow/outflow) for a soap to rest converted api.
+     *
+     * @param apiId           API ID
+     * @param sequenceType    sequence type('in' or 'out')
+     * @param resourcePath    api resource path
+     * @param verb            http verb
+     * @param accept          Accept header value
+     * @param ifNoneMatch     If-None-Match header value
+     * @param ifModifiedSince If-Modified-Since header value
+     * @return json response of the conversion policies according to the resource path
+     */
+    @Override
+    public Response apisApiIdSoapToRestConversionPolicyGet(String apiId, String sequenceType,
+            String resourcePath, String verb, String accept, String ifNoneMatch, String ifModifiedSince) {
+        try {
+            String tenantDomain = RestApiUtil.getLoggedInUserTenantDomain();
+            APIIdentifier apiIdentifier = APIMappingUtil.getAPIIdentifierFromApiIdOrUUID(apiId, tenantDomain);
+            boolean isSoapToRESTApi = SOAPOperationBindingUtils
+                    .isSOAPToRESTApi(apiIdentifier.getApiName(), apiIdentifier.getVersion(),
+                            apiIdentifier.getProviderName());
+            if (isSoapToRESTApi) {
+                if (StringUtils.isEmpty(sequenceType) || !(RestApiConstants.IN_SEQUENCE.equals(sequenceType)
+                        || RestApiConstants.OUT_SEQUENCE.equals(sequenceType))) {
+                    String errorMessage = "Sequence type should be either of the values from 'in' or 'out'";
+                    RestApiUtil.handleBadRequest(errorMessage, log);
+                }
+                String sequence = SequenceUtils
+                        .getRestToSoapConvertedSequence(apiIdentifier.getApiName(), apiIdentifier.getVersion(),
+                                apiIdentifier.getProviderName(), sequenceType);
+                if (StringUtils.isEmpty(resourcePath) && StringUtils.isEmpty(verb)) {
+                    return Response.ok().entity(sequence).build();
+                }
+                if (StringUtils.isNotEmpty(resourcePath) && StringUtils.isNotEmpty(verb)) {
+                    JSONObject sequenceObj = (JSONObject) new JSONParser().parse(sequence);
+                    JSONObject resultJson = new JSONObject();
+                    String key = resourcePath + "_" + verb;
+                    JSONObject sequenceContent = (JSONObject) sequenceObj.get(key);
+                    if (sequenceContent == null) {
+                        String errorMessage = "Cannot find any conversion policy for Resource path : " + resourcePath +
+                                " with type: " + verb;
+                        RestApiUtil.handleResourceNotFoundError(errorMessage, log);
+                    }
+                    resultJson.put(key, sequenceObj.get(key));
+                    return Response.ok().entity(resultJson.toJSONString()).build();
+                } else if (StringUtils.isEmpty(resourcePath)) {
+                    String errorMessage = "Resource path cannot be empty for the defined verb: " + verb;
+                    RestApiUtil.handleBadRequest(errorMessage, log);
+                } else if (StringUtils.isEmpty(verb)) {
+                    String errorMessage = "HTTP verb cannot be empty for the defined resource path: " + resourcePath;
+                    RestApiUtil.handleBadRequest(errorMessage, log);
+                }
+            } else {
+                String errorMessage = "The provided api with id: " + apiId + " is not a soap to rest converted api.";
+                RestApiUtil.handleBadRequest(errorMessage, log);
+            }
+        } catch (APIManagementException e) {
+            String errorMessage = "Error while retrieving the API : " + apiId;
+            RestApiUtil.handleInternalServerError(errorMessage, e, log);
+        } catch (ParseException e) {
+            String errorMessage = "Error while retrieving the conversion policies for the API : " + apiId;
+            RestApiUtil.handleInternalServerError(errorMessage, e, log);
+        }
+        return null;
+    }
+
+    /**
+     * Update the conversion policy(inflow/outflow) for a provided resurce path of a soap to rest converted api.
+     *
+     * @param apiId             API ID
+     * @param sequenceType      sequence type('in' or 'out')
+     * @param content           sequence content to be updated
+     * @param contentType       Request content type
+     * @param resourcePath      api resource path
+     * @param verb              http verb
+     * @param ifMatch           If-Match header value
+     * @param ifUnmodifiedSince If-Unmodified-Since header value
+     * @return json response of the updated sequence content
+     */
+    @Override
+    public Response apisApiIdSoapToRestConversionPolicyPut(String apiId, String resourcePath, String verb,
+            String sequenceType, String content, String contentType, String ifMatch, String ifUnmodifiedSince) {
+        try {
+            String tenantDomain = RestApiUtil.getLoggedInUserTenantDomain();
+            APIIdentifier apiIdentifier = APIMappingUtil.getAPIIdentifierFromApiIdOrUUID(apiId, tenantDomain);
+            boolean isSoapToRESTApi = SOAPOperationBindingUtils
+                    .isSOAPToRESTApi(apiIdentifier.getApiName(), apiIdentifier.getVersion(),
+                            apiIdentifier.getProviderName());
+            if (isSoapToRESTApi) {
+                if (StringUtils.isEmpty(sequenceType) || !(RestApiConstants.IN_SEQUENCE.equals(sequenceType)
+                        || RestApiConstants.OUT_SEQUENCE.equals(sequenceType))) {
+                    String errorMessage = "Sequence type should be either of the values from 'in' or 'out'";
+                    RestApiUtil.handleBadRequest(errorMessage, log);
+                }
+                String sequence = SequenceUtils
+                        .getRestToSoapConvertedSequence(apiIdentifier.getApiName(), apiIdentifier.getVersion(),
+                                apiIdentifier.getProviderName(), sequenceType);
+                if (StringUtils.isNotEmpty(resourcePath) && StringUtils.isNotEmpty(verb)) {
+                    content = StringEscapeUtils.unescapeJava(content);
+                    JSONObject currentSequenceObj = (JSONObject) new JSONParser().parse(sequence);
+                    String key = resourcePath + "_" + verb;
+                    JSONObject sequenceContent = (JSONObject) currentSequenceObj.get(key);
+                    if (sequenceContent == null) {
+                        String errorMessage = "Cannot find any conversion policy for Resource path : " + resourcePath +
+                                " with type: " + verb;
+                        RestApiUtil.handleInternalServerError(errorMessage, log);
+                    }
+                    boolean isValidSchema = RestApiPublisherUtils.validateXMLSchema(content);
+                    if (isValidSchema) {
+                        sequenceContent.put(RestApiConstants.SEQUENCE_CONTENT, content);
+                        SequenceUtils.updateRestToSoapConvertedSequences(apiIdentifier.getApiName(),
+                                apiIdentifier.getVersion(), apiIdentifier.getProviderName(), sequenceType,
+                                currentSequenceObj.toJSONString());
+                        String updatedSequence = SequenceUtils
+                                .getRestToSoapConvertedSequence(apiIdentifier.getApiName(), apiIdentifier.getVersion(),
+                                        apiIdentifier.getProviderName(), sequenceType);
+                        JSONObject updatedSequenceObj = (JSONObject) new JSONParser().parse(updatedSequence);
+                        JSONObject response = new JSONObject();
+                        response.put(key, updatedSequenceObj.get(key));
+                        return Response.ok().entity(response.toJSONString()).build();
+                    } else {
+                        String errorMessage =
+                                "Error while validating the conversion policy xml content for the API : " + apiId;
+                        RestApiUtil.handleInternalServerError(errorMessage, log);
+                    }
+                } else {
+                    String errorMessage =
+                            "Resource path and verb parameters cannot be empty when updating conversion policy.";
+                    RestApiUtil.handleBadRequest(errorMessage, log);
+                }
+            } else {
+                String errorMessage = "The provided api with id: " + apiId + " is not a soap to rest converted api.";
+                RestApiUtil.handleBadRequest(errorMessage, log);
+            }
+        } catch (APIManagementException e) {
+            String errorMessage = "Error while retrieving the API : " + apiId;
+            RestApiUtil.handleInternalServerError(errorMessage, e, log);
+        } catch (ParseException e) {
+            String errorMessage = "Error while parsing the conversion policies content for the API : " + apiId;
+            RestApiUtil.handleInternalServerError(errorMessage, e, log);
+        }
+        return null;
+    }
 
     /**
      * This method is used to assign micro gateway labels to the DTO

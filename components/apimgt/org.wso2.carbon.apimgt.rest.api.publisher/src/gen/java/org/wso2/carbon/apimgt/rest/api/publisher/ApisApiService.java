@@ -37,6 +37,8 @@ public abstract class ApisApiService {
     public abstract Response apisApiIdPoliciesMediationMediationPolicyIdPut(String apiId,String mediationPolicyId,MediationDTO body,String contentType,String ifMatch,String ifUnmodifiedSince);
     public abstract Response apisApiIdPoliciesMediationPost(MediationDTO body,String apiId,String contentType,String ifMatch,String ifUnmodifiedSince);
     public abstract Response apisApiIdPut(String apiId,APIDetailedDTO body,String contentType,String ifMatch,String ifUnmodifiedSince);
+    public abstract Response apisApiIdSoapToRestConversionPolicyGet(String apiId,String sequenceType,String resourcePath,String verb,String accept,String ifNoneMatch,String ifModifiedSince);
+    public abstract Response apisApiIdSoapToRestConversionPolicyPut(String apiId,String resourcePath,String verb,String sequenceType,String content,String contentType,String ifMatch,String ifUnmodifiedSince);
     public abstract Response apisApiIdSwaggerGet(String apiId,String accept,String ifNoneMatch,String ifModifiedSince);
     public abstract Response apisApiIdSwaggerPut(String apiId,String apiDefinition,String contentType,String ifMatch,String ifUnmodifiedSince);
     public abstract Response apisApiIdThumbnailGet(String apiId,String accept,String ifNoneMatch,String ifModifiedSince);

@@ -364,6 +364,57 @@ public class ApisApi  {
     return delegate.apisApiIdPut(apiId,body,contentType,ifMatch,ifUnmodifiedSince);
     }
     @GET
+    @Path("/{apiId}/soap-to-rest-conversion-policy")
+    @Consumes({ "application/json" })
+    @Produces({ "application/json" })
+    @io.swagger.annotations.ApiOperation(value = "Get soap to rest generated conversion policy(inflow/outflow) definition", notes = "This operation can be used to retrieve the SOAP to REST Generated conversion policy definition of an API.\n", response = void.class)
+    @io.swagger.annotations.ApiResponses(value = { 
+        @io.swagger.annotations.ApiResponse(code = 200, message = "OK.\nRequested SOAP to REST Generated conversion policy definition of the API is returned\n"),
+        
+        @io.swagger.annotations.ApiResponse(code = 304, message = "Not Modified.\nEmpty body because the client has already the latest version of the requested resource (Will be supported in future).\n"),
+        
+        @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found.\nRequested API does not exist.\n"),
+        
+        @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable.\nThe requested media type is not supported\n") })
+
+    public Response apisApiIdSoapToRestConversionPolicyGet(@ApiParam(value = "**API ID** consisting of the **UUID** of the API. Using the **UUID** in the API call is recommended.\nThe combination of the provider of the API, name of the API and the version is also accepted as a valid API ID.\nShould be formatted as **provider-name-version**.\n",required=true ) @PathParam("apiId") @Encoded String apiId,
+    @ApiParam(value = "sequence type of the SOAP to REST Generated conversion policy definition",required=true) @QueryParam("sequenceType")  String sequenceType,
+    @ApiParam(value = "Resource path of the SOAP to REST Generated conversion policy definition") @QueryParam("resourcePath")  String resourcePath,
+    @ApiParam(value = "HTTP verb of the resource path of the SOAP to REST Generated conversion policy definition") @QueryParam("verb")  String verb,
+    @ApiParam(value = "Media types acceptable for the response. Default is application/json.\n"  , defaultValue="application/json")@HeaderParam("Accept") String accept,
+    @ApiParam(value = "Validator for conditional requests; based on the ETag of the formerly retrieved\nvariant of the resource (Will be supported in future).\n"  )@HeaderParam("If-None-Match") String ifNoneMatch,
+    @ApiParam(value = "Validator for conditional requests; based on Last Modified header of the\nformerly retrieved variant of the resource (Will be supported in future).\n"  )@HeaderParam("If-Modified-Since") String ifModifiedSince)
+    {
+    return delegate.apisApiIdSoapToRestConversionPolicyGet(apiId,sequenceType,resourcePath,verb,accept,ifNoneMatch,ifModifiedSince);
+    }
+    @PUT
+    @Path("/{apiId}/soap-to-rest-conversion-policy")
+    @Consumes({ "multipart/form-data" })
+    @Produces({ "application/json" })
+    @io.swagger.annotations.ApiOperation(value = "Update soap to rest generated conversion policy(inflow/outflow) definition", notes = "This operation can be used to update the soap to rest generated conversion policy(inflow/outflow) definition of an existing API. conversion policy definition to be updated is passed as a form data parameter `content`.\n", response = void.class)
+    @io.swagger.annotations.ApiResponses(value = { 
+        @io.swagger.annotations.ApiResponse(code = 200, message = "OK.\nSuccessful response with updated SOAP to REST Generated api conversion policy definition\n"),
+        
+        @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request.\nInvalid request or validation error\n"),
+        
+        @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden.\nThe request must be conditional but no condition has been specified.\n"),
+        
+        @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found.\nThe resource to be updated does not exist.\n"),
+        
+        @io.swagger.annotations.ApiResponse(code = 412, message = "Precondition Failed.\nThe request has not been performed because one of the preconditions is not met.\n") })
+
+    public Response apisApiIdSoapToRestConversionPolicyPut(@ApiParam(value = "**API ID** consisting of the **UUID** of the API. Using the **UUID** in the API call is recommended.\nThe combination of the provider of the API, name of the API and the version is also accepted as a valid API ID.\nShould be formatted as **provider-name-version**.\n",required=true ) @PathParam("apiId") @Encoded String apiId,
+    @ApiParam(value = "Resource path of the SOAP to REST Generated conversion policy definition", required=true )@Multipart(value = "resourcePath")  String resourcePath,
+    @ApiParam(value = "HTTP verb of the resource path of the SOAP to REST Generated conversion policy definition", required=true )@Multipart(value = "verb")  String verb,
+    @ApiParam(value = "SOAP to REST Generated conversion policy definition type of the API", required=true )@Multipart(value = "sequenceType")  String sequenceType,
+    @ApiParam(value = "SOAP to REST Generated conversion policy definition to be updated of the API", required=true )@Multipart(value = "content")  String content,
+    @ApiParam(value = "Media type of the entity in the body. Default is application/json.\n" ,required=true , defaultValue="application/json")@HeaderParam("Content-Type") String contentType,
+    @ApiParam(value = "Validator for conditional requests; based on ETag (Will be supported in future).\n"  )@HeaderParam("If-Match") String ifMatch,
+    @ApiParam(value = "Validator for conditional requests; based on Last Modified header (Will be supported in future).\n"  )@HeaderParam("If-Unmodified-Since") String ifUnmodifiedSince)
+    {
+    return delegate.apisApiIdSoapToRestConversionPolicyPut(apiId,resourcePath,verb,sequenceType,content,contentType,ifMatch,ifUnmodifiedSince);
+    }
+    @GET
     @Path("/{apiId}/swagger")
     @Consumes({ "application/json" })
     @Produces({ "application/json" })

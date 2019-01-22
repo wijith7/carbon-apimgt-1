@@ -172,4 +172,8 @@ public final class RestApiConstants {
             CERTS_BASE_PATH + "?limit=" + LIMIT_PARAM + "&offset=" + OFFSET_PARAM + QUERY_PARAM;
     public static final String CLIENT_CERTS_GET_PAGINATED_URL =
             CLIENT_CERTS_BASE_PATH + "?limit=" + LIMIT_PARAM + "&offset=" + OFFSET_PARAM + QUERY_PARAM;
+
+    public static final String IN_SEQUENCE = "in";
+    public static final String OUT_SEQUENCE = "out";
+    public static final String SEQUENCE_CONTENT = "content";
 }
