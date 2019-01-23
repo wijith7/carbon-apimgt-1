@@ -354,8 +354,8 @@ if(jagg.isCSRFTokenValid())
             apiData.visibility = request.getParameter("visibility");
             apiData.visibleRoles = request.getParameter("roles","UTF-8");
             apiData.wsdl = request.getParameter("wsdl");
-            if(wsdlFile){
-            apiData.wsdlFile = wsdlFile;
+            if (wsdlFile) {
+                apiData.wsdlFile = wsdlFile;
             }
             apiData.accessControl = request.getParameter("accessControl");
             apiData.accessControlRoles = request.getParameter("accessControlRoles", "UTF-8");
