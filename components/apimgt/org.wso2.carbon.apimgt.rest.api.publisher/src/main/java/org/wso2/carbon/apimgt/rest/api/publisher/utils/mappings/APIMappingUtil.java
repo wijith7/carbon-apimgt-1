@@ -45,9 +45,9 @@ import org.wso2.carbon.apimgt.rest.api.publisher.dto.APIEndpointSecurityDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.APIInfoDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.APIListDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.APIMaxTpsDTO;
-import org.wso2.carbon.apimgt.rest.api.publisher.dto.ConversionPolicyInfoDTO;
-import org.wso2.carbon.apimgt.rest.api.publisher.dto.ConversionPolicyListDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.LabelDTO;
+import org.wso2.carbon.apimgt.rest.api.publisher.dto.ResourcePolicyInfoDTO;
+import org.wso2.carbon.apimgt.rest.api.publisher.dto.ResourcePolicyListDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.SequenceDTO;
 import org.wso2.carbon.apimgt.rest.api.util.RestApiConstants;
 import org.wso2.carbon.apimgt.rest.api.util.utils.RestApiUtil;
@@ -667,19 +667,19 @@ public class APIMappingUtil {
      * @return ConversionPolicyListDTO object containing ConversionPolicyInfoDTOs
      * @throws APIManagementException
      */
-    public static ConversionPolicyListDTO fromConversionPolicyStrToDTO(String conversionPolicyStr)
+    public static ResourcePolicyListDTO fromResourcePolicyStrToDTO(String conversionPolicyStr)
             throws APIManagementException {
-        ConversionPolicyListDTO policyListDTO = new ConversionPolicyListDTO();
-        List<ConversionPolicyInfoDTO> policyInfoDTOs = policyListDTO.getList();
+        ResourcePolicyListDTO policyListDTO = new ResourcePolicyListDTO();
+        List<ResourcePolicyInfoDTO> policyInfoDTOs = policyListDTO.getList();
         if (StringUtils.isNotEmpty(conversionPolicyStr)) {
             try {
                 JSONObject conversionPolicyObj = (JSONObject) new JSONParser().parse(conversionPolicyStr);
                 for (Object key : conversionPolicyObj.keySet()) {
                     JSONObject policyInfo = (JSONObject) conversionPolicyObj.get(key);
                     String keyStr = ((String) key);
-                    ConversionPolicyInfoDTO policyInfoDTO = new ConversionPolicyInfoDTO();
+                    ResourcePolicyInfoDTO policyInfoDTO = new ResourcePolicyInfoDTO();
                     policyInfoDTO.setId(policyInfo.get(RestApiConstants.SEQUENCE_ARTIFACT_ID).toString());
-                    policyInfoDTO.setMethod(policyInfo.get(RestApiConstants.HTTP_METHOD).toString());
+                    policyInfoDTO.setHttpVerb(policyInfo.get(RestApiConstants.HTTP_METHOD).toString());
                     policyInfoDTO.setResourcePath(keyStr.substring(0, keyStr.lastIndexOf("_")));
                     policyInfoDTO.setContent(policyInfo.get(RestApiConstants.SEQUENCE_CONTENT).toString());
                     policyInfoDTOs.add(policyInfoDTO);
@@ -699,9 +699,9 @@ public class APIMappingUtil {
      * @return ConversionPolicyInfoDTO consisting given conversion policy string
      * @throws APIManagementException
      */
-    public static ConversionPolicyInfoDTO fromConversionPolicyStrToInfoDTO(String conversionPolicyStr)
+    public static ResourcePolicyInfoDTO fromResourcePolicyStrToInfoDTO(String conversionPolicyStr)
             throws APIManagementException {
-        ConversionPolicyInfoDTO policyInfoDTO = new ConversionPolicyInfoDTO();
+        ResourcePolicyInfoDTO policyInfoDTO = new ResourcePolicyInfoDTO();
         if (StringUtils.isNotEmpty(conversionPolicyStr)) {
             try {
                 JSONObject conversionPolicyObj = (JSONObject) new JSONParser().parse(conversionPolicyStr);
@@ -709,7 +709,7 @@ public class APIMappingUtil {
                     JSONObject policyInfo = (JSONObject) conversionPolicyObj.get(key);
                     String keyStr = ((String) key);
                     policyInfoDTO.setId(policyInfo.get(RestApiConstants.SEQUENCE_ARTIFACT_ID).toString());
-                    policyInfoDTO.setMethod(policyInfo.get(RestApiConstants.HTTP_METHOD).toString());
+                    policyInfoDTO.setHttpVerb(policyInfo.get(RestApiConstants.HTTP_METHOD).toString());
                     policyInfoDTO.setResourcePath(keyStr.substring(0, keyStr.lastIndexOf("_")));
                     policyInfoDTO.setContent(policyInfo.get(RestApiConstants.SEQUENCE_CONTENT).toString());
                 }

@@ -2,7 +2,7 @@ package org.wso2.carbon.apimgt.rest.api.publisher.dto;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.wso2.carbon.apimgt.rest.api.publisher.dto.ConversionPolicyInfoDTO;
+import org.wso2.carbon.apimgt.rest.api.publisher.dto.ResourcePolicyInfoDTO;
 
 import io.swagger.annotations.*;
 import com.fasterxml.jackson.annotation.*;
@@ -14,11 +14,11 @@ import javax.validation.constraints.NotNull;
 
 
 @ApiModel(description = "")
-public class ConversionPolicyListDTO  {
+public class ResourcePolicyListDTO  {
   
   
   
-  private List<ConversionPolicyInfoDTO> list = new ArrayList<ConversionPolicyInfoDTO>();
+  private List<ResourcePolicyInfoDTO> list = new ArrayList<ResourcePolicyInfoDTO>();
   
   
   private Integer count = null;
@@ -28,10 +28,10 @@ public class ConversionPolicyListDTO  {
    **/
   @ApiModelProperty(value = "")
   @JsonProperty("list")
-  public List<ConversionPolicyInfoDTO> getList() {
+  public List<ResourcePolicyInfoDTO> getList() {
     return list;
   }
-  public void setList(List<ConversionPolicyInfoDTO> list) {
+  public void setList(List<ResourcePolicyInfoDTO> list) {
     this.list = list;
   }
 
@@ -53,7 +53,7 @@ public class ConversionPolicyListDTO  {
   @Override
   public String toString()  {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ConversionPolicyListDTO {\n");
+    sb.append("class ResourcePolicyListDTO {\n");
     
     sb.append("  list: ").append(list).append("\n");
     sb.append("  count: ").append(count).append("\n");

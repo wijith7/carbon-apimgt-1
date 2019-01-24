@@ -11,14 +11,14 @@ import javax.validation.constraints.NotNull;
 
 
 @ApiModel(description = "")
-public class ConversionPolicyInfoDTO  {
+public class ResourcePolicyInfoDTO  {
   
   
   
   private String id = null;
   
   
-  private String method = null;
+  private String httpVerb = null;
   
   
   private String resourcePath = null;
@@ -28,9 +28,9 @@ public class ConversionPolicyInfoDTO  {
 
   
   /**
-   * UUID of the conversion policy registry artifact\n
+   * UUID of the resource policy registry artifact\n
    **/
-  @ApiModelProperty(value = "UUID of the conversion policy registry artifact\n")
+  @ApiModelProperty(value = "UUID of the resource policy registry artifact\n")
   @JsonProperty("id")
   public String getId() {
     return id;
@@ -44,19 +44,19 @@ public class ConversionPolicyInfoDTO  {
    * HTTP verb used for the resource path
    **/
   @ApiModelProperty(value = "HTTP verb used for the resource path")
-  @JsonProperty("method")
-  public String getMethod() {
-    return method;
+  @JsonProperty("httpVerb")
+  public String getHttpVerb() {
+    return httpVerb;
   }
-  public void setMethod(String method) {
-    this.method = method;
+  public void setHttpVerb(String httpVerb) {
+    this.httpVerb = httpVerb;
   }
 
   
   /**
-   * A string that represents the resource path of the api for the related conversion policy
+   * A string that represents the resource path of the api for the related resource policy
    **/
-  @ApiModelProperty(value = "A string that represents the resource path of the api for the related conversion policy")
+  @ApiModelProperty(value = "A string that represents the resource path of the api for the related resource policy")
   @JsonProperty("resourcePath")
   public String getResourcePath() {
     return resourcePath;
@@ -67,9 +67,9 @@ public class ConversionPolicyInfoDTO  {
 
   
   /**
-   * The conversion policy content
+   * The resource policy content
    **/
-  @ApiModelProperty(value = "The conversion policy content")
+  @ApiModelProperty(value = "The resource policy content")
   @JsonProperty("content")
   public String getContent() {
     return content;
@@ -83,10 +83,10 @@ public class ConversionPolicyInfoDTO  {
   @Override
   public String toString()  {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ConversionPolicyInfoDTO {\n");
+    sb.append("class ResourcePolicyInfoDTO {\n");
     
     sb.append("  id: ").append(id).append("\n");
-    sb.append("  method: ").append(method).append("\n");
+    sb.append("  httpVerb: ").append(httpVerb).append("\n");
     sb.append("  resourcePath: ").append(resourcePath).append("\n");
     sb.append("  content: ").append(content).append("\n");
     sb.append("}\n");

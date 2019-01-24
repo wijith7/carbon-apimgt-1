@@ -61,14 +61,14 @@ import org.wso2.carbon.apimgt.rest.api.publisher.ApisApiService;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.APIDetailedDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.APIListDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.APIListPaginationDTO;
-import org.wso2.carbon.apimgt.rest.api.publisher.dto.ConversionPolicyInfoDTO;
-import org.wso2.carbon.apimgt.rest.api.publisher.dto.ConversionPolicyListDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.DocumentDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.DocumentListDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.FileInfoDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.LabelDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.MediationDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.MediationListDTO;
+import org.wso2.carbon.apimgt.rest.api.publisher.dto.ResourcePolicyInfoDTO;
+import org.wso2.carbon.apimgt.rest.api.publisher.dto.ResourcePolicyListDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.WsdlDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.utils.RestApiPublisherUtils;
 import org.wso2.carbon.apimgt.rest.api.publisher.utils.mappings.APIMappingUtil;
@@ -917,7 +917,7 @@ public class ApisApiServiceImpl extends ApisApiService {
     }
 
     /**
-     * Get the conversion policies(inflow/outflow).
+     * Get the resource policies(inflow/outflow).
      *
      * @param apiId           API ID
      * @param sequenceType    sequence type('in' or 'out')
@@ -929,7 +929,7 @@ public class ApisApiServiceImpl extends ApisApiService {
      * @return json response of the conversion policies according to the resource path
      */
     @Override
-    public Response apisApiIdConversionPoliciesGet(String apiId, String sequenceType, String resourcePath,
+    public Response apisApiIdResourcePoliciesGet(String apiId, String sequenceType, String resourcePath,
             String verb, String accept, String ifNoneMatch, String ifModifiedSince) {
         try {
             String tenantDomain = RestApiUtil.getLoggedInUserTenantDomain();
@@ -943,16 +943,16 @@ public class ApisApiServiceImpl extends ApisApiService {
                     String errorMessage = "Sequence type should be either of the values from 'in' or 'out'";
                     RestApiUtil.handleBadRequest(errorMessage, log);
                 }
-                String conversionPolicy = SequenceUtils
+                String resourcePolicy = SequenceUtils
                         .getRestToSoapConvertedSequence(apiIdentifier.getApiName(), apiIdentifier.getVersion(),
                                 apiIdentifier.getProviderName(), sequenceType);
                 if (StringUtils.isEmpty(resourcePath) && StringUtils.isEmpty(verb)) {
-                    ConversionPolicyListDTO conversionPolicyListDTO = APIMappingUtil
-                            .fromConversionPolicyStrToDTO(conversionPolicy);
-                    return Response.ok().entity(conversionPolicyListDTO).build();
+                    ResourcePolicyListDTO resourcePolicyListDTO = APIMappingUtil
+                            .fromResourcePolicyStrToDTO(resourcePolicy);
+                    return Response.ok().entity(resourcePolicyListDTO).build();
                 }
                 if (StringUtils.isNotEmpty(resourcePath) && StringUtils.isNotEmpty(verb)) {
-                    JSONObject sequenceObj = (JSONObject) new JSONParser().parse(conversionPolicy);
+                    JSONObject sequenceObj = (JSONObject) new JSONParser().parse(resourcePolicy);
                     JSONObject resultJson = new JSONObject();
                     String key = resourcePath + "_" + verb;
                     JSONObject sequenceContent = (JSONObject) sequenceObj.get(key);
@@ -962,9 +962,9 @@ public class ApisApiServiceImpl extends ApisApiService {
                         RestApiUtil.handleResourceNotFoundError(errorMessage, log);
                     }
                     resultJson.put(key, sequenceObj.get(key));
-                    ConversionPolicyListDTO conversionPolicyListDTO = APIMappingUtil
-                            .fromConversionPolicyStrToDTO(resultJson.toJSONString());
-                    return Response.ok().entity(conversionPolicyListDTO).build();
+                    ResourcePolicyListDTO resourcePolicyListDTO = APIMappingUtil
+                            .fromResourcePolicyStrToDTO(resultJson.toJSONString());
+                    return Response.ok().entity(resourcePolicyListDTO).build();
                 } else if (StringUtils.isEmpty(resourcePath)) {
                     String errorMessage = "Resource path cannot be empty for the defined verb: " + verb;
                     RestApiUtil.handleBadRequest(errorMessage, log);
@@ -987,7 +987,7 @@ public class ApisApiServiceImpl extends ApisApiService {
     }
 
     /**
-     * Update the conversion policies(inflow/outflow) given the resource id.
+     * Update the resource policies(inflow/outflow) given the resource id.
      *
      * @param apiId             API ID
      * @param id                resource id
@@ -998,8 +998,8 @@ public class ApisApiServiceImpl extends ApisApiService {
      * @return json response of the updated sequence content
      */
     @Override
-    public Response apisApiIdConversionPoliciesPut(String apiId, String id, String content,
-            String contentType, String ifMatch, String ifUnmodifiedSince) {
+    public Response apisApiIdResourcePoliciesPut(String apiId, String id, String content, String contentType,
+            String ifMatch, String ifUnmodifiedSince) {
         try {
             String tenantDomain = RestApiUtil.getLoggedInUserTenantDomain();
             APIIdentifier apiIdentifier = APIMappingUtil.getAPIIdentifierFromApiIdOrUUID(apiId, tenantDomain);
@@ -1016,9 +1016,9 @@ public class ApisApiServiceImpl extends ApisApiService {
                     SequenceUtils.updateConversionPolicyFromResourceId(apiIdentifier, id, content);
                     String updatedPolicyContent = SequenceUtils
                             .getConversionPolicyFromResourceId(apiIdentifier, id);
-                    ConversionPolicyInfoDTO conversionPolicyInfoDTO = APIMappingUtil
-                            .fromConversionPolicyStrToInfoDTO(updatedPolicyContent);
-                    return Response.ok().entity(conversionPolicyInfoDTO).build();
+                    ResourcePolicyInfoDTO resourcePolicyInfoDTO = APIMappingUtil
+                            .fromResourcePolicyStrToInfoDTO(updatedPolicyContent);
+                    return Response.ok().entity(resourcePolicyInfoDTO).build();
                 } else {
                     String errorMessage =
                             "Error while validating the conversion policy xml content for the API : " + apiId;
