@@ -22,6 +22,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.wso2.carbon.apimgt.api.APIDefinition;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.APIProvider;
@@ -43,6 +45,8 @@ import org.wso2.carbon.apimgt.rest.api.publisher.dto.APIEndpointSecurityDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.APIInfoDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.APIListDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.APIMaxTpsDTO;
+import org.wso2.carbon.apimgt.rest.api.publisher.dto.ConversionPolicyInfoDTO;
+import org.wso2.carbon.apimgt.rest.api.publisher.dto.ConversionPolicyListDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.LabelDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.dto.SequenceDTO;
 import org.wso2.carbon.apimgt.rest.api.util.RestApiConstants;
@@ -654,6 +658,66 @@ public class APIMappingUtil {
             apiInfoDTO.setThumbnailUri(getThumbnailUri(api.getUUID()));
         }
         return apiInfoDTO;
+    }
+
+    /**
+     * Creates  a list of conversion policies into a DTO
+     *
+     * @param conversionPolicyStr conversion policies
+     * @return ConversionPolicyListDTO object containing ConversionPolicyInfoDTOs
+     * @throws APIManagementException
+     */
+    public static ConversionPolicyListDTO fromConversionPolicyStrToDTO(String conversionPolicyStr)
+            throws APIManagementException {
+        ConversionPolicyListDTO policyListDTO = new ConversionPolicyListDTO();
+        List<ConversionPolicyInfoDTO> policyInfoDTOs = policyListDTO.getList();
+        if (StringUtils.isNotEmpty(conversionPolicyStr)) {
+            try {
+                JSONObject conversionPolicyObj = (JSONObject) new JSONParser().parse(conversionPolicyStr);
+                for (Object key : conversionPolicyObj.keySet()) {
+                    JSONObject policyInfo = (JSONObject) conversionPolicyObj.get(key);
+                    String keyStr = ((String) key);
+                    ConversionPolicyInfoDTO policyInfoDTO = new ConversionPolicyInfoDTO();
+                    policyInfoDTO.setId(policyInfo.get(RestApiConstants.SEQUENCE_ARTIFACT_ID).toString());
+                    policyInfoDTO.setMethod(policyInfo.get(RestApiConstants.HTTP_METHOD).toString());
+                    policyInfoDTO.setResourcePath(keyStr.substring(0, keyStr.lastIndexOf("_")));
+                    policyInfoDTO.setContent(policyInfo.get(RestApiConstants.SEQUENCE_CONTENT).toString());
+                    policyInfoDTOs.add(policyInfoDTO);
+                }
+            } catch (ParseException e) {
+                throw new APIManagementException("Couldn't parse the conversion policy string.", e);
+            }
+        }
+        policyListDTO.setCount(policyInfoDTOs.size());
+        return policyListDTO;
+    }
+
+    /**
+     * Creates a DTO consisting a single conversion policy
+     *
+     * @param conversionPolicyStr conversion policy string
+     * @return ConversionPolicyInfoDTO consisting given conversion policy string
+     * @throws APIManagementException
+     */
+    public static ConversionPolicyInfoDTO fromConversionPolicyStrToInfoDTO(String conversionPolicyStr)
+            throws APIManagementException {
+        ConversionPolicyInfoDTO policyInfoDTO = new ConversionPolicyInfoDTO();
+        if (StringUtils.isNotEmpty(conversionPolicyStr)) {
+            try {
+                JSONObject conversionPolicyObj = (JSONObject) new JSONParser().parse(conversionPolicyStr);
+                for (Object key : conversionPolicyObj.keySet()) {
+                    JSONObject policyInfo = (JSONObject) conversionPolicyObj.get(key);
+                    String keyStr = ((String) key);
+                    policyInfoDTO.setId(policyInfo.get(RestApiConstants.SEQUENCE_ARTIFACT_ID).toString());
+                    policyInfoDTO.setMethod(policyInfo.get(RestApiConstants.HTTP_METHOD).toString());
+                    policyInfoDTO.setResourcePath(keyStr.substring(0, keyStr.lastIndexOf("_")));
+                    policyInfoDTO.setContent(policyInfo.get(RestApiConstants.SEQUENCE_CONTENT).toString());
+                }
+            } catch (ParseException e) {
+                throw new APIManagementException("Couldn't parse the conversion policy string.", e);
+            }
+        }
+        return policyInfoDTO;
     }
 
     private static void setEndpointSecurityFromApiDTOToModel (APIDetailedDTO dto, API api) {

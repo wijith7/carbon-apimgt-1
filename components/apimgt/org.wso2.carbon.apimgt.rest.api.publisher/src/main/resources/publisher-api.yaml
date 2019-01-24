@@ -573,38 +573,38 @@ paths:
             $ref: '#/definitions/Error'
 
   ################################################################
-  # The SOAP to REST Generated api conversion sequences of "Individual API" resource APIs
+  # The conversion policy resources of "Individual API" resource APIs
   ################################################################
 
-  /apis/{apiId}/soap-to-rest-conversion-policy:
+  /apis/{apiId}/conversion-policies:
     #-----------------------------------------------------
-    # Retrieve the SOAP to REST Generated api conversion policy definition
+    # Retrieve the conversion policy resource definition
     #-----------------------------------------------------
     get:
       x-scope: apim:api_view
-      x-wso2-curl: "curl -k -H \"Authorization: Bearer ae4eae22-3f65-387b-a171-d37eaa366fa8\" https://localhost:9443/api/am/publisher/v0.14/apis/890a4f4d-09eb-4877-a323-57f6ce2ed79b/soap-to-rest-conversion-policy"
+      x-wso2-curl: "curl -k -H \"Authorization: Bearer ae4eae22-3f65-387b-a171-d37eaa366fa8\" https://localhost:9443/api/am/publisher/v0.14/apis/890a4f4d-09eb-4877-a323-57f6ce2ed79b/conversion-policies"
       x-wso2-request: |
-        GET https://localhost:9443/api/am/publisher/v0.14/apis/890a4f4d-09eb-4877-a323-57f6ce2ed79b/soap-to-rest-conversion-policy
+        GET https://localhost:9443/api/am/publisher/v0.14/apis/890a4f4d-09eb-4877-a323-57f6ce2ed79b/conversion-policies
         Authorization: Bearer ae4eae22-3f65-387b-a171-d37eaa366fa8
       x-wso2-response: "HTTP/1.1 200 OK\nContent-Type: application/json\nContent-Length: 329\n\n{\n   \"paths\": {\"/*\": {\"get\":    {\n      \"x-auth-type\": \"Application\",\n      \"x-throttling-tier\": \"Unlimited\",\n      \"responses\": {\"200\": {\"description\": \"OK\"}}\n   }}},\n   \"x-wso2-security\": {\"apim\": {\"x-wso2-scopes\": []}},\n   \"swagger\": \"2.0\",\n   \"info\":    {\n      \"title\": \"PhoneVerification\",\n      \"description\": \"Verify a phone number\",\n      \"contact\":       {\n         \"email\": \"xx@ee.com\",\n         \"name\": \"xx\"\n      },\n      \"version\": \"1.0.0\"\n   }\n}"
-      summary: Get soap to rest generated conversion policy(inflow/outflow) definition
+      summary: Get the conversion policy resource(inflow/outflow) definitions
       description: |
-        This operation can be used to retrieve the SOAP to REST Generated conversion policy definition of an API.
+        This operation can be used to retrieve conversion policy resource definitions of an API.
       parameters:
       - $ref: '#/parameters/apiId'
       - in: query
         name: resourcePath
-        description: Resource path of the SOAP to REST Generated conversion policy definition
+        description: Resource path of the conversion policy resource definition
         type: string
         required: false
       - in: query
         name: verb
-        description: HTTP verb of the resource path of the SOAP to REST Generated conversion policy definition
+        description: HTTP verb of the resource path of the conversion policy resource definition
         type: string
         required: false
       - in: query
         name: sequenceType
-        description: sequence type of the SOAP to REST Generated conversion policy definition
+        description: sequence type of the conversion policy resource definition
         type: string
         required: true
       - $ref: '#/parameters/Accept'
@@ -616,7 +616,7 @@ paths:
         200:
           description: |
             OK.
-            Requested SOAP to REST Generated conversion policy definition of the API is returned
+            Requested conversion policy resource definition of the API is returned
           headers:
             Content-Type:
               description: |
@@ -649,15 +649,15 @@ paths:
             $ref: '#/definitions/Error'
 
     #-----------------------------------------------------
-    # Update the SOAP to REST Generated api inflow definition
+    # Update the conversion policy resource definition
     #-----------------------------------------------------
     put:
       consumes:
       - multipart/form-data
       x-scope: apim:api_create
-      x-wso2-curl: "curl -k -H \"Authorization:Bearer 5311eca3-8ac8-354e-ab36-7e2fdd6a4013\" -F apiDefinition=\"{\\\"paths\\\":{\\\"\\/*\\\":{\\\"get\\\":{\\\"x-auth-type\\\":\\\"Application\\\",\\\"x-throttling-tier\\\":\\\"Unlimited\\\",\\\"responses\\\":{\\\"200\\\":{\\\"description\\\":\\\"OK\\\"}}}}},\\\"x-wso2-security\\\":{\\\"apim\\\":{\\\"x-wso2-scopes\\\":[]}},\\\"swagger\\\":\\\"2.0\\\",\\\"info\\\":{\\\"title\\\":\\\"PhoneVerification\\\",\\\"description\\\":\\\"Verify a phone number\\\",\\\"contact\\\":{\\\"email\\\":\\\"xx@ee.com\\\",\\\"name\\\":\\\"xx\\\"},\\\"version\\\":\\\"1.0.0\\\"}}\" -X PUT \"https://localhost:9443/api/am/publisher/v0.14/apis/8848faaa-7fd1-478a-baa2-48a4ebb92c98/soap-to-rest-conversion-policy\""
+      x-wso2-curl: "curl -k -H \"Authorization:Bearer 5311eca3-8ac8-354e-ab36-7e2fdd6a4013\" -F apiDefinition=\"{\\\"paths\\\":{\\\"\\/*\\\":{\\\"get\\\":{\\\"x-auth-type\\\":\\\"Application\\\",\\\"x-throttling-tier\\\":\\\"Unlimited\\\",\\\"responses\\\":{\\\"200\\\":{\\\"description\\\":\\\"OK\\\"}}}}},\\\"x-wso2-security\\\":{\\\"apim\\\":{\\\"x-wso2-scopes\\\":[]}},\\\"swagger\\\":\\\"2.0\\\",\\\"info\\\":{\\\"title\\\":\\\"PhoneVerification\\\",\\\"description\\\":\\\"Verify a phone number\\\",\\\"contact\\\":{\\\"email\\\":\\\"xx@ee.com\\\",\\\"name\\\":\\\"xx\\\"},\\\"version\\\":\\\"1.0.0\\\"}}\" -X PUT \"https://localhost:9443/api/am/publisher/v0.14/apis/8848faaa-7fd1-478a-baa2-48a4ebb92c98/conversion-policies\""
       x-wso2-request: |
-        PUT https://localhost:9443/api/am/publisher/v0.14/apis/8848faaa-7fd1-478a-baa2-48a4ebb92c98/soap-to-rest-conversion-policy
+        PUT https://localhost:9443/api/am/publisher/v0.14/apis/8848faaa-7fd1-478a-baa2-48a4ebb92c98/conversion-policies
         Authorization:Bearer 5311eca3-8ac8-354e-ab36-7e2fdd6a4013
         Content-Length: 477
         Content-Type: multipart/form-data; boundary=------------------------4f51e636c0003d99
@@ -668,24 +668,14 @@ paths:
         {"paths":{"\/*":{"get":{"x-auth-type":"Application","x-throttling-tier":"Unlimited","responses":{"200":{"description":"OK"}}}}},"x-wso2-security":{"apim":{"x-wso2-scopes":[]}},"swagger":"2.0","info":{"title":"PhoneVerification","description":"Verify a phone number","contact":{"email":"xx@ee.com","name":"xx"},"version":"1.0.0"}}
         --------------------------4f51e636c0003d99--
       x-wso2-response: "HTTP/1.1 200 OK\nContent-Type: application/json\n\n{\n   \"paths\": {\"/*\": {\"get\":    {\n      \"x-auth-type\": \"Application\",\n      \"x-throttling-tier\": \"Unlimited\",\n      \"responses\": {\"200\": {\"description\": \"OK\"}}\n   }}},\n   \"x-wso2-security\": {\"apim\": {\"x-wso2-scopes\": []}},\n   \"swagger\": \"2.0\",\n   \"info\":    {\n      \"title\": \"PhoneVerification\",\n      \"description\": \"Verify a phone number\",\n      \"contact\":       {\n         \"email\": \"xx@ee.com\",\n         \"name\": \"xx\"\n      },\n      \"version\": \"1.0.0\"\n   }\n}"
-      summary: Update soap to rest generated conversion policy(inflow/outflow) definition
+      summary: Update the conversion policy resource(inflow/outflow) definitions
       description: |
-        This operation can be used to update the soap to rest generated conversion policy(inflow/outflow) definition of an existing API. conversion policy definition to be updated is passed as a form data parameter `content`.
+        This operation can be used to update the conversion policy resource(inflow/outflow) definitions of an existing API. conversion policy definition to be updated is passed as a form data parameter `content`.
       parameters:
       - $ref: '#/parameters/apiId'
       - in: formData
-        name: resourcePath
-        description: Resource path of the SOAP to REST Generated conversion policy definition
-        type: string
-        required: true
-      - in: formData
-        name: verb
-        description: HTTP verb of the resource path of the SOAP to REST Generated conversion policy definition
-        type: string
-        required: true
-      - in: formData
-        name: sequenceType
-        description: SOAP to REST Generated conversion policy definition type of the API
+        name: id
+        description: Resource id of the the conversion policy definition resource
         type: string
         required: true
       - in: formData
@@ -702,7 +692,7 @@ paths:
         200:
           description: |
             OK.
-            Successful response with updated SOAP to REST Generated api conversion policy definition
+            Successful response with updated the conversion policy resource definition
           headers:
             Location:
               description: |
@@ -4776,3 +4766,43 @@ definitions:
       tier:
         type: string
         example: Gold
+
+  #-----------------------------------------------------
+  # The Conversion policy List resource
+  #-----------------------------------------------------
+  ConversionPolicyList:
+    title: Conversion policy List
+    properties:
+      list:
+        type: array
+        items:
+          $ref: '#/definitions/ConversionPolicyInfo'
+      count:
+        type: integer
+        description: |
+          Number of policy resources returned.
+        example: 1
+
+  #-----------------------------------------------------
+  # The Conversion Policy Info resource
+  #-----------------------------------------------------
+  ConversionPolicyInfo:
+    title: Conversion policy Info object with conversion policy resource details.
+    properties:
+      id:
+        type: string
+        description: |
+          UUID of the conversion policy registry artifact
+        example: 01234567-0123-0123-0123-012345678901
+      method:
+        type: string
+        description: HTTP verb used for the resource path
+        example: get
+      resourcePath:
+        type: string
+        description: A string that represents the resource path of the api for the related conversion policy
+        example: CalculatorAPI
+      content:
+        type: string
+        description: The conversion policy content
+        example: "<header description=\"SOAPAction\" name=\"SOAPAction\" scope=\"transport\" value=\"http://ws.cdyne.com/PhoneVerify/query/CheckPhoneNumber\"/>"

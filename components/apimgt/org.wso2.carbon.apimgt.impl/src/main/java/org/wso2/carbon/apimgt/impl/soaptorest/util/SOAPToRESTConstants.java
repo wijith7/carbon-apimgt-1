@@ -34,6 +34,8 @@ public class SOAPToRESTConstants {
     public static final String MAX_OCCURS_ATTRIBUTE = "maxOccurs";
     public static final String UNBOUNDED = "unbounded";
     public static final String METHOD = "method";
+    public static final String RESOURCE_ID = "id";
+    public static final String RESOURCE_PATH = "path";
     public static final String PARAM_TYPE = "type";
     public static final String CONTENT = "content";
     public static final String EMPTY_STRING = "";
