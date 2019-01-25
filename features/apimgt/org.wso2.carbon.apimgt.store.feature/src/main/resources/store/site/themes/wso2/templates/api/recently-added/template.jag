@@ -1,5 +1,5 @@
 <% jagg.template("api/recently-added", function(inputs, outputs, jagg) { %>
-<% 
+<%
 
    var theme = jagg.getUserTheme().base;
    var themePath = jagg.url('/site/themes/'+theme+"/");
@@ -22,33 +22,33 @@
 									{{#if thumbnailurl}}
 										<div class="square-element">
                                     		<img class="" src="{{ thumbnailurl }}" alt="<%=i18n.localize("API Thumbnail")%>">
-                                    	</div>										                               		
-									{{else}}     
+                                    	</div>
+									{{else}}
                                     	<div class="square-element setbgcolor">
 											<div class="api-name-icon"></div>
 											<div style="display: none">
 												<a title="<%=i18n.localize("Name")%>" href="" class="api-name">{{ name }}</a>
 											</div>
-										</div> 
+										</div>
 									{{/if}}
-									<a href="<%=jagg.getMappedUrl("/site/pages/item-info.jag")%>?name={{ name }}&version={{ version }}&provider={{ provider }}<%=urlPrefix%>" title="<%=i18n.localize("Browse APIs")%>">
-                                    	<div class="after">                                        
+									<a href="<%=jagg.getMappedUrl("/site/pages/item-info.jag")%>?name={{ name }}&version={{ version }}<%=urlPrefix%>" title="<%=i18n.localize("Browse APIs")%>">
+                                    	<div class="after">
                                     		<span class="fw-stack fw-lg">
                                     			<i class="fw fw-circle-outline fw-stack-2x"></i>
                                     			<i class="fw fw-view fw-stack-1x"></i>
-                                    		</span>                                        
+                                    		</span>
                                     	</div>
 									</a>
                                 </div>
                                 <div class="add-padding-2x app-data ">
-                                    <h4 class="truncate"><a title="API Browse" href="<%=jagg.getMappedUrl("/site/pages/item-info.jag")%>?name={{ name }}&version={{ version }}&provider={{ provider }}<%=urlPrefix%>">{{ name }}-{{ version }}</a></h4>
+                                    <h4 class="truncate"><a title="API Browse" href="<%=jagg.getMappedUrl("/site/pages/item-info.jag")%>?name={{ name }}&version={{ version }}<%=urlPrefix%>">{{ name }}-{{ version }}</a></h4>
                                     <h5 class="truncate" title="{{ displayOwner }}" data-toggle="tooltip" data-placement="bottom">{{ displayOwner }}</h5>
 									<input type="hidden" class="rating recent_rating" disabled="disabled" value="{{ rates }}" />
                                 </div>
                             </div>
                         </div>
-    {{/each}}   
-  </script>  
+    {{/each}}
+  </script>
     </div>
 </div>
 
@@ -58,7 +58,7 @@
   $(function(){
     jagg.post("/site/blocks/api/recently-added/ajax/list.jag", {
       action:"getRecentlyAddedAPIs",
-      limit:5 
+      limit:5
     }, function (result) {
          if (result.error == false) {
           for(var i = 0; i < result.apis.length;i++){
@@ -77,7 +77,7 @@
             else{
               result.apis[i].displayOwner = result.apis[i].provider;
             }
-          } 
+          }
           var source   = $("#recently-added-template").html();
           var template = Handlebars.compile(source);
           $("#recently-added").html(template(result));

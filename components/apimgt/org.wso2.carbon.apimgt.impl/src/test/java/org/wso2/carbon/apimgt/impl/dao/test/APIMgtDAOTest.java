@@ -110,6 +110,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest( {KeyManagerHolder.class})
@@ -1220,6 +1221,36 @@ public class APIMgtDAOTest {
         assertTrue(apiMgtDAO.getExternalAPIStoresDetails(apiId).size()==0);
         apiMgtDAO.deleteAPI(apiId);
     }
+
+    @Test
+    public void testGetProviderByNameVersionTenant() throws APIManagementException, SQLException {
+        final String apiProviderSuperTenant = "testUser1";
+        final String apiProviderWSO2Tenant = "testUser1@wso2.test";
+
+        final String apiName = "testAPI1";
+        final String apiVersion = "1.0.0";
+        try {
+            apiMgtDAO.getAPIProviderByNameAndVersion(apiName, apiVersion, "");
+            fail("Should throw an exception when tenant value is blank string");
+        } catch (APIManagementException ex){
+            assertTrue(ex.getMessage().contains("cannot be null when fetching provider"));
+        }
+
+        try {
+            apiMgtDAO.getAPIProviderByNameAndVersion(apiName, apiVersion, null);
+            fail("Should throw an exception when tenant value is null");
+        } catch (APIManagementException ex){
+            assertTrue(ex.getMessage().contains("cannot be null when fetching provider"));
+        }
+
+        String apiProviderSuperTenantResult = apiMgtDAO.getAPIProviderByNameAndVersion(apiName, apiVersion, APIConstants.SUPER_TENANT_DOMAIN);
+        assertEquals(apiProviderSuperTenant, apiProviderSuperTenantResult);
+
+        String apiProviderWSO2TenantResult = apiMgtDAO.getAPIProviderByNameAndVersion(apiName, apiVersion, "wso2.test");
+        assertEquals(apiProviderWSO2Tenant, apiProviderWSO2TenantResult);
+
+    }
+
     private void deleteSubscriber(int subscriberId) throws APIManagementException {
         Connection conn = null;
         ResultSet rs = null;

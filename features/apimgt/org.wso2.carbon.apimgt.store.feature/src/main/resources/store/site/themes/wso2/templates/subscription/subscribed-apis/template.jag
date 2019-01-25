@@ -1,9 +1,9 @@
-<% jagg.template("subscription/subscribed-apis", function(inputs, outputs, jagg) { 
+<% jagg.template("subscription/subscribed-apis", function(inputs, outputs, jagg) {
 //@todo api should have image and provider
 //@todo api status should be displayed in
     var urlPrefix = jagg.getTenantURLPrefix("&");
     var path = jagg.getMappedUrl("/site/pages/item-info.jag") +
-        "?name={{ apiName }}&version={{ apiVersion }}&provider={{ apiProvider }}" + urlPrefix;
+    "?name={{ apiName }}&version={{ apiVersion }}" + urlPrefix;
 %>
 
 
@@ -17,12 +17,12 @@
     <table id="subscription-table" class="table table-striped table-hover table-bordered display data-table" cellspacing="0" data-app="<%= encode.forHtml(outputs.application.name) %>" data-appid="<%= encode.forHtml(outputs.application.id) %>" data-grp="<%= encode.forHtml(outputs.application.groupId) %>">
       	<thead>
 	        <tr>
-	            <th><%= i18n.localize("API Name")%></th>            
-	            <th><%= i18n.localize("Subscription Tier")%></th>      
+	            <th><%= i18n.localize("API Name")%></th>
+	            <th><%= i18n.localize("Subscription Tier")%></th>
 	            <th><%= i18n.localize("Status")%></th>
                 <th><%= i18n.localize("Actions")%></th>
 	        </tr>
-    	</thead>    
+    	</thead>
     </table>
     </div>
 
@@ -39,24 +39,24 @@
 <script id="subscription-api-name" type="text/x-handlebars-template">
         <div class="thumbnail icon pull-left add-margin-right-2x" style="width:80px;">
       <a title="<%= i18n.localize("API browse")%>" href="<%=path%>">
-			{{#if thumburl}}        
-				<div class="square-element">          
-					<img class="" src="<%= jagg.getRegistryPath("") %>{{ thumburl }}" alt="<%=i18n.localize("API Thumbnail")%>">          
-        </div>        										                               		
-			{{else}}     
+			{{#if thumburl}}
+				<div class="square-element">
+					<img class="" src="<%= jagg.getRegistryPath("") %>{{ thumburl }}" alt="<%=i18n.localize("API Thumbnail")%>">
+        </div>
+			{{else}}
           <div class="square-element setbgcolor">
 					<div class="api-name-icon" style="font-size:4em;"></div>
 					<div style="display: none">
 						<a title="<%=i18n.localize("Name")%>" href="" class="api-name">{{ apiName }}</a>
 					</div>
-				</div> 
+				</div>
 			{{/if}}
       </a>
 	    </div>
         <a title="<%= i18n.localize("API browse")%>" href="<%=path%>">
         <h4>{{apiName}} - {{apiVersion}}</h4>
         </a>
-        <i class="fw fw-publish fw-1x"></i> {{status}}  	
+        <i class="fw fw-publish fw-1x"></i> {{status}}
 </script>
 
 

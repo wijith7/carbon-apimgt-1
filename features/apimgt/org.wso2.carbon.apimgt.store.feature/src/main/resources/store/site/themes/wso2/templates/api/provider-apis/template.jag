@@ -1,5 +1,5 @@
 <% jagg.template("api/provider-apis", function(inputs, outputs, jagg) {%>
-<%  
+<%
     var owner="";
     if(outputs.apiBizOwner != null) { owner = outputs.apiBizOwner }
     else if(outputs.apiOwner != null){ owner =outputs.apiOwner }
@@ -28,7 +28,7 @@
                 thumbURL = jagg.getRegistryPath(thumbURL);
             }
             path = jagg.getMappedUrl("/site/pages/item-info.jag") + "?name=" + api.name + "&version=" + api.version +
-                   "&provider=" + api.provider+ urlPrefix;
+                   urlPrefix;
     %>
     <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2">
     			<div class="white-wrapper">
@@ -39,18 +39,18 @@
 											<div style="display: none">
 												<a href="" title="<%=i18n.localize("Name")%>" class="api-name"><%=api.name%></a>
 											</div>
-										</div> 
+										</div>
                                     <% } else { %>
                                     	<div class="square-element">
                                     		<img class="" src="<%=thumbURL%>" alt="<%=i18n.localize("API Thumbnail")%>">
                                     	</div>
                                     <% } %>
                                      <a href="<%=path%>" title="<%=i18n.localize("Browse APIs")%>">
-                                     	<div class="after">                                       
+                                     	<div class="after">
 		                                    <span class="fw-stack fw-lg">
 		                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
 		                                    <i class="fw fw-view fw-stack-1x"></i>
-		                                    </span>		                                        
+		                                    </span>
 		                                    </div>
 		                               </a>
                                 </div>
