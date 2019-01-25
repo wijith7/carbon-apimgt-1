@@ -4768,7 +4768,7 @@ definitions:
         example: Gold
 
   #-----------------------------------------------------
-  # The Conversion policy List resource
+  # The Resource policy List resource
   #-----------------------------------------------------
   ResourcePolicyList:
     title: Resource policy List
@@ -4784,7 +4784,7 @@ definitions:
         example: 1
 
   #-----------------------------------------------------
-  # The Conversion Policy Info resource
+  # The Resource Policy Info resource
   #-----------------------------------------------------
   ResourcePolicyInfo:
     title: Resource policy Info object with conversion policy resource details.

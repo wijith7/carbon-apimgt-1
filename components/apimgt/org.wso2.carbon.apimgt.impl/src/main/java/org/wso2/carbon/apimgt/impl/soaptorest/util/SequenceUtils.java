@@ -160,14 +160,14 @@ public class SequenceUtils {
     }
 
     /**
-     * Updates conversion policy resource for the given resource id from the registry.
+     * Updates resource policy resource for the given resource id from the registry.
      *
      * @param identifier API identifier
      * @param resourceId Resource identifier
-     * @param content    conversion policy content
+     * @param content    resource policy content
      * @throws APIManagementException
      */
-    public static void updateConversionPolicyFromResourceId(APIIdentifier identifier, String resourceId, String content)
+    public static void updateResourcePolicyFromRegistryResourceId(APIIdentifier identifier, String resourceId, String content)
             throws APIManagementException {
 
         boolean isTenantFlowStarted = false;
@@ -192,23 +192,23 @@ public class SequenceUtils {
             String[] resources = collection.getChildren();
 
             if (resources == null) {
-                handleException("Cannot find any conversion policies at the path: " + resourcePath);
+                handleException("Cannot find any resource policies at the path: " + resourcePath);
             }
             for (String path : resources) {
-                Collection conversionPolicyCollection = (Collection) registry.get(path);
-                String[] conversionPolicies = conversionPolicyCollection.getChildren();
-                if (conversionPolicies == null) {
+                Collection resourcePolicyCollection = (Collection) registry.get(path);
+                String[] resourcePolicies = resourcePolicyCollection.getChildren();
+                if (resourcePolicies == null) {
                     if (log.isDebugEnabled()) {
-                        log.debug("Cannot find conversion policies under path: " + path);
+                        log.debug("Cannot find resource policies under path: " + path);
                     }
                     continue;
                 }
-                for (String conversionPolicyPath : conversionPolicies) {
-                    Resource resource = registry.get(conversionPolicyPath);
+                for (String resourcePolicyPath : resourcePolicies) {
+                    Resource resource = registry.get(resourcePolicyPath);
                     if (StringUtils.isNotEmpty(resourceId) && resourceId.equals(((ResourceImpl) resource).getUUID())) {
                         resource.setContent(content);
                         resource.setMediaType("text/xml");
-                        registry.put(conversionPolicyPath, resource);
+                        registry.put(resourcePolicyPath, resource);
                         break;
                     }
                 }
@@ -221,7 +221,7 @@ public class SequenceUtils {
         } catch (RegistryException e) {
             handleException("Error when create registry instance", e);
         } catch (org.wso2.carbon.registry.api.RegistryException e) {
-            handleException("Error while setting the conversion policy content for the registry resource", e);
+            handleException("Error while setting the resource policy content for the registry resource", e);
         } finally {
             if (isTenantFlowStarted) {
                 PrivilegedCarbonContext.endTenantFlow();
@@ -230,14 +230,14 @@ public class SequenceUtils {
     }
 
     /**
-     * Gets conversion policy resource for the given resource id from the registry.
+     * Gets resource policy resource for the given resource id from the registry.
      *
      * @param identifier API identifier
      * @param resourceId Resource identifier
-     * @return conversion policy string for the given resource id
+     * @return resource policy string for the given resource id
      * @throws APIManagementException
      */
-    public static String getConversionPolicyFromResourceId(APIIdentifier identifier, String resourceId)
+    public static String getResourcePolicyFromRegistryResourceId(APIIdentifier identifier, String resourceId)
             throws APIManagementException {
 
         boolean isTenantFlowStarted = false;
@@ -263,23 +263,23 @@ public class SequenceUtils {
             String[] resources = collection.getChildren();
 
             if (resources == null) {
-                handleException("Cannot find any conversion policies at the path: " + resourcePath);
+                handleException("Cannot find any resource policies at the path: " + resourcePath);
             }
             for (String path : resources) {
-                Collection conversionPolicyCollection = (Collection) registry.get(path);
-                String[] conversionPolicies = conversionPolicyCollection.getChildren();
-                if (conversionPolicies == null) {
+                Collection resourcePolicyCollection = (Collection) registry.get(path);
+                String[] resourcePolicies = resourcePolicyCollection.getChildren();
+                if (resourcePolicies == null) {
                     if (log.isDebugEnabled()) {
-                        log.debug("Cannot find conversion policies under path: " + path);
+                        log.debug("Cannot find resource policies under path: " + path);
                     }
                     continue;
                 }
-                for (String conversionPolicyPath : conversionPolicies) {
-                    Resource resource = registry.get(conversionPolicyPath);
+                for (String resourcePolicyPath : resourcePolicies) {
+                    Resource resource = registry.get(resourcePolicyPath);
                     if (StringUtils.isNotEmpty(resourceId) && resourceId.equals(((ResourceImpl) resource).getUUID())) {
                         JSONObject resultJson = new JSONObject();
-                        Resource conversionPolicyResource = registry.get(conversionPolicyPath);
-                        String content = new String((byte[]) conversionPolicyResource.getContent(),
+                        Resource resourcePolicyResource = registry.get(resourcePolicyPath);
+                        String content = new String((byte[]) resourcePolicyResource.getContent(),
                                 Charset.defaultCharset());
                         String resourceName = ((ResourceImpl) resource).getName();
                         resourceName = resourceName.replaceAll(SOAPToRESTConstants.SequenceGen.XML_FILE_RESOURCE_PREFIX,
@@ -299,7 +299,7 @@ public class SequenceUtils {
         } catch (RegistryException e) {
             handleException("Error when create registry instance.", e);
         } catch (org.wso2.carbon.registry.api.RegistryException e) {
-            handleException("Error while retrieving conversion policy resource content from the registry.", e);
+            handleException("Error while retrieving resource policy resource content from the registry.", e);
         } finally {
             if (isTenantFlowStarted) {
                 PrivilegedCarbonContext.endTenantFlow();

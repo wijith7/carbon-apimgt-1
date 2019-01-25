@@ -926,7 +926,7 @@ public class ApisApiServiceImpl extends ApisApiService {
      * @param accept          Accept header value
      * @param ifNoneMatch     If-None-Match header value
      * @param ifModifiedSince If-Modified-Since header value
-     * @return json response of the conversion policies according to the resource path
+     * @return json response of the resource policies according to the resource path
      */
     @Override
     public Response apisApiIdResourcePoliciesGet(String apiId, String sequenceType, String resourcePath,
@@ -957,7 +957,7 @@ public class ApisApiServiceImpl extends ApisApiService {
                     String key = resourcePath + "_" + verb;
                     JSONObject sequenceContent = (JSONObject) sequenceObj.get(key);
                     if (sequenceContent == null) {
-                        String errorMessage = "Cannot find any conversion policy for Resource path : " + resourcePath +
+                        String errorMessage = "Cannot find any resource policy for Resource path : " + resourcePath +
                                 " with type: " + verb;
                         RestApiUtil.handleResourceNotFoundError(errorMessage, log);
                     }
@@ -980,7 +980,7 @@ public class ApisApiServiceImpl extends ApisApiService {
             String errorMessage = "Error while retrieving the API : " + apiId;
             RestApiUtil.handleInternalServerError(errorMessage, e, log);
         } catch (ParseException e) {
-            String errorMessage = "Error while retrieving the conversion policies for the API : " + apiId;
+            String errorMessage = "Error while retrieving the resource policies for the API : " + apiId;
             RestApiUtil.handleInternalServerError(errorMessage, e, log);
         }
         return null;
@@ -991,7 +991,7 @@ public class ApisApiServiceImpl extends ApisApiService {
      *
      * @param apiId             API ID
      * @param id                resource id
-     * @param content           conversion policy content
+     * @param content           resource policy content
      * @param contentType       Request content type
      * @param ifMatch           If-Match header value
      * @param ifUnmodifiedSince If-Unmodified-Since header value
@@ -1008,20 +1008,20 @@ public class ApisApiServiceImpl extends ApisApiService {
                             apiIdentifier.getProviderName());
             if (isSoapToRESTApi) {
                 if (StringUtils.isEmpty(id)) {
-                    String errorMessage = "Resource id should not be empty to update a conversion policy resource.";
+                    String errorMessage = "Resource id should not be empty to update a resource policy.";
                     RestApiUtil.handleBadRequest(errorMessage, log);
                 }
                 boolean isValidSchema = RestApiPublisherUtils.validateXMLSchema(content);
                 if (isValidSchema) {
-                    SequenceUtils.updateConversionPolicyFromResourceId(apiIdentifier, id, content);
+                    SequenceUtils.updateResourcePolicyFromRegistryResourceId(apiIdentifier, id, content);
                     String updatedPolicyContent = SequenceUtils
-                            .getConversionPolicyFromResourceId(apiIdentifier, id);
+                            .getResourcePolicyFromRegistryResourceId(apiIdentifier, id);
                     ResourcePolicyInfoDTO resourcePolicyInfoDTO = APIMappingUtil
                             .fromResourcePolicyStrToInfoDTO(updatedPolicyContent);
                     return Response.ok().entity(resourcePolicyInfoDTO).build();
                 } else {
                     String errorMessage =
-                            "Error while validating the conversion policy xml content for the API : " + apiId;
+                            "Error while validating the resource policy xml content for the API : " + apiId;
                     RestApiUtil.handleInternalServerError(errorMessage, log);
                 }
             } else {
