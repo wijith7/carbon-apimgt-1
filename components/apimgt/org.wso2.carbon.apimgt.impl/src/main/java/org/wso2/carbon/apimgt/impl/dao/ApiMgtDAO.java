@@ -5985,31 +5985,31 @@ public class ApiMgtDAO {
             throw new APIManagementException(msg);
         }
 
-        PreparedStatement prepStmt = null;
-        ResultSet rs = null;
         String apiProvider = null;
         String getAPIProviderQuery = null;
-
-        try(Connection connection = APIMgtDBUtil.getConnection()) {
-            if (MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equalsIgnoreCase(tenant)) {
-                //in this case, the API should be fetched from super tenant
-                getAPIProviderQuery = SQLConstants.GET_API_PROVIDER_WITH_NAME_VERSION_FOR_SUPER_TENANT;
-                prepStmt = connection.prepareStatement(getAPIProviderQuery);
-            } else {
-                //in this case, the API should be fetched from the respective tenant
-                getAPIProviderQuery = SQLConstants.GET_API_PROVIDER_WITH_NAME_VERSION_FOR_GIVEN_TENANT;
-                prepStmt = connection.prepareStatement(getAPIProviderQuery);
+        boolean isSuperTenant = MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equalsIgnoreCase(tenant);
+        if (isSuperTenant) {
+            //in this case, the API should be fetched from super tenant
+            getAPIProviderQuery = SQLConstants.GET_API_PROVIDER_WITH_NAME_VERSION_FOR_SUPER_TENANT;
+        } else {
+            //in this case, the API should be fetched from the respective tenant
+            getAPIProviderQuery = SQLConstants.GET_API_PROVIDER_WITH_NAME_VERSION_FOR_GIVEN_TENANT;
+        }
+        try(Connection connection = APIMgtDBUtil.getConnection();
+                PreparedStatement prepStmt = connection.prepareStatement(getAPIProviderQuery)) {
+            if (!isSuperTenant) {
                 prepStmt.setString(3, "%" + tenant + "%");
             }
             prepStmt.setString(1, apiName);
             prepStmt.setString(2, apiVersion);
-            rs = prepStmt.executeQuery();
-            if (rs.next()) {
-                apiProvider = rs.getString("API_PROVIDER");
-            }
-            if (StringUtils.isBlank(apiProvider)) {
-                String msg = "Unable to find provider for API: " + apiName + " in the database";
-                log.warn(msg);
+            try (ResultSet rs = prepStmt.executeQuery()) {
+                if (rs.next()) {
+                    apiProvider = rs.getString("API_PROVIDER");
+                }
+                if (StringUtils.isBlank(apiProvider)) {
+                    String msg = "Unable to find provider for API: " + apiName + " in the database";
+                    log.warn(msg);
+                }
             }
         } catch (SQLException e) {
             handleException("Error while locating API: " + apiName + " from the database", e);
