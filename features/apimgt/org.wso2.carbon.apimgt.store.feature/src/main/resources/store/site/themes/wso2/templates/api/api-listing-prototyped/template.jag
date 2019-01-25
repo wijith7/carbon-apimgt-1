@@ -1,7 +1,7 @@
 <% jagg.template("api/api-listing-prototyped", function(inputs, outputs, jagg) { %>
 
 <%
-          var tenant=request_tenant;          
+          var tenant=request_tenant;
           var urlPrefix = jagg.getTenantURLPrefix("&");
           if (outputs.error) { %>
 				<label><b><%=encode.forHtml(outputs.message)%></b></label>
@@ -67,8 +67,8 @@
                             }else{
                                 thumbURL = jagg.getRegistryPath(thumbURL);
                             }
-                            path = jagg.getMappedUrl("/site/pages/item-info.jag") + "?name=" + name+ "&version=" + version + "&provider=" +provider+ urlPrefix;
-                            
+                            path = jagg.getMappedUrl("/site/pages/item-info.jag") + "?name=" + name+ "&version=" + version + urlPrefix;
+
                         %>
                         <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2">
                             <div class="white-wrapper add-margin-bottom-4x">
@@ -92,11 +92,11 @@
                                     	</div>
                                     <% } %>
                                     <a href="<%=path%>" title="<%=i18n.localize("Browse APIs")%>">
-	                                    <div class="after">                                        
+	                                    <div class="after">
 	                                    <span class="fw-stack fw-lg">
 	                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
 	                                    <i class="fw fw-view fw-stack-1x"></i>
-	                                    </span>                                        
+	                                    </span>
 	                                    </div>
                                     </a>
                                 </div>
@@ -237,7 +237,7 @@
                       }
                       }
                     %>
-       
+
     </div>
 </div>
 <style>

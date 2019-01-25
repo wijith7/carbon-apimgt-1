@@ -20,7 +20,7 @@ var urlPrefix = jagg.getTenantURLPrefix("&");
         if(documentations.hasOwnProperty(type)) {
             empty = false;
             docs = documentations[type];
-            
+
             if (type.toUpperCase() == "HOW TO") {
                 icon = "fw-info";
             } else if (type.toUpperCase() == "PUBLIC FORUM" || type.toUpperCase() == "SUPPORT FORUM") {
@@ -65,7 +65,7 @@ var urlPrefix = jagg.getTenantURLPrefix("&");
                 for(i = 0; i < length; i++) {
                     doc = docs[i];
                 %>
-                
+
 		               <tr>
 		                	<td><%=encode.forHtml(doc.name)%></td>
 		                	<% if (doc.summary && doc.summary != "") { %>
@@ -85,15 +85,15 @@ var urlPrefix = jagg.getTenantURLPrefix("&");
 		                			<a href="<%=jagg.getAbsoluteUrl(jagg.getThemeFile("templates/api/documentation/download.jag?tenant=" + tenantDomain + "&resourceUrl=" + doc.filePath))%>" class="doc-content" target="_blank" title="<%=i18n.localize("Download Document")%>" download><%=i18n.localize("Download")%></a>
 		                		<% } else { %>
 		                			<%if(reqUrl.indexOf(".jag")>=0)	{%>
-                     					<a title="<%=i18n.localize("Document Content")%>" href="doc-viewer.jag?docName=<%= encode.forUriComponent(doc.name)%>&name=<%= encode.forUriComponent(name) %>&version=<%= encode.forUriComponent(version)%>&provider=<%= encode.forUriComponent(provider)%>&<%=urlPrefix%>" class="doc-content"  target="_blank"><%=i18n.localize("View Content")%></a>
+										<a title="<%=i18n.localize("Document Content")%>" href="doc-viewer.jag?docName=<%= encode.forUriComponent(doc.name)%>&name=<%= encode.forUriComponent(name) %>&version=<%= encode.forUriComponent(version)%>&<%=urlPrefix%>" class="doc-content"  target="_blank"><%=i18n.localize("View Content")%></a>
                      				<%}else	{%>
-                     					<a title="<%=i18n.localize("Document Content")%>" href="../site/pages/doc-viewer.jag?docName=<%= encode.forUriComponent(doc.name) %>&name=<%= name %>&version=<%= version %>&provider=<%= provider %>&<%=urlPrefix%>" class="doc-content"  target="_blank"><%=i18n.localize("View Content")%></a>
+										<a title="<%=i18n.localize("Document Content")%>" href="../site/pages/doc-viewer.jag?docName=<%= encode.forUriComponent(doc.name) %>&name=<%= name %>&version=<%= version %>&<%=urlPrefix%>" class="doc-content"  target="_blank"><%=i18n.localize("View Content")%></a>
                      				<%}%>
 		                		<%} %>
-		                	</td>	                
-		                </tr>               
-                
-                
+		                	</td>
+		                </tr>
+
+
                 <% } %>
                   </tbody>
 			    </table>
@@ -101,7 +101,7 @@ var urlPrefix = jagg.getTenantURLPrefix("&");
         </div>
     </div>
     <%  } %>
-    <% 
+    <%
     	count ++;
     } %>
 </div>

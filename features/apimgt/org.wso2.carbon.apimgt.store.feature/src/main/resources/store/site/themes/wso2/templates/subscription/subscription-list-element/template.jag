@@ -61,7 +61,7 @@
 
                         <div class="row keys">
 							<div class="col-sm-3">
-		                        <b><%=i18n.localize("consumerKey")%> :</b> 
+		                        <b><%=i18n.localize("consumerKey")%> :</b>
 	                        </div>
 	                        <div class="col-sm-9">
 	                        	<div class="consumerKey token bg-info">
@@ -77,10 +77,10 @@
 		                        </div>
 	                        </div>
                         </div>
-						
+
 						<div class="row keys">
 							<div class="col-sm-3">
-		                        <b><%=i18n.localize("consumerSecret")%> :</b> 
+		                        <b><%=i18n.localize("consumerSecret")%> :</b>
 	                        </div>
 	                        <div class="col-sm-9">
 	                        	<div class="consumerSecret token bg-info">
@@ -103,7 +103,7 @@
 								<b><%=i18n.localize("scope")%>:</b>
 							</div>
 							<div class="col-sm-9">
-			
+
 								<div class="token bg-info">
 									<% if(app.prodKeyScope != null && app.prodKeyScope.length > 60){ %>
 									<textarea
@@ -117,7 +117,7 @@
 								</div>
 							</div>
 						</div>
-						<% } %>	
+						<% } %>
 
                         <div class="row keys">
 							<div class="col-sm-12">
@@ -155,7 +155,7 @@
 
 													<% if(lenS > 0){ %>
 												        <a title="<%=i18n.localize("selectScopes")%>" href="#scopePopup" role="button" class="btn" data-toggle="modal" data-target="#scopePopupTarget" id="selectScopeText" ><%=i18n.localize("selectScopes")%></a>
-                                            						            <% } %>		
+                                            						            <% } %>
 													Validity Time: <input type="text" title="refreshProdValidityTime" class="form-control input-sm token-validity-input" id="refreshProdValidityTime" value='<%=prodValidityTime %>' maxlength="70"  autofocus="autofocus" /> Seconds
 
 													<span class="label label-warning" id = "timeWarn" style="display:none;"><%=i18n.localize("timeWarn")%></span>
@@ -227,7 +227,7 @@
 										/>
 									</div>
                         		</div>
-                        	    <div class="pull-right">                        		
+                        	    <div class="pull-right">
                         		<button  class="btn btn-primary "
                         		id="btnProvideKeyProductionSave" data-application="<%= encode.forHtmlAttribute(app.name)%>"
 									   data-callbackUrl="<%=encode.forHtmlAttribute(app.callbackUrl)%>"
@@ -236,7 +236,7 @@
 									   iteration="200">Save</button>
 									<button  class="btn btn-default "
 									id="btnProvideKeyProductionCancle">Cancel</button>
-								</div>									
+								</div>
                         	</div>
                         	<div class="cDivDefaultBtnSet">
 								<button  class="app-key-generate-button btn btn-primary btn-generatekeys" onclick="jagg
@@ -249,12 +249,12 @@
 									   <% if(site.mapExistingAuthApps != false){ %>
 								<button  class="btn btn-primary btn-providekeys"
 								id="btnProvideKeyProduction">Provide
-								keys</button>																
+								keys</button>
 								<% } %>
                             </div>
 
                         </div>
-                        <% } %>                        
+                        <% } %>
 	  </div>
 	  <div class="col-md-6">
 		    		<div <%if(app.prodKeyState == "CREATED" || app.prodKeyState == "APPROVED" || app.prodKeyState == "REJECTED"){%> style="display:none" <%}%> >
@@ -280,16 +280,16 @@
                         </div>
 			   		</div>
 	  </div>
-	</div><!-- end of row-->   
+	</div><!-- end of row-->
 
-               
+
                 <div class="row curl-testurlp-wrapper">
                 	<div class="col-md-12">
                 		<div class="editable-div-wrapper">
                     		<div class="copybtn-wrapper pull-right">
                     			<span class="curl-copyinfo">Copied!</span>
                 				<a id="prodCurlCopy" data-clipboard-target="prodCurl" title="Copy to clipboard" class="curl-copybtn"><i class="fa fa-clipboard"></i></a>
-                			</div>                		
+                			</div>
                     		<div class="editable-div curl-testurl col-md-11" id="prodCurl" data-value="<%=app.prodConsumerKey%>:<%=app.prodConsumerSecret%>" contenteditable="true"></div>
                 		</div>
                     </div>
@@ -298,13 +298,13 @@
 
 
   </div><!-- end of panel body -->
-</div>  
+</div>
 
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title"><a data-toggle="collapse" data-target="#sandbox-key-panel" aria-expanded="true" title="<%=i18n.localize("keysSand")%>" aria-controls="production-key-panel"><%=i18n.localize("keysSand")%><i class="glyphicon glyphicon-chevron-down pull-right"></i><i class="glyphicon glyphicon-chevron-up pull-right"></i></a></h3>
   </div>
-  <div class="panel-body collapse in" id="sandbox-key-panel">      
+  <div class="panel-body collapse in" id="sandbox-key-panel">
 
 <div class="row">
   <div class="col-md-6">
@@ -520,7 +520,7 @@
 		                            <span class="label label-warning" id = "timeWarn" style="display:none;"><%=i18n.localize("timeWarn")%></span>
                                     <a class="icon-question-sign help_popup_sand" title="sandbox_help"></a>
                                     <div id="sandtoken_help"></div>
-		                        <% } %>		                        
+		                        <% } %>
                             </div>
                         	<!-- END config section -->
                         </div>
@@ -536,13 +536,13 @@
                     			<span class="curl-copyinfo">Copied!</span>
                 				<a id="sandCurlCopy" data-clipboard-target="sandboxCurl" title="Copy to clipboard" class="curl-copybtn"><i class="fa fa-clipboard"></i></a>
                 			</div>
-                    		<div class="editable-div curl-testurl col-sm-11" id="sandboxCurl" data-value="<%=app.sandboxConsumerKey%>:<%=app.sandboxConsumerSecret%>" contenteditable="true"></div>                    		
+                    		<div class="editable-div curl-testurl col-sm-11" id="sandboxCurl" data-value="<%=app.sandboxConsumerKey%>:<%=app.sandboxConsumerSecret%>" contenteditable="true"></div>
                 		</div>
                     </div>
                 </div>
 
   </div>
-</div>          
+</div>
 
         <h3 class="sub-title"><span data-toggle="collapse" data-target="#subscription-list" aria-expanded="true" aria-controls="subscription-list">Subscribed APIs <small><i class="glyphicon glyphicon-chevron-down "></i><i class="glyphicon glyphicon-chevron-up "></i></small></span></h3>
 
@@ -575,7 +575,7 @@
 				}
                 prodKey = api.prodKey;
                 clazz = (j%2) == 0 ? "even" : "odd";
-                path = jagg.getMappedUrl("/site/pages/item-info.jag") + "?name=" + api.name + "&version=" + api.version + "&provider=" + api.provider+ "&"+urlPrefix;
+                path = jagg.getMappedUrl("/site/pages/item-info.jag") + "?name=" + api.name + "&version=" + api.version + "&"+urlPrefix;
                 var apiName = api.name;
                 if(api.name.length > 12){
                     apiName = api.name.substring(0,10)+ "..";
@@ -587,8 +587,8 @@
 						 	<a title="<%=i18n.localize("apiThumb")%>" href="<%=path%>" class="thumbnailInsideLink pull-left"><img width="50" alt="<%=i18n.localize("apiThumb")%>" src="<%=thumbURL%>"  <%if(api.subStatus != "UNBLOCKED") {%>class="desaturate"  title="Subscription not active."<%}%>/></a>
 						 	<dl>
 							  <dt>&nbsp; <a href="<%=path%>" class="service-name" title="<%=api.name%>-<%=api.version%>"><%=apiName%> - <%=api.version%></a></dt>
-							  <dd>&nbsp; API Status : 
-						 	
+							  <dd>&nbsp; API Status :
+
 						 	<% if(api.status == "DEPRECATED") { %>
                             <span class="label label-warning"><%=i18n.localize("deprecated")%></span>
                             <% } else if(api.status == "RETIRED") { %>
@@ -606,7 +606,7 @@
 				                <a title="API Provider" href="<%=path%>" class="link-to-provider link-h2"><%=api.provider%></a>
 				            <%}%>
 				         </td>
-				         <td>							
+				         <td>
                             <%  if(api.subStatus == "BLOCKED" || api.subStatus == "BLOCKED") { %>
                             <span class="label label-danger"><%=i18n.localize("blocked")%></span>
                             <% } else if(api.subStatus == "PROD_ONLY_BLOCKED") {%>
@@ -614,7 +614,7 @@
                             <% } else if(api.subStatus == "REJECTED") {%>
                             <span class="label label-warning"><%=i18n.localize("rejected")%></span>
                             <%}else{%>
-                            <span class="label label-success">Active</span>	
+                            <span class="label label-success">Active</span>
                             <% } %>
 				         </td>
 				         <td><%=api.tier%></td>
@@ -622,22 +622,22 @@
 							<% if(api.subStatus != "BLOCKED" || api.subStatus != "PROD_ONLY_BLOCKED" || api.status != "REJECTED"){ %>
 								<a title="removeSubscription" onClick="removeSubscription('<%=api.name%>','<%=api.version%>','<%=api.provider%>','<%=app.id%>',this)" ><i class="fa fa-times"></i> Remove</a>
                             <%}%>
-				         </td>   			
+				         </td>
             			</tr>
 
                 <!--div class="span4 keyListPadding">
                     <div class="thumbnail <% if(api.status == "DEPRECATED" || api.status == "RETIRED" || api.status == "BLOCKED") { %>deprecated<% } %>">
                         <div class="deprecatedLabel">
-                            
+
                         </div>
                         <div class="container-fluid">
                             <div class="row-fluid">
                                 <div class="span4">
-                                    
+
                                 </div>
                                 <div class="span8">
-                                    
-                                    
+
+
                                 </div>
                             </div>
                         </div>
@@ -645,7 +645,7 @@
                 </div -->
             <% } %>
             		</tbody>
-				</table>            
+				</table>
             </div><!-- End row -->
             <%
 	   if(numberOfPages > 1) { %>
@@ -782,5 +782,5 @@
             }
 
         </script>
-                        
+
 <% }}); %>
