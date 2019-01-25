@@ -25,7 +25,7 @@ jagg.block("api/documentation/view", {
             }
             var APIUtil = org.wso2.carbon.apimgt.impl.utils.APIUtil;
             // If can't find the provider , "null" String will be returned
-            provider = String(APIUtil.getAPIProviderFromAPINameVersionTenant(apiName, version, tenant));
+            provider = stringify(APIUtil.getAPIProviderFromAPINameVersionTenant(apiName, version, tenant));
         }
 
         result = jagg.module("documentation").getInlineContent(provider, apiName, version, docName);
