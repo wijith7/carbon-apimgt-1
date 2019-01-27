@@ -987,19 +987,18 @@ public class ApisApiServiceImpl extends ApisApiService {
     }
 
     /**
-     * Update the resource policies(inflow/outflow) given the resource id.
+     * Get the resource policy given the resource id.
      *
-     * @param apiId             API ID
-     * @param id                resource id
-     * @param content           resource policy content
-     * @param contentType       Request content type
-     * @param ifMatch           If-Match header value
-     * @param ifUnmodifiedSince If-Unmodified-Since header value
-     * @return json response of the updated sequence content
+     * @param apiId           API ID
+     * @param resourceId      resource id
+     * @param accept          Accept header value
+     * @param ifNoneMatch     If-None-Match header value
+     * @param ifModifiedSince If-Modified-Since header value
+     * @return json response of the resource policy for the resource id given
      */
     @Override
-    public Response apisApiIdResourcePoliciesPut(String apiId, String id, String content, String contentType,
-            String ifMatch, String ifUnmodifiedSince) {
+    public Response apisApiIdResourcePoliciesResourceIdGet(String apiId, String resourceId, String accept,
+            String ifNoneMatch, String ifModifiedSince) {
         try {
             String tenantDomain = RestApiUtil.getLoggedInUserTenantDomain();
             APIIdentifier apiIdentifier = APIMappingUtil.getAPIIdentifierFromApiIdOrUUID(apiId, tenantDomain);
@@ -1007,15 +1006,57 @@ public class ApisApiServiceImpl extends ApisApiService {
                     .isSOAPToRESTApi(apiIdentifier.getApiName(), apiIdentifier.getVersion(),
                             apiIdentifier.getProviderName());
             if (isSoapToRESTApi) {
-                if (StringUtils.isEmpty(id)) {
+                if (StringUtils.isEmpty(resourceId)) {
                     String errorMessage = "Resource id should not be empty to update a resource policy.";
                     RestApiUtil.handleBadRequest(errorMessage, log);
                 }
-                boolean isValidSchema = RestApiPublisherUtils.validateXMLSchema(content);
+                String policyContent = SequenceUtils
+                        .getResourcePolicyFromRegistryResourceId(apiIdentifier, resourceId);
+                ResourcePolicyInfoDTO resourcePolicyInfoDTO = APIMappingUtil
+                        .fromResourcePolicyStrToInfoDTO(policyContent);
+                return Response.ok().entity(resourcePolicyInfoDTO).build();
+            } else {
+                String errorMessage = "The provided api with id: " + apiId + " is not a soap to rest converted api.";
+                RestApiUtil.handleBadRequest(errorMessage, log);
+            }
+        } catch (APIManagementException e) {
+            String errorMessage = "Error while retrieving the API : " + apiId;
+            RestApiUtil.handleInternalServerError(errorMessage, e, log);
+        }
+        return null;
+    }
+
+    /**
+     * Update the resource policies(inflow/outflow) given the resource id.
+     *
+     * @param apiId  API ID
+     * @param resourceId resource id
+     * @param body resource policy content
+     * @param contentType Request content type
+     * @param ifMatch If-Match header value
+     * @param ifUnmodifiedSince If-Unmodified-Since header value
+     * @return json response of the updated sequence content
+     */
+    @Override
+    public Response apisApiIdResourcePoliciesResourceIdPut(String apiId, String resourceId,
+            ResourcePolicyInfoDTO body, String contentType, String ifMatch, String ifUnmodifiedSince) {
+        try {
+            String tenantDomain = RestApiUtil.getLoggedInUserTenantDomain();
+            APIIdentifier apiIdentifier = APIMappingUtil.getAPIIdentifierFromApiIdOrUUID(apiId, tenantDomain);
+            boolean isSoapToRESTApi = SOAPOperationBindingUtils
+                    .isSOAPToRESTApi(apiIdentifier.getApiName(), apiIdentifier.getVersion(),
+                            apiIdentifier.getProviderName());
+            if (isSoapToRESTApi) {
+                if (StringUtils.isEmpty(resourceId)) {
+                    String errorMessage = "Resource id should not be empty to update a resource policy.";
+                    RestApiUtil.handleBadRequest(errorMessage, log);
+                }
+                boolean isValidSchema = RestApiPublisherUtils.validateXMLSchema(body.getContent());
                 if (isValidSchema) {
-                    SequenceUtils.updateResourcePolicyFromRegistryResourceId(apiIdentifier, id, content);
+                    SequenceUtils
+                            .updateResourcePolicyFromRegistryResourceId(apiIdentifier, resourceId, body.getContent());
                     String updatedPolicyContent = SequenceUtils
-                            .getResourcePolicyFromRegistryResourceId(apiIdentifier, id);
+                            .getResourcePolicyFromRegistryResourceId(apiIdentifier, resourceId);
                     ResourcePolicyInfoDTO resourcePolicyInfoDTO = APIMappingUtil
                             .fromResourcePolicyStrToInfoDTO(updatedPolicyContent);
                     return Response.ok().entity(resourcePolicyInfoDTO).build();

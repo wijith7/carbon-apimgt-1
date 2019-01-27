@@ -257,7 +257,7 @@ public class RestApiPublisherUtils {
      */
     public static boolean validateXMLSchema(String xmlContent) throws APIManagementException {
         xmlContent = "<xml>" + xmlContent + "</xml>";
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory factory = APIUtil.getSecuredDocumentBuilder();
         factory.setValidating(false);
         factory.setNamespaceAware(false);
         try {
