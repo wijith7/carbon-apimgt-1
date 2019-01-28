@@ -43,6 +43,7 @@ public class SOAPToRESTConstants {
     public static final String SOAP_VERSION_12 = "1.2";
     public static final String SOAP11_NAMESPACE = "http://schemas.xmlsoap.org/soap/envelope/";
     public static final String SOAP12_NAMSPACE = "http://www.w3.org/2003/05/soap-envelope";
+    public static final String TEXT_XML = "text/xml";
 
     public final class Swagger {
         public static final String DEFINITIONS = "definitions";

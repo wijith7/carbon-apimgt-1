@@ -207,7 +207,7 @@ public class SequenceUtils {
                     Resource resource = registry.get(resourcePolicyPath);
                     if (StringUtils.isNotEmpty(resourceId) && resourceId.equals(((ResourceImpl) resource).getUUID())) {
                         resource.setContent(content);
-                        resource.setMediaType("text/xml");
+                        resource.setMediaType(SOAPToRESTConstants.TEXT_XML);
                         registry.put(resourcePolicyPath, resource);
                         break;
                     }
