@@ -3657,6 +3657,13 @@
             "required": true,
             "type": "string"
         },
+        "resourceId": {
+            "name": "resourceId",
+            "in": "path",
+            "description": "registry resource Id\n",
+            "required": true,
+            "type": "string"
+        },
         "subscriptionId-Q": {
             "name": "subscriptionId",
             "in": "query",
