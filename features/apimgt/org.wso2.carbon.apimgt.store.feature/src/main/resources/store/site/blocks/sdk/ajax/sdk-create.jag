@@ -62,10 +62,10 @@ include("/jagg/jagg.jag");
         }
 
         if (!apiProvider) {
-            var tenant = stringify(jagg.getTenantDomain());
+            var tenant = String(jagg.getTenantDomain());
             var APIUtil = org.wso2.carbon.apimgt.impl.utils.APIUtil;
             // If can't find the provider , "null" String will be returned
-            apiProvider = stringify(APIUtil.getAPIProviderFromAPINameVersionTenant(apiName, apiVersion, tenant));
+            apiProvider = String(APIUtil.getAPIProviderFromAPINameVersionTenant(apiName, apiVersion, tenant));
         }
 
         var apiResult = jagg.module("api").getAPIDescription({

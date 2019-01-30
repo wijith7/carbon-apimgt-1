@@ -21,7 +21,7 @@ i18n.init(request,localeResourcesBasePath);
         }
         var APIUtil = org.wso2.carbon.apimgt.impl.utils.APIUtil;
         // If can't find the provider , "null" String will be returned
-        provider = stringify(APIUtil.getAPIProviderFromAPINameVersionTenant(name, version, tenant));
+        provider = String(APIUtil.getAPIProviderFromAPINameVersionTenant(name, version, tenant));
     }
     var username=null;
     result = jagg.module("api").getAPIDescription({
