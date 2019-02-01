@@ -83,7 +83,7 @@ public abstract class AbstractJWTGenerator implements TokenGenerator {
 
     private String signatureAlgorithm = SHA256_WITH_RSA;
 
-    private String x5tEncoding = BASE64URL;
+    private String x5tEncoding = BASE64;
 
     private static ConcurrentHashMap<Integer, Key> privateKeys = new ConcurrentHashMap<Integer, Key>();
     private static ConcurrentHashMap<Integer, Certificate> publicCerts = new ConcurrentHashMap<Integer, Certificate>();
@@ -106,8 +106,8 @@ public abstract class AbstractJWTGenerator implements TokenGenerator {
         }
         //Check if the system property for x5tencoding in base64 has been provided
         String overrideEncoding = System.getProperty("x5tEncoding");
-        if (overrideEncoding != null && overrideEncoding.equals(BASE64)) {
-            x5tEncoding = BASE64;
+        if (overrideEncoding != null && overrideEncoding.equalsIgnoreCase(BASE64URL)) {
+            x5tEncoding = BASE64URL;
         }
         String claimsRetrieverImplClass =
                 ServiceReferenceHolder.getInstance().getAPIManagerConfigurationService().
@@ -143,10 +143,10 @@ public abstract class AbstractJWTGenerator implements TokenGenerator {
     public abstract Map<String, String> populateCustomClaims(TokenValidationContext validationContext) throws APIManagementException;
 
     public String encode(byte[] stringToBeEncoded) throws APIManagementException {
-        if (x5tEncoding.equals(BASE64)) {
-            return Base64Utils.encode(stringToBeEncoded);
+        if (x5tEncoding.equals(BASE64URL)) {
+            return java.util.Base64.getUrlEncoder().encodeToString(stringToBeEncoded);
         }
-        return java.util.Base64.getUrlEncoder().encodeToString(stringToBeEncoded);
+        return Base64Utils.encode(stringToBeEncoded);
     }
 
     public String generateToken(TokenValidationContext validationContext) throws APIManagementException{
@@ -404,12 +404,12 @@ public abstract class AbstractJWTGenerator implements TokenGenerator {
                 byte[] digestInBytes = digestValue.digest();
                 String publicCertThumbprint = hexify(digestInBytes);
                 String base64UrlEncodedThumbPrint;
-                if (x5tEncoding.equals(BASE64)) {
-                    Base64 base64 = new Base64(true);
-                    base64UrlEncodedThumbPrint = base64.encodeToString(publicCertThumbprint.getBytes(Charsets.UTF_8)).trim();
-                } else {
+                if (x5tEncoding.equals(BASE64URL)) {
                     base64UrlEncodedThumbPrint = java.util.Base64.getUrlEncoder()
                             .encodeToString(publicCertThumbprint.getBytes("UTF-8"));
+                } else {
+                    Base64 base64 = new Base64(true);
+                    base64UrlEncodedThumbPrint = base64.encodeToString(publicCertThumbprint.getBytes(Charsets.UTF_8)).trim();
                 }
                 StringBuilder jwtHeader = new StringBuilder();
                 //Sample header

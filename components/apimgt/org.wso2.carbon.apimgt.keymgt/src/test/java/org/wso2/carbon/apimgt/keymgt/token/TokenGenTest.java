@@ -44,7 +44,7 @@ import org.wso2.carbon.core.util.KeyStoreManager;
 //import org.wso2.carbon.apimgt.impl.utils.TokenGenUtil;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {AbstractJWTGenerator.class,APIUtil.class,KeyStoreManager.class})
+@PrepareForTest( {AbstractJWTGenerator.class,APIUtil.class,KeyStoreManager.class, System.class})
 public class TokenGenTest {
     private static final Log log = LogFactory.getLog(TokenGenTest.class);
 
@@ -191,6 +191,7 @@ public class TokenGenTest {
     @Test
     public void testJWTx5tEncoding() throws Exception {
         //Preparing mocks
+        System.setProperty("x5tEncoding","base64Url");
         AbstractJWTGenerator jwtGenerator = new JWTGenerator();
         PowerMockito.mockStatic(APIUtil.class);
         PowerMockito.mockStatic(KeyStoreManager.class);
