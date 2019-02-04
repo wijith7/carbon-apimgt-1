@@ -93,7 +93,7 @@ public class APIMWSDLReader {
 		this.baseURI = baseURI;
 	}
 
-	private static WSDLFactory getWsdlFactoryInstance() throws WSDLException {
+	public static WSDLFactory getWsdlFactoryInstance() throws WSDLException {
 		if (null == wsdlFactoryInstance) {
 			wsdlFactoryInstance = WSDLFactory.newInstance();
 		}
@@ -728,6 +728,15 @@ public class APIMWSDLReader {
             if (log.isDebugEnabled()) {
                 log.debug("Gateway endpoint for environment:" + environmentName + " is: "
                         + ((HTTPAddressImpl) exElement).getLocationURI());
+            }
+        } else if (exElement instanceof UnknownExtensibilityElement) {
+            Element unknownExtensibilityElement = ((UnknownExtensibilityElement) exElement).getElement();
+            if (unknownExtensibilityElement != null) {
+                NodeList nodeList = unknownExtensibilityElement.getElementsByTagNameNS(APIConstants.WSDL_NAMESPACE_URI,
+                        APIConstants.WSDL_ELEMENT_LOCAL_NAME);
+                if (nodeList != null && nodeList.getLength() > 0) {
+                    nodeList.item(0).setTextContent(APIUtil.getGatewayendpoint(transports) + context);
+                }
             }
         } else {
             if (log.isDebugEnabled()) {

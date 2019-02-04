@@ -46,6 +46,7 @@ import org.wso2.carbon.apimgt.impl.soaptorest.model.WSDLParamDefinition;
 import org.wso2.carbon.apimgt.impl.soaptorest.model.WSDLSOAPOperation;
 import org.wso2.carbon.apimgt.impl.soaptorest.util.SOAPOperationBindingUtils;
 import org.wso2.carbon.apimgt.impl.soaptorest.util.SOAPToRESTConstants;
+import org.wso2.carbon.apimgt.impl.utils.APIFileUtil;
 import org.wso2.carbon.apimgt.impl.soaptorest.util.SwaggerFieldsExcludeStrategy;
 import org.wso2.carbon.apimgt.impl.utils.APIMWSDLReader;
 
@@ -60,9 +61,11 @@ import javax.wsdl.Part;
 import javax.wsdl.Types;
 import javax.wsdl.WSDLException;
 import javax.wsdl.extensions.schema.Schema;
+import javax.wsdl.extensions.schema.SchemaImport;
 import javax.wsdl.extensions.soap.SOAPBinding;
 import javax.wsdl.extensions.soap.SOAPOperation;
 import javax.wsdl.extensions.soap12.SOAP12Binding;
+import javax.wsdl.extensions.soap12.SOAP12Operation;
 import javax.wsdl.xml.WSDLReader;
 import java.io.File;
 import java.util.ArrayList;
@@ -73,6 +76,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import static org.wso2.carbon.apimgt.impl.soaptorest.util.SOAPToRESTConstants.COMPLEX_TYPE_NODE_NAME;
 import static org.wso2.carbon.apimgt.impl.soaptorest.util.SOAPToRESTConstants.SIMPLE_TYPE_NODE_NAME;
@@ -128,41 +132,73 @@ public class WSDL11SOAPOperationExtractor implements WSDLSOAPOperationExtractor 
                 typeList = types.getExtensibilityElements();
             }
 
-            if (typeList != null) {
-                for (Object ext : typeList) {
-                    if (ext instanceof Schema) {
-                        Schema schema = (Schema) ext;
-                        Element schemaElement = schema.getElement();
-                        NodeList schemaNodes = schemaElement.getChildNodes();
-                        schemaNodeList.addAll(SOAPOperationBindingUtils.list(schemaNodes));
-                        if (log.isDebugEnabled()) {
-                            Gson gson = new GsonBuilder().setExclusionStrategies(new SwaggerFieldsExcludeStrategy())
-                                    .create();
-                            log.debug("swagger definition model map from the wsdl: " + gson.toJson(parameterModelMap));
-                        }
-
-                        if (schemaNodeList == null) {
-                            log.warn("No schemas found in the type element for target namespace:" + schema
-                                    .getDocumentBaseURI());
-                        }
-                    }
+            if (typeList == null) {
+                return canProcess;
+            }
+            for (Object ext : typeList) {
+                if (!(ext instanceof Schema)) {
+                    continue;
                 }
-                if (schemaNodeList != null) {
-                    for (Node node : schemaNodeList) {
-                        WSDLParamDefinition wsdlParamDefinition = new WSDLParamDefinition();
-                        ModelImpl model = new ModelImpl();
-                        Property currentProperty = null;
-                        traverseTypeElement(node, null, model, currentProperty);
-                        if (StringUtils.isNotBlank(model.getName())) {
-                            parameterModelMap.put(model.getName(), model);
+                Schema schema = (Schema) ext;
+                Map importedSchemas = schema.getImports();
+                Element schemaElement = schema.getElement();
+                NodeList schemaNodes = schemaElement.getChildNodes();
+                schemaNodeList.addAll(SOAPOperationBindingUtils.list(schemaNodes));
+                //gets types from imported schemas from the parent wsdl. Nested schemas will not be imported.
+                if (importedSchemas != null) {
+                    for (Object importedSchemaObj : importedSchemas.keySet()) {
+                        String schemaUrl = (String) importedSchemaObj;
+                        if (importedSchemas.get(schemaUrl) == null) {
+                            continue;
                         }
-                        if (wsdlParamDefinition.getDefinitionName() != null) {
-                            wsdlParamDefinitions.add(wsdlParamDefinition);
+                        Vector vector = (Vector) importedSchemas.get(schemaUrl);
+                        for (Object schemaVector : vector) {
+                            if (!(schemaVector instanceof SchemaImport)) {
+                                continue;
+                            }
+                            Schema referencedSchema = ((SchemaImport) schemaVector).getReferencedSchema();
+                            if (referencedSchema != null && referencedSchema.getElement() != null) {
+                                if (referencedSchema.getElement().hasChildNodes()) {
+                                    schemaNodeList.addAll(SOAPOperationBindingUtils
+                                            .list(referencedSchema.getElement().getChildNodes()));
+                                } else {
+                                    log.warn(
+                                            "The referenced schema : " + schemaUrl + " doesn't have any defined types");
+                                }
+                            } else {
+                                log.warn("Cannot access referenced schema for the schema defined at: " + schemaUrl);
+                            }
                         }
                     }
                 } else {
-                    log.info("No schema is defined in the wsdl document");
+                    log.info("No any imported schemas found in the given wsdl.");
                 }
+                if (log.isDebugEnabled()) {
+                    Gson gson = new GsonBuilder().setExclusionStrategies(new SwaggerFieldsExcludeStrategy()).create();
+                    log.debug("swagger definition model map from the wsdl: " + gson.toJson(parameterModelMap));
+                }
+
+                if (schemaNodeList == null) {
+                    log.warn(
+                            "No schemas found in the type element for target namespace:" + schema.getDocumentBaseURI());
+                }
+
+            }
+            if (schemaNodeList != null) {
+                for (Node node : schemaNodeList) {
+                    WSDLParamDefinition wsdlParamDefinition = new WSDLParamDefinition();
+                    ModelImpl model = new ModelImpl();
+                    Property currentProperty = null;
+                    traverseTypeElement(node, null, model, currentProperty);
+                    if (StringUtils.isNotBlank(model.getName())) {
+                        parameterModelMap.put(model.getName(), model);
+                    }
+                    if (wsdlParamDefinition.getDefinitionName() != null) {
+                        wsdlParamDefinitions.add(wsdlParamDefinition);
+                    }
+                }
+            } else {
+                log.info("No schema is defined in the wsdl document");
             }
             if (log.isDebugEnabled()) {
                 log.debug("Successfully initialized an instance of " + this.getClass().getSimpleName()
@@ -515,6 +551,40 @@ public class WSDL11SOAPOperationExtractor implements WSDLSOAPOperationExtractor 
     }
 
     @Override
+    public boolean initPath(String path) throws APIMgtWSDLException {
+        pathToDefinitionMap = new HashMap<>();
+        try {
+            WSDLReader wsdlReader = APIMWSDLReader.getWsdlFactoryInstance().newWSDLReader();
+            // switch off the verbose mode
+            wsdlReader.setFeature(JAVAX_WSDL_VERBOSE_MODE, false);
+            wsdlReader.setFeature(JAVAX_WSDL_IMPORT_DOCUMENTS, false);
+            File folderToImport = new File(path);
+            Collection<File> foundWSDLFiles = APIFileUtil.searchFilesWithMatchingExtension(folderToImport, "wsdl");
+            if (log.isDebugEnabled()) {
+                log.debug("Found " + foundWSDLFiles.size() + " WSDL file(s) in path " + path);
+            }
+            for (File file : foundWSDLFiles) {
+                String absWSDLPath = file.getAbsolutePath();
+                if (log.isDebugEnabled()) {
+                    log.debug("Processing WSDL file: " + absWSDLPath);
+                }
+                Definition definition = wsdlReader.readWSDL(null, absWSDLPath);
+                pathToDefinitionMap.put(absWSDLPath, definition);
+            }
+            if (foundWSDLFiles.size() > 0) {
+                canProcess = true;
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully processed all WSDL files in path " + path);
+            }
+        } catch (WSDLException e) {
+            throw new APIMgtWSDLException(
+                    this.getClass().getName() + " was unable to process the WSDL Files for the path: " + path, e);
+        }
+        return canProcess;
+    }
+
+    @Override
     public WSDLInfo getWsdlInfo() throws APIMgtWSDLException {
 
         WSDLInfo wsdlInfo = new WSDLInfo();
@@ -571,12 +641,18 @@ public class WSDL11SOAPOperationExtractor implements WSDLSOAPOperationExtractor 
     private Set<WSDLSOAPOperation> getSOAPBindingOperations(Binding binding) throws APIMgtWSDLException {
         Set<WSDLSOAPOperation> allBindingOperations = new HashSet<>();
         if (binding.getExtensibilityElements() != null && binding.getExtensibilityElements().size() > 0) {
-            if (binding.getExtensibilityElements().get(0) instanceof SOAPBinding) {
-                for (Object opObj : binding.getBindingOperations()) {
-                    BindingOperation bindingOperation = (BindingOperation) opObj;
-                    WSDLSOAPOperation wsdlSoapOperation = getSOAPOperation(bindingOperation);
-                    if (wsdlSoapOperation != null) {
-                        allBindingOperations.add(wsdlSoapOperation);
+            List extensibilityElements = binding.getExtensibilityElements();
+            for (Object extensibilityElement : extensibilityElements) {
+                if (extensibilityElement instanceof SOAPBinding || extensibilityElement instanceof SOAP12Binding) {
+                    for (Object opObj : binding.getBindingOperations()) {
+                        BindingOperation bindingOperation = (BindingOperation) opObj;
+                        WSDLSOAPOperation wsdlSoapOperation = getSOAPOperation(bindingOperation);
+                        if (wsdlSoapOperation != null) {
+                            allBindingOperations.add(wsdlSoapOperation);
+                        } else {
+                            log.warn("Unable to get soap operation details from binding operation: " + bindingOperation
+                                    .getName());
+                        }
                     }
                 }
             }
@@ -602,7 +678,15 @@ public class WSDL11SOAPOperationExtractor implements WSDLSOAPOperationExtractor 
                 wsdlOperation.setSoapAction(soapOperation.getSoapActionURI());
                 wsdlOperation.setTargetNamespace(targetNamespace);
                 wsdlOperation.setStyle(soapOperation.getStyle());
-
+                wsdlOperation.setInputParameterModel(getSoapInputParameterModel(bindingOperation));
+                wsdlOperation.setOutputParameterModel(getSoapOutputParameterModel(bindingOperation));
+            } else if (boExtElement instanceof SOAP12Operation) {
+                SOAP12Operation soapOperation = (SOAP12Operation) boExtElement;
+                wsdlOperation = new WSDLSOAPOperation();
+                wsdlOperation.setName(bindingOperation.getName());
+                wsdlOperation.setSoapAction(soapOperation.getSoapActionURI());
+                wsdlOperation.setTargetNamespace(targetNamespace);
+                wsdlOperation.setStyle(soapOperation.getStyle());
                 wsdlOperation.setInputParameterModel(getSoapInputParameterModel(bindingOperation));
                 wsdlOperation.setOutputParameterModel(getSoapOutputParameterModel(bindingOperation));
             }
@@ -645,8 +729,15 @@ public class WSDL11SOAPOperationExtractor implements WSDLSOAPOperationExtractor 
                                     ModelImpl model = new ModelImpl();
                                     model.setType(ObjectProperty.TYPE);
                                     model.setName(message.getQName().getLocalPart());
-                                    model.addProperty(part.getName(),
-                                            getPropertyFromDataType(part.getTypeName().getLocalPart()));
+                                    if (getPropertyFromDataType(part.getTypeName().getLocalPart()) instanceof RefProperty) {
+                                        RefProperty property = (RefProperty) getPropertyFromDataType(part.getTypeName()
+                                                .getLocalPart());
+                                        property.set$ref("#/definitions/" + part.getTypeName().getLocalPart());
+                                        model.addProperty(part.getName(), property);
+                                    } else {
+                                        model.addProperty(part.getName(),
+                                                getPropertyFromDataType(part.getTypeName().getLocalPart()));
+                                    }
                                     parameterModelMap.put(model.getName(), model);
                                     inputParameterModelList.add(model);
                                 }
@@ -692,8 +783,15 @@ public class WSDL11SOAPOperationExtractor implements WSDLSOAPOperationExtractor 
                                     ModelImpl model = new ModelImpl();
                                     model.setType(ObjectProperty.TYPE);
                                     model.setName(message.getQName().getLocalPart());
-                                    model.addProperty(part.getName(),
-                                            getPropertyFromDataType(part.getTypeName().getLocalPart()));
+                                    if (getPropertyFromDataType(part.getTypeName().getLocalPart()) instanceof RefProperty) {
+                                        RefProperty property = (RefProperty) getPropertyFromDataType(part.getTypeName()
+                                                .getLocalPart());
+                                        property.set$ref("#/definitions/" + part.getTypeName().getLocalPart());
+                                        model.addProperty(part.getName(), property);
+                                    } else {
+                                        model.addProperty(part.getName(),
+                                                getPropertyFromDataType(part.getTypeName().getLocalPart()));
+                                    }
                                     parameterModelMap.put(model.getName(), model);
                                     outputParameterModelList.add(model);
                                 }

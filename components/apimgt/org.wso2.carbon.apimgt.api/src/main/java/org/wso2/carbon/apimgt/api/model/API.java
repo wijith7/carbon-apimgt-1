@@ -43,11 +43,13 @@ public class API implements Serializable {
     private String url;
     private String sandboxUrl;
     private String wsdlUrl;
+    private String wsdlArchivePath;
     private String wadlUrl;
     private String type;
     private String context;
     private String contextTemplate;
     private String thumbnailUrl;
+    private ResourceFile wsdlArchive;
     private Set<String> tags = new LinkedHashSet<String>();
     private Set<Documentation> documents = new LinkedHashSet<Documentation>();
     private String httpVerb;
@@ -129,6 +131,9 @@ public class API implements Serializable {
 
     // API security at the gateway level.
     private String apiSecurity = "oauth2";
+
+    private static final String NULL_VALUE = "NULL";
+    private static final String EMPTY_STRING = "";
 
     public void setEnvironmentList(Set<String> environmentList) {
         this.environmentList = environmentList;
@@ -754,10 +759,10 @@ public class API implements Serializable {
     }
 
     public void setType(String type) {
-        if (type != null && type != "") {
-            this.type = type.toUpperCase();
-        } else {
+        if (type == null || EMPTY_STRING.equals(type.trim()) || NULL_VALUE.equalsIgnoreCase(type.trim())) {
             this.type = "HTTP";
+        } else {
+            this.type = type.trim().toUpperCase();
         }
     }
 
@@ -811,5 +816,21 @@ public class API implements Serializable {
      */
     public String getApiSecurity() {
         return apiSecurity;
+    }
+
+    public String getWsdlArchivePath() {
+        return wsdlArchivePath;
+    }
+
+    public void setWsdlArchivePath(String wsdlArchivePath) {
+        this.wsdlArchivePath = wsdlArchivePath;
+    }
+
+    public ResourceFile getWsdlArchive() {
+        return wsdlArchive;
+    }
+
+    public void setWsdlArchive(ResourceFile wsdlArchive) {
+        this.wsdlArchive = wsdlArchive;
     }
 }

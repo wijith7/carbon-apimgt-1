@@ -60,6 +60,16 @@ include("/jagg/jagg.jag");
         else {
             apiProvider = null;
         }
+        if (!apiProvider) {
+            var tenant = jagg.getTenantDomain();
+            if (tenant === null) {
+                //If no tenant name provided in the query params, We assume that user is in super tenant
+                tenant = org.wso2.carbon.apimgt.impl.APIConstants.SUPER_TENANT_DOMAIN;
+            }
+            var APIUtil = org.wso2.carbon.apimgt.impl.utils.APIUtil;
+            // If can't find the provider , "null" String will be returned
+            apiProvider = String(APIUtil.getAPIProviderFromAPINameVersionTenant(apiName, apiVersion, tenant));
+        }
 
         var apiResult = jagg.module("api").getAPIDescription({
             name:apiName,
@@ -74,7 +84,7 @@ include("/jagg/jagg.jag");
             });
             return;
         }
-        
+
         mod = jagg.module("sdk");
         result = mod.generateClientSDK(language, apiName, apiVersion, apiProvider);
 

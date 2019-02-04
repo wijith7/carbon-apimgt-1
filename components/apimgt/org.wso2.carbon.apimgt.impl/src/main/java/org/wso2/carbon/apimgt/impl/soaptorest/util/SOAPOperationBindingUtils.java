@@ -41,6 +41,7 @@ import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.internal.ServiceReferenceHolder;
 import org.wso2.carbon.apimgt.impl.soaptorest.WSDL11SOAPOperationExtractor;
+import org.wso2.carbon.apimgt.impl.soaptorest.WSDL20SOAPOperationExtractor;
 import org.wso2.carbon.apimgt.impl.soaptorest.WSDLSOAPOperationExtractor;
 import org.wso2.carbon.apimgt.impl.soaptorest.exceptions.APIMgtWSDLException;
 import org.wso2.carbon.apimgt.impl.soaptorest.model.WSDLOperationParam;
@@ -57,6 +58,7 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -100,17 +102,17 @@ public class SOAPOperationBindingUtils {
                 Operation op = new Operation();
                 List<ModelImpl> inputParameterModel = operation.getInputParameterModel();
                 List<ModelImpl> outputParameterModel = operation.getOutputParameterModel();
-                if (HTTPConstants.HTTP_METHOD_GET.equals(operation.getHttpVerb())) {
+                if (HTTPConstants.HTTP_METHOD_GET.equals(operation.getHttpVerb()) && inputParameterModel != null) {
                     for (ModelImpl input : inputParameterModel) {
-                        if (operation.getName().equals(input.getName())) {
+                        if (input != null && operation.getName().equalsIgnoreCase(input.getName())) {
                             Map<String, Property> properties = input.getProperties();
                             if (properties != null) {
-                                QueryParameter param = new QueryParameter();
-                                param.setName(operation.getName());
                                 for (String property : properties.keySet()) {
+                                    QueryParameter param = new QueryParameter();
+                                    param.setName(property);
                                     param.setType(properties.get(property).getType());
+                                    op.addParameter(param);
                                 }
-                                op.addParameter(param);
                             }
                             inputParameterModel.remove(input);
                             break;
@@ -157,11 +159,13 @@ public class SOAPOperationBindingUtils {
                     inputModel.setName(operation.getName() + SOAPToRESTConstants.Swagger.INPUT_POSTFIX);
                     inputModel.setType(ObjectProperty.TYPE);
                     Map<String, Property> inputPropertyMap = new HashMap<>();
-                    for (ModelImpl input : inputParameterModel) {
-                        RefProperty inputRefProp = new RefProperty();
-                        if (input != null) {
-                            inputRefProp.set$ref(SOAPToRESTConstants.Swagger.DEFINITIONS_ROOT + input.getName());
-                            inputPropertyMap.put(input.getName(), inputRefProp);
+                    if (inputParameterModel != null) {
+                        for (ModelImpl input : inputParameterModel) {
+                            RefProperty inputRefProp = new RefProperty();
+                            if (input != null) {
+                                inputRefProp.set$ref(SOAPToRESTConstants.Swagger.DEFINITIONS_ROOT + input.getName());
+                                inputPropertyMap.put(input.getName(), inputRefProp);
+                            }
                         }
                     }
                     inputModel.setProperties(inputPropertyMap);
@@ -173,11 +177,13 @@ public class SOAPOperationBindingUtils {
                 outputModel.setName(operation.getName() + SOAPToRESTConstants.Swagger.OUTPUT_POSTFIX);
                 outputModel.setType(ObjectProperty.TYPE);
                 Map<String, Property> outputPropertyMap = new HashMap<>();
-                for (ModelImpl output : outputParameterModel) {
-                    RefProperty outputRefProp = new RefProperty();
-                    if (output != null) {
-                        outputRefProp.set$ref(SOAPToRESTConstants.Swagger.DEFINITIONS_ROOT + output.getName());
-                        outputPropertyMap.put(output.getName(), outputRefProp);
+                if (outputParameterModel != null) {
+                    for (ModelImpl output : outputParameterModel) {
+                        RefProperty outputRefProp = new RefProperty();
+                        if (output != null) {
+                            outputRefProp.set$ref(SOAPToRESTConstants.Swagger.DEFINITIONS_ROOT + output.getName());
+                            outputPropertyMap.put(output.getName(), outputRefProp);
+                        }
                     }
                 }
                 outputModel.setProperties(outputPropertyMap);
@@ -284,7 +290,8 @@ public class SOAPOperationBindingUtils {
                         && operation.getInputParameterModel().size() <= 1) {
 
                     Map<String, Property> properties = null;
-                    if (operation.getInputParameterModel().size() > 0) {
+                    if (operation.getInputParameterModel().size() > 0
+                            && operation.getInputParameterModel().get(0) != null) {
                         properties = operation.getInputParameterModel().get(0).getProperties();
                     }
                     if (properties == null) {
@@ -350,6 +357,31 @@ public class SOAPOperationBindingUtils {
         } catch (APIMgtWSDLException e) {
             throw new APIManagementException("Error while instantiating wsdl processor class", e);
         }
+    }
+
+    /**
+     * Returns the appropriate WSDL 1.1/WSDL 2.0 based on the file path {@code wsdlPath}.
+     *
+     * @param wsdlPath File path containing WSDL files and dependant files
+     * @return WSDL 1.1 processor for the provided content
+     * @throws APIManagementException If an error occurs while determining the processor
+     */
+    public static WSDLSOAPOperationExtractor getWSDLProcessor(String wsdlPath) throws APIManagementException {
+        WSDLSOAPOperationExtractor wsdl11Processor = new WSDL11SOAPOperationExtractor();
+        WSDLSOAPOperationExtractor wsdl20Processor = new WSDL20SOAPOperationExtractor();
+        boolean canProcess;
+        try {
+            canProcess = wsdl11Processor.initPath(wsdlPath);
+            if (canProcess) {
+                return wsdl11Processor;
+            } else if (wsdl20Processor.initPath(wsdlPath)){
+                return wsdl20Processor;
+            }
+        } catch (APIMgtWSDLException e) {
+            handleException("Error while initializing wsdl processor class.", e);
+        }
+        //no processors found if this line reaches
+        throw new APIManagementException("No WSDL processor found.");
     }
 
     /**

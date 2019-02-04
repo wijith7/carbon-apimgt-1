@@ -22,6 +22,8 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -108,11 +110,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest( {KeyManagerHolder.class})
 public class APIMgtDAOTest {
 
+    private static final Log log = LogFactory.getLog(APIMgtDAOTest.class);
     public static ApiMgtDAO apiMgtDAO;
 
     @Before
@@ -1217,6 +1221,36 @@ public class APIMgtDAOTest {
         assertTrue(apiMgtDAO.getExternalAPIStoresDetails(apiId).size()==0);
         apiMgtDAO.deleteAPI(apiId);
     }
+
+    @Test
+    public void testGetProviderByNameVersionTenant() throws APIManagementException, SQLException {
+        final String apiProviderSuperTenant = "testUser1";
+        final String apiProviderWSO2Tenant = "testUser1@wso2.test";
+
+        final String apiName = "testAPI1";
+        final String apiVersion = "1.0.0";
+        try {
+            apiMgtDAO.getAPIProviderByNameAndVersion(apiName, apiVersion, "");
+            fail("Should throw an exception when tenant value is blank string");
+        } catch (APIManagementException ex){
+            assertTrue(ex.getMessage().contains("cannot be null when fetching provider"));
+        }
+
+        try {
+            apiMgtDAO.getAPIProviderByNameAndVersion(apiName, apiVersion, null);
+            fail("Should throw an exception when tenant value is null");
+        } catch (APIManagementException ex){
+            assertTrue(ex.getMessage().contains("cannot be null when fetching provider"));
+        }
+
+        String apiProviderSuperTenantResult = apiMgtDAO.getAPIProviderByNameAndVersion(apiName, apiVersion, APIConstants.SUPER_TENANT_DOMAIN);
+        assertEquals(apiProviderSuperTenant, apiProviderSuperTenantResult);
+
+        String apiProviderWSO2TenantResult = apiMgtDAO.getAPIProviderByNameAndVersion(apiName, apiVersion, "wso2.test");
+        assertEquals(apiProviderWSO2Tenant, apiProviderWSO2TenantResult);
+
+    }
+
     private void deleteSubscriber(int subscriberId) throws APIManagementException {
         Connection conn = null;
         ResultSet rs = null;
@@ -1256,12 +1290,11 @@ public class APIMgtDAOTest {
             ps.setInt(6, -1234);
             ps.setString(7, username);
             ps.executeUpdate();
-            conn.commit();
             rs = ps.getGeneratedKeys();
-
             while (rs.next()) {
                 appId = Integer.parseInt(rs.getString(1));
             }
+            conn.commit();
         } finally {
             APIMgtDBUtil.closeAllConnections(ps, conn, rs);
         }
