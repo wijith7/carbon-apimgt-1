@@ -46,6 +46,4 @@ public class JWTGeneratorWrapper extends JWTGenerator {
         };
         return claimsRetriever;
     }
-
-
 }
