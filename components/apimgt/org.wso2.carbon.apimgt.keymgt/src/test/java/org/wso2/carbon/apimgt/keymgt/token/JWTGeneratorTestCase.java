@@ -33,6 +33,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.apimgt.keymgt.service.TokenValidationContext;
 import org.wso2.carbon.core.util.KeyStoreManager;
+import org.wso2.carbon.identity.oauth.cache.AuthorizationGrantCache;
 import org.wso2.carbon.user.api.RealmConfiguration;
 import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.user.core.UserStoreException;
@@ -52,7 +53,7 @@ import java.util.Map;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ServiceReferenceHolder.class, MultitenantUtils.class, APIUtil.class, KeyStoreManager.class,
-        MessageDigest.class})
+        MessageDigest.class, AuthorizationGrantCache.class })
 public class JWTGeneratorTestCase {
 
     private void mockAPIMConfiguration(Map<String, String> configMap) {
@@ -206,6 +207,9 @@ public class JWTGeneratorTestCase {
                 .thenReturn(apiManagerConfigurationService);
         APIManagerConfiguration apiManagerConfiguration = Mockito.mock(APIManagerConfiguration.class);
         Mockito.when(apiManagerConfigurationService.getAPIManagerConfiguration()).thenReturn(apiManagerConfiguration);
+        PowerMockito.mockStatic(AuthorizationGrantCache.class);
+        AuthorizationGrantCache authorizationGrantCache = Mockito.mock(AuthorizationGrantCache.class);
+        PowerMockito.when(AuthorizationGrantCache.getInstance()).thenReturn(authorizationGrantCache);
 
         String dialectUri = "dialect_uri";
         Map<String, String> configMap = new HashMap<String, String>();
@@ -222,6 +226,7 @@ public class JWTGeneratorTestCase {
         APIKeyValidationInfoDTO apiKeyValidationInfoDTO = new APIKeyValidationInfoDTO();
         String endUserName = "admin";
         apiKeyValidationInfoDTO.setEndUserName(endUserName);
+        apiKeyValidationInfoDTO.setApplicationId("1");
         tokenValidationContext.setValidationInfoDTO(apiKeyValidationInfoDTO);
 
         PowerMockito.mockStatic(APIUtil.class);
@@ -255,6 +260,9 @@ public class JWTGeneratorTestCase {
                 .thenReturn(apiManagerConfigurationService);
         APIManagerConfiguration apiManagerConfiguration = Mockito.mock(APIManagerConfiguration.class);
         Mockito.when(apiManagerConfigurationService.getAPIManagerConfiguration()).thenReturn(apiManagerConfiguration);
+        PowerMockito.mockStatic(AuthorizationGrantCache.class);
+        AuthorizationGrantCache authorizationGrantCache = Mockito.mock(AuthorizationGrantCache.class);
+        PowerMockito.when(AuthorizationGrantCache.getInstance()).thenReturn(authorizationGrantCache);
 
         String dialectUri = "dialect_uri";
         Map<String, String> configMap = new HashMap<String, String>();
@@ -271,6 +279,7 @@ public class JWTGeneratorTestCase {
         APIKeyValidationInfoDTO apiKeyValidationInfoDTO = new APIKeyValidationInfoDTO();
         String endUserName = "admin";
         apiKeyValidationInfoDTO.setEndUserName(endUserName);
+        apiKeyValidationInfoDTO.setApplicationId("1");
         tokenValidationContext.setValidationInfoDTO(apiKeyValidationInfoDTO);
 
         PowerMockito.mockStatic(APIUtil.class);
@@ -295,6 +304,9 @@ public class JWTGeneratorTestCase {
                 .thenReturn(apiManagerConfigurationService);
         APIManagerConfiguration apiManagerConfiguration = Mockito.mock(APIManagerConfiguration.class);
         Mockito.when(apiManagerConfigurationService.getAPIManagerConfiguration()).thenReturn(apiManagerConfiguration);
+        PowerMockito.mockStatic(AuthorizationGrantCache.class);
+        AuthorizationGrantCache authorizationGrantCache = Mockito.mock(AuthorizationGrantCache.class);
+        PowerMockito.when(AuthorizationGrantCache.getInstance()).thenReturn(authorizationGrantCache);
 
         String dialectUri = "dialect_uri";
         Map<String, String> configMap = new HashMap<String, String>();
@@ -311,6 +323,8 @@ public class JWTGeneratorTestCase {
         APIKeyValidationInfoDTO apiKeyValidationInfoDTO = new APIKeyValidationInfoDTO();
         String endUserName = "admin";
         apiKeyValidationInfoDTO.setEndUserName(endUserName);
+        apiKeyValidationInfoDTO.setApplicationId("1");
+
         tokenValidationContext.setValidationInfoDTO(apiKeyValidationInfoDTO);
 
         PowerMockito.mockStatic(APIUtil.class);
@@ -344,6 +358,9 @@ public class JWTGeneratorTestCase {
                 .thenReturn(apiManagerConfigurationService);
         APIManagerConfiguration apiManagerConfiguration = Mockito.mock(APIManagerConfiguration.class);
         Mockito.when(apiManagerConfigurationService.getAPIManagerConfiguration()).thenReturn(apiManagerConfiguration);
+        PowerMockito.mockStatic(AuthorizationGrantCache.class);
+        AuthorizationGrantCache authorizationGrantCache = Mockito.mock(AuthorizationGrantCache.class);
+        PowerMockito.when(AuthorizationGrantCache.getInstance()).thenReturn(authorizationGrantCache);
 
         String dialectUri = "dialect_uri";
         Map<String, String> configMap = new HashMap<String, String>();
@@ -360,6 +377,8 @@ public class JWTGeneratorTestCase {
         APIKeyValidationInfoDTO apiKeyValidationInfoDTO = new APIKeyValidationInfoDTO();
         String endUserName = "admin";
         apiKeyValidationInfoDTO.setEndUserName(endUserName);
+        apiKeyValidationInfoDTO.setApplicationId("1");
+
         tokenValidationContext.setValidationInfoDTO(apiKeyValidationInfoDTO);
 
         PowerMockito.mockStatic(APIUtil.class);
@@ -393,6 +412,9 @@ public class JWTGeneratorTestCase {
                 .thenReturn(apiManagerConfigurationService);
         APIManagerConfiguration apiManagerConfiguration = Mockito.mock(APIManagerConfiguration.class);
         Mockito.when(apiManagerConfigurationService.getAPIManagerConfiguration()).thenReturn(apiManagerConfiguration);
+        PowerMockito.mockStatic(AuthorizationGrantCache.class);
+        AuthorizationGrantCache authorizationGrantCache = Mockito.mock(AuthorizationGrantCache.class);
+        PowerMockito.when(AuthorizationGrantCache.getInstance()).thenReturn(authorizationGrantCache);
 
         String dialectUri = "dialect_uri";
         Map<String, String> configMap = new HashMap<String, String>();
@@ -409,6 +431,8 @@ public class JWTGeneratorTestCase {
         APIKeyValidationInfoDTO apiKeyValidationInfoDTO = new APIKeyValidationInfoDTO();
         String endUserName = "admin";
         apiKeyValidationInfoDTO.setEndUserName(endUserName);
+        apiKeyValidationInfoDTO.setApplicationId("1");
+
         tokenValidationContext.setValidationInfoDTO(apiKeyValidationInfoDTO);
 
         PowerMockito.mockStatic(APIUtil.class);
@@ -434,6 +458,9 @@ public class JWTGeneratorTestCase {
                 .thenReturn(apiManagerConfigurationService);
         APIManagerConfiguration apiManagerConfiguration = Mockito.mock(APIManagerConfiguration.class);
         Mockito.when(apiManagerConfigurationService.getAPIManagerConfiguration()).thenReturn(apiManagerConfiguration);
+        PowerMockito.mockStatic(AuthorizationGrantCache.class);
+        AuthorizationGrantCache authorizationGrantCache = Mockito.mock(AuthorizationGrantCache.class);
+        PowerMockito.when(AuthorizationGrantCache.getInstance()).thenReturn(authorizationGrantCache);
 
         String dialectUri = "dialect_uri";
         Map<String, String> configMap = new HashMap<String, String>();
@@ -451,6 +478,7 @@ public class JWTGeneratorTestCase {
         String endUserName = "admin";
         apiKeyValidationInfoDTO.setEndUserName(endUserName);
         apiKeyValidationInfoDTO.setApplicationTier("Unlimited,test");
+        apiKeyValidationInfoDTO.setApplicationId("1");
         tokenValidationContext.setValidationInfoDTO(apiKeyValidationInfoDTO);
 
         PowerMockito.mockStatic(APIUtil.class);
@@ -476,6 +504,7 @@ public class JWTGeneratorTestCase {
         APIKeyValidationInfoDTO apiKeyValidationInfoDTO = new APIKeyValidationInfoDTO();
         String endUserName = "admin";
         apiKeyValidationInfoDTO.setEndUserName(endUserName);
+        apiKeyValidationInfoDTO.setApplicationId("1");
 
         tokenValidationContext.setValidationInfoDTO(apiKeyValidationInfoDTO);
         PowerMockito.mockStatic(MultitenantUtils.class);
@@ -505,6 +534,10 @@ public class JWTGeneratorTestCase {
                 .thenReturn(apiManagerConfigurationService);
         APIManagerConfiguration apiManagerConfiguration = Mockito.mock(APIManagerConfiguration.class);
         Mockito.when(apiManagerConfigurationService.getAPIManagerConfiguration()).thenReturn(apiManagerConfiguration);
+
+        PowerMockito.mockStatic(AuthorizationGrantCache.class);
+        AuthorizationGrantCache authorizationGrantCache = Mockito.mock(AuthorizationGrantCache.class);
+        PowerMockito.when(AuthorizationGrantCache.getInstance()).thenReturn(authorizationGrantCache);
 
         String dialectUri = "dialect_uri";
         Map<String, String> configMap = new HashMap<String, String>();
