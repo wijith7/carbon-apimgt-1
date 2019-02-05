@@ -24,6 +24,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -95,6 +96,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -1270,6 +1272,49 @@ public class APIMgtDAOTest {
         }
     }
 
+    @Test
+    public void testAddAndConvertNullThrottlingTiers() throws APIManagementException {
+
+        //Adding an API with a null THROTTLING_TIER should automatically convert it to Unlimited
+        APIIdentifier apiId = new APIIdentifier("testAddAndGetApi", "testAddAndGetApi", "1.0.0");
+        API api = new API(apiId);
+        api.setContext("/testAddAndGetApi");
+        api.setContextTemplate("/testAddAndGetApi/{version}");
+        Set<URITemplate> uriTemplates = new HashSet<URITemplate>();
+        uriTemplates.add(getUriTemplate("/abc", "GET", "Any", "read", null));
+        api.setUriTemplates(uriTemplates);
+        api.setScopes(getScopes());
+        api.setStatus(APIConstants.PUBLISHED);
+        api.setAsDefaultVersion(true);
+        apiMgtDAO.addAPI(api, -1234);
+        HashMap<String, String> result1 = apiMgtDAO.getURITemplatesPerAPIAsString(apiId);
+        Assert.assertTrue(result1.containsKey("/abc::GET::Any::Unlimited::abcd defgh fff"));
+
+        //Change the inserted throttling tier back to Null and test the convertNullThrottlingTier method
+        updateThrottlingTierToNull();
+        apiMgtDAO.convertNullThrottlingTiers();
+        HashMap<String, String> result2 = apiMgtDAO.getURITemplatesPerAPIAsString(apiId);
+        Assert.assertTrue(result2.containsKey("/abc::GET::Any::Unlimited::abcd defgh fff"));
+    }
+
+    private void updateThrottlingTierToNull() {
+        Connection conn = null;
+        ResultSet rs = null;
+        PreparedStatement ps = null;
+        try {
+            conn = APIMgtDBUtil.getConnection();
+            conn.setAutoCommit(false);
+
+            String query = "UPDATE AM_API_URL_MAPPING SET THROTTLING_TIER=null where THROTTLING_TIER='Unlimited'";
+            ps = conn.prepareStatement(query);
+            ps.executeUpdate();
+            conn.commit();
+        } catch (SQLException e) {
+        } finally {
+            APIMgtDBUtil.closeAllConnections(ps, conn, rs);
+        }
+    }
+
     private int insertConsumerApp(String clientId, String appName, String username) throws SQLException {
         Connection conn = null;
         ResultSet rs = null;
@@ -1381,15 +1426,17 @@ public class APIMgtDAOTest {
     }
     private Set<URITemplate> getUriTemplateSet(){
         Set<URITemplate> uriTemplates = new HashSet<URITemplate>();
-        uriTemplates.add(getUriTemplate("/abc","GET","Any","read"));
-        uriTemplates.add(getUriTemplate("/abc", "GET", "Any", null));
+        uriTemplates.add(getUriTemplate("/abc", "GET", "Any", "read",
+                "Unlimited"));
+        uriTemplates.add(getUriTemplate("/abc", "GET", "Any", null,
+                "Unlimited"));
         return uriTemplates;
     }
-    private URITemplate getUriTemplate(String resourceString,String httpVerb,String authType,String scope){
+    private URITemplate getUriTemplate(String resourceString,String httpVerb,String authType,String scope, String throtlingTier){
         URITemplate uriTemplate = new URITemplate();
         uriTemplate.setUriTemplate(resourceString);
         uriTemplate.setHTTPVerb(httpVerb);
-        uriTemplate.setThrottlingTier("Unlimited");
+        uriTemplate.setThrottlingTier(throtlingTier);
         uriTemplate.setAuthType(authType);
         uriTemplate.setMediationScript("abcd defgh fff");
         if (scope!= null){
