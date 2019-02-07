@@ -7498,11 +7498,9 @@ public class ApiMgtDAO {
                         //Adding scope bindings
                         List<String> roleList = Lists.newArrayList(Splitter.on(",").trimResults().split(roles));
                         for (String role : roleList) {
-                            if (StringUtils.isNotBlank(role)) {
-                                ps3.setInt(1, uriTemplate.getScope().getId());
-                                ps3.setString(2, role);
-                                ps3.addBatch();
-                            }
+                            ps3.setInt(1, uriTemplate.getScope().getId());
+                            ps3.setString(2, role);
+                            ps3.addBatch();
                         }
                         ps3.executeBatch();
 
@@ -7531,11 +7529,9 @@ public class ApiMgtDAO {
                         //Adding scope bindings
                         List<String> roleList = Lists.newArrayList(Splitter.on(",").trimResults().split(roles));
                         for (String role : roleList) {
-                            if (StringUtils.isNotBlank(role)) {
-                                ps3.setInt(1, scope.getId());
-                                ps3.setString(2, role);
-                                ps3.addBatch();
-                            }
+                            ps3.setInt(1, scope.getId());
+                            ps3.setString(2, role);
+                            ps3.addBatch();
                         }
                         ps3.executeBatch();
                         ps2.setInt(1, apiID);
