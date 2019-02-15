@@ -33,6 +33,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.wso2.carbon.apimgt.api.APIManagementException;
+import org.wso2.carbon.apimgt.hybrid.gateway.api.synchronizer.dto.LabelDTO;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
 import org.wso2.carbon.apimgt.impl.utils.APIUtil;
@@ -96,6 +97,8 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
     private static final Log log = LogFactory.getLog(APISynchronizer.class);
     private String apiViewUrl = APISynchronizationConstants.EMPTY_STRING;
     private String mediationPolicyUrl = APISynchronizationConstants.EMPTY_STRING;
+    /** Label configured for this gateway (if configured) */
+    private String label;
 
     @Override
     public void completedInitialization() {
@@ -334,12 +337,31 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
             throw new APISynchronizationException("Error while retrieving Http client." ,e);
         }
 
-        HttpGet httpGet = new HttpGet(apiViewUrl);
-        String authHeaderValue = OnPremiseGatewayConstants.AUTHORIZATION_BEARER + accessTokenDTO.getAccessToken();
-        httpGet.addHeader(OnPremiseGatewayConstants.AUTHORIZATION_HEADER, authHeaderValue);
+        String apiViewUrl = this.apiViewUrl;
         try {
-            String response = HttpRequestUtil.executeHTTPMethodWithRetry(httpClient, httpGet,
-                    OnPremiseGatewayConstants.DEFAULT_RETRY_COUNT);
+            String label =
+                    ConfigManager.getConfigManager().getProperty(OnPremiseGatewayConstants.GATEWAY_LABEL_PROPERTY_KEY);
+            if (StringUtils.isNotEmpty(label)) {
+                this.label = label;
+                apiViewUrl = apiViewUrl + APISynchronizationConstants.QUESTION_MARK +
+                             APISynchronizationConstants.API_SEARCH_QUERY_PREFIX + label;
+                if (log.isDebugEnabled()) {
+                    log.debug("API get URL after adding label property value: " + apiViewUrl);
+                }
+            }
+        } catch (OnPremiseGatewayException e) {
+            log.error("An error occurred when loading Gateway label from properties.", e);
+        }
+
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("Sending request to GET details of all APIs for the URL: " + apiViewUrl);
+            }
+            HttpGet httpGet = new HttpGet(apiViewUrl);
+            String authHeaderValue = OnPremiseGatewayConstants.AUTHORIZATION_BEARER + accessTokenDTO.getAccessToken();
+            httpGet.addHeader(OnPremiseGatewayConstants.AUTHORIZATION_HEADER, authHeaderValue);
+            String response = HttpRequestUtil
+                    .executeHTTPMethodWithRetry(httpClient, httpGet, OnPremiseGatewayConstants.DEFAULT_RETRY_COUNT);
             if (log.isDebugEnabled()) {
                 log.debug("Received response from GET details of all APIs : " + response);
             }
@@ -415,7 +437,18 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
             String detailedAPIViewUrl = apiViewUrl + APISynchronizationConstants.URL_PATH_SEPARATOR + id;
             try {
                 APIDTO apiDTO = getAPI(id, detailedAPIViewUrl, accessTokenDTO);
-                apiDtoList.add(apiDTO);
+                // If a label is configured, only the APIs with the given label should be
+                // synced out of the APIs that have been updated.
+                if (StringUtils.isNotEmpty(label)) {
+                    for (LabelDTO labelDTO : apiDTO.getLabels()) {
+                        if (labelDTO.getName().equals(label)) {
+                            apiDtoList.add(apiDTO);
+                            break;
+                        }
+                    }
+                } else {
+                    apiDtoList.add(apiDTO);
+                }
             } catch (APISynchronizationException e) {
                 log.error("An error occurred while retrieving details of API: " + id, e);
             }

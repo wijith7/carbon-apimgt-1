@@ -38,4 +38,6 @@ public class APISynchronizationConstants {
     public static final String API_DEFAULT_VERSION = "v0.14";
     public static final String URL_PATH_SEPARATOR = "/";
     public static final String CLOUD_API = "cloud";
+    public static final String QUESTION_MARK = "?";
+    public static final String API_SEARCH_QUERY_PREFIX = "query=label:";
 }
