@@ -260,6 +260,17 @@ public class APIManagerComponent {
             if(advancedThrottlingEnabled) {
                 addDefaultAdvancedThrottlePolicies();
             }
+
+            //Update all NULL THROTTLING_TIER values to Unlimited
+            boolean isNullThrottlingTierConversionEnabled = APIUtil.updateNullThrottlingTierAtStartup();
+            try {
+                if (isNullThrottlingTierConversionEnabled) {
+                    ApiMgtDAO.getInstance().convertNullThrottlingTiers();
+                }
+            } catch (APIManagementException e) {
+                log.error("Failed to convert NULL THROTTLING_TIERS to Unlimited");
+            }
+
             // Initialise KeyManager.
             KeyManagerHolder.initializeKeyManager(configuration);
             //Initialise sql constants

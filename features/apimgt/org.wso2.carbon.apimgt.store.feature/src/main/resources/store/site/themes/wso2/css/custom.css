@@ -475,7 +475,11 @@ a.remove_rating:hover{
     vertical-align: bottom;
   }
 }
-
+/* Pagination fix for mobile browsers */
+.paginationFix{
+    clear: both;
+    padding-left: 30px;
+}
 /* =============================================================================
  * Forum comment styles
  * ============================================================================= */
@@ -626,4 +630,7 @@ a.remove_rating:hover{
 
 .scope-selection-form div.btn-group.scope_select{
     height: auto;
+}
+header.header .dropdown-backdrop{
+  display: none;
 }
