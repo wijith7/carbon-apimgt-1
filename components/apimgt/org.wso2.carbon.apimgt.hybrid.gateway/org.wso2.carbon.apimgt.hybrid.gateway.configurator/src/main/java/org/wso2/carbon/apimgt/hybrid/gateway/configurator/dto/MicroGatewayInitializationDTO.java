@@ -146,7 +146,7 @@ public class MicroGatewayInitializationDTO {
     /**
      * Get system environment specific metadata
      *
-     * @return envMetadataMap
+     * @return envMetadataMap environment metadata
      */
     public Map<String, String> getEnvMetadataMap() {
         return envMetadataMap;
@@ -155,7 +155,7 @@ public class MicroGatewayInitializationDTO {
     /**
      * Set the system environment specific metadata
      *
-     * @param envMetadataMap
+     * @param envMetadataMap environment metadata
      */
     public void setEnvMetadataMap(Map<String, String> envMetadataMap) {
         this.envMetadataMap = envMetadataMap;
@@ -164,7 +164,7 @@ public class MicroGatewayInitializationDTO {
     /**
      * Get the custom configured metadata (which are not related to system environments)
      *
-     * @return customMetadataMap
+     * @return customMetadataMap custom metadata
      */
     public Map<String, String> getCustomMetadataMap() {
         return customMetadataMap;
@@ -173,7 +173,7 @@ public class MicroGatewayInitializationDTO {
     /**
      * Set the custom configured metadata (which are not related to system environments)
      *
-     * @param customMetadataMap
+     * @param customMetadataMap custom metadata
      */
     public void setCustomMetadataMap(Map<String, String> customMetadataMap) {
         this.customMetadataMap = customMetadataMap;

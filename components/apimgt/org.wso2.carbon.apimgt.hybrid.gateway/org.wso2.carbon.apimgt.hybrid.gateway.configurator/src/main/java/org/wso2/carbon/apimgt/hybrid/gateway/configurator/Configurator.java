@@ -64,7 +64,9 @@ public class Configurator {
     private static final Log log = LogFactory.getLog(Configurator.class);
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
+    /** Path to Carbon Home */
     private static String carbonHome;
+    /** Path to 'repository/conf' directory */
     private static String carbonConfigDirPath;
 
     /**
@@ -153,6 +155,9 @@ public class Configurator {
      */
     private static void initializeOnPremGateway(Properties gatewayProperties, String carbonConfigDirPath, String[] args)
             throws OnPremiseGatewayException, IOException {
+        if (log.isDebugEnabled()){
+            log.debug("Initializing on-premises gateway.");
+        }
         String initApiUrl = gatewayProperties.getProperty(ConfigConstants.INITIALIZATION_API_URL);
         //Collect device details
         Map<String, String> deviceDetails = getDeviceDetails();
@@ -256,6 +261,9 @@ public class Configurator {
      */
     protected static String getInitializationPayload(Properties gatewayProperties, Map<String, String> deviceDetails,
                                                      String[] args) throws IOException {
+        if (log.isDebugEnabled()) {
+            log.debug("Getting a JSON String with the details required to initialize on-prem gateway.");
+        }
         //Create object
         MicroGatewayInitializationDTO microGatewayInitializationDTO = new MicroGatewayInitializationDTO();
         //Order of args - email, tenantDomain, password
@@ -263,7 +271,7 @@ public class Configurator {
         microGatewayInitializationDTO.setMacAddress(deviceDetails.get(ConfigConstants.MAC_ADDRESS));
         microGatewayInitializationDTO.setPort(deviceDetails.get(ConfigConstants.PORT));
         microGatewayInitializationDTO.setHostName(deviceDetails.get(ConfigConstants.HOST_NAME));
-        // Set the GW URL and Label
+        // Set the GW URL, Label and Metadata
         microGatewayInitializationDTO.setGwUrl(getGateWayURL(gatewayProperties));
         microGatewayInitializationDTO.setLabel(getGateWayLabel(gatewayProperties));
         microGatewayInitializationDTO.setEnvMetadataMap(getEnvMetadataFromPropertiesFile(gatewayProperties));
@@ -458,11 +466,10 @@ public class Configurator {
         if (url == null) {
             log.info(
                     "Micro Gateway URL not set. To configure later, set " + ConfigConstants.MICRO_GATEWAY_URL_PROPERTY +
-                    " property in " + ConfigConstants.CLOUD_CONFIG_FILE_NAME + " and rerun this command");
+                    " property in " + ConfigConstants.CLOUD_CONFIG_FILE_NAME + " and reinitialize the gateway");
         } else {
-            log.info("Micro Gateway URL: " + url);
+            log.info("Micro Gateway URL found: " + url);
         }
-
         return url;
     }
 
@@ -477,16 +484,18 @@ public class Configurator {
         if (label == null) {
             log.info("Micro Gateway label not set. To configure later, set " +
                      ConfigConstants.MICRO_GATEWAY_LABEL_PROPERTY + " property in " +
-                     ConfigConstants.CLOUD_CONFIG_FILE_NAME + " and rerun this command");
+                     ConfigConstants.CLOUD_CONFIG_FILE_NAME + " and reinitialize the gateway");
         } else {
-            log.info("Micro Gateway Label: " + label);
+            log.info("Micro Gateway Label found: " + label);
         }
-
         return label;
     }
 
     /**
-     * @return map of key value pairs
+     * Retrieves environment metadata keys from properties file and maps with system property values accordingly
+     *
+     * @param gatewayProperties
+     * @return environment metadata map
      */
     private static Map<String, String> getEnvMetadataFromPropertiesFile(Properties gatewayProperties) {
         Map<String, String> properties =
@@ -531,7 +540,6 @@ public class Configurator {
             }
             envMetaData.put(metaDataKey, properties.get(key));
         }
-
         if (log.isDebugEnabled()) {
             log.debug("Found modified property map for environment metadata: " + envMetaData);
         }
@@ -539,8 +547,10 @@ public class Configurator {
     }
 
     /**
+     * Retrieves custom metadata keys and values from properties file
+     *
      * @param gatewayProperties
-     * @return
+     * @return custom metadata map
      */
     private static Map<String, String> getCustomMetadataFromPropertiesFile(Properties gatewayProperties) {
         Map<String, String> allPropertiesForPrefix =
@@ -557,9 +567,11 @@ public class Configurator {
     }
 
     /**
+     * Retrieves all the properties from property file
+     *
      * @param gatewayProperties
      * @param propertyKeyPrefix
-     * @return
+     * @return all property keys and values in a map
      */
     private static Map<String, String> getAllPropertiesForPrefix(Properties gatewayProperties,
                                                                  String propertyKeyPrefix) {
