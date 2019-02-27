@@ -23,8 +23,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -33,13 +33,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.wso2.carbon.apimgt.api.APIManagementException;
-import org.wso2.carbon.apimgt.hybrid.gateway.api.synchronizer.dto.LabelDTO;
-import org.wso2.carbon.apimgt.impl.APIConstants;
-import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
-import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.apimgt.hybrid.gateway.api.synchronizer.dto.APIDTO;
 import org.wso2.carbon.apimgt.hybrid.gateway.api.synchronizer.dto.APIInfoDTO;
 import org.wso2.carbon.apimgt.hybrid.gateway.api.synchronizer.dto.APIListDTO;
+import org.wso2.carbon.apimgt.hybrid.gateway.api.synchronizer.dto.APIListPaginationDTO;
+import org.wso2.carbon.apimgt.hybrid.gateway.api.synchronizer.dto.LabelDTO;
 import org.wso2.carbon.apimgt.hybrid.gateway.api.synchronizer.dto.MediationDTO;
 import org.wso2.carbon.apimgt.hybrid.gateway.api.synchronizer.dto.MediationInfoDTO;
 import org.wso2.carbon.apimgt.hybrid.gateway.api.synchronizer.dto.MediationListDTO;
@@ -57,13 +55,15 @@ import org.wso2.carbon.apimgt.hybrid.gateway.common.util.HttpRequestUtil;
 import org.wso2.carbon.apimgt.hybrid.gateway.common.util.MicroGatewayCommonUtil;
 import org.wso2.carbon.apimgt.hybrid.gateway.common.util.OnPremiseGatewayConstants;
 import org.wso2.carbon.apimgt.hybrid.gateway.common.util.TokenUtil;
+import org.wso2.carbon.apimgt.impl.APIConstants;
+import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
+import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.multitenancy.utils.TenantAxisUtils;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -74,13 +74,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -238,10 +239,22 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
      * @param accessTokenDTO access token DTO
      * @return A list of APIDTO objects
      */
-    private List<APIDTO> getDetailsOfAllAPIs(AccessTokenDTO accessTokenDTO)
-            throws APISynchronizationException {
+    private List<APIDTO> getDetailsOfAllAPIs(AccessTokenDTO accessTokenDTO) throws APISynchronizationException {
         APIListDTO summarizedApiDTOList = getAPIList(accessTokenDTO);
         List<APIInfoDTO> apiInfoList = summarizedApiDTOList.getList();
+        APIListPaginationDTO pagination = summarizedApiDTOList.getPagination();
+        while (pagination != null && pagination.getOffset() + pagination.getLimit() < pagination.getTotal()) {
+            int newOffset = pagination.getOffset() + pagination.getLimit();
+            if (log.isDebugEnabled()) {
+                log.debug("Retrieving paginated APIs for the offset value: " + newOffset);
+            }
+
+            summarizedApiDTOList = getAPIList(accessTokenDTO, newOffset);
+            pagination = summarizedApiDTOList.getPagination();
+
+            apiInfoList.addAll(summarizedApiDTOList.getList());
+        }
+
         List<APIDTO> apiDTOList = new ArrayList<>();
         for (APIInfoDTO apiInfoObj : apiInfoList) {
             String id = apiInfoObj.getId();
@@ -304,12 +317,20 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
     }
 
     /**
+     * @see #getAPIList(AccessTokenDTO, int)
+     */
+    private APIListDTO getAPIList(AccessTokenDTO accessTokenDTO) throws APISynchronizationException {
+        return getAPIList(accessTokenDTO, 0);
+    }
+
+    /**
      * Method to retrieve a list of all APIs
      *
      * @param accessTokenDTO Access token DTO
+     * @param offset         Pagination offset for listing APIs
      * @return APIListDTO APIListDTO
      */
-    private APIListDTO getAPIList(AccessTokenDTO accessTokenDTO)
+    private APIListDTO getAPIList(AccessTokenDTO accessTokenDTO, int offset)
             throws APISynchronizationException {
 
         if (log.isDebugEnabled()) {
@@ -337,20 +358,28 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
             throw new APISynchronizationException("Error while retrieving Http client." ,e);
         }
 
-        String apiViewUrl = this.apiViewUrl;
+        // Setting offset limit to 0 and pagination limit to 500 at the beginning
+        String apiViewUrl = this.apiViewUrl + APISynchronizationConstants.QUESTION_MARK +
+                            APISynchronizationConstants.OFFSET_PREFIX + String.valueOf(offset) +
+                            APISynchronizationConstants.AMPERSAND +
+                            APISynchronizationConstants.PAGINATION_LIMIT_PREFIX +
+                            APISynchronizationConstants.PAGINATION_LIMIT;
         try {
             String label =
                     ConfigManager.getConfigManager().getProperty(OnPremiseGatewayConstants.GATEWAY_LABEL_PROPERTY_KEY);
             if (StringUtils.isNotEmpty(label)) {
                 this.label = label;
-                apiViewUrl = apiViewUrl + APISynchronizationConstants.QUESTION_MARK +
-                             APISynchronizationConstants.API_SEARCH_QUERY_PREFIX + label;
+                apiViewUrl = apiViewUrl + APISynchronizationConstants.AMPERSAND +
+                             APISynchronizationConstants.API_SEARCH_LABEL_QUERY_PREFIX +
+                             URLEncoder.encode(label, APISynchronizationConstants.CHARSET_UTF8);
                 if (log.isDebugEnabled()) {
                     log.debug("API get URL after adding label property value: " + apiViewUrl);
                 }
             }
         } catch (OnPremiseGatewayException e) {
             log.error("An error occurred when loading Gateway label from properties.", e);
+        } catch (UnsupportedEncodingException e) {
+            log.error("An Error occurred when encoding the URL with label: " + label, e);
         }
 
         try {
