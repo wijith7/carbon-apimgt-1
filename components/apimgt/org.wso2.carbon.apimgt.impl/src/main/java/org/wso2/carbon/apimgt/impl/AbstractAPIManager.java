@@ -1928,6 +1928,7 @@ public abstract class AbstractAPIManager implements APIManager {
                 String[] searchKeys = query.split("=");
 
                 if (searchKeys.length >= 2) {
+                    //check with SachiniD in APIM
                     //prevent api-meta. getting prefixed to labelName and restrict label serach to exact match only
                     if (APIConstants.LABEL.equals(searchKeys[0])) {
                         searchKeys[0] = APIConstants.API_LABELS_GATEWAY_LABELS;

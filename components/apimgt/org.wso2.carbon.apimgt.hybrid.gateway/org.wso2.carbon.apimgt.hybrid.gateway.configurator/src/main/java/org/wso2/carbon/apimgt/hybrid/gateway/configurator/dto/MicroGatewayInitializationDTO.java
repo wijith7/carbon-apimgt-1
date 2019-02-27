@@ -17,6 +17,8 @@
  */
 package org.wso2.carbon.apimgt.hybrid.gateway.configurator.dto;
 
+import java.util.Map;
+
 /**
  *  DTO to store micro gateway details
  */
@@ -26,6 +28,10 @@ public class MicroGatewayInitializationDTO {
     private String macAddress = null;
     private String port = null;
     private String hostName = null;
+    private String gwUrl = null;
+    private String label = null;
+    private Map<String, String> envMetadataMap = null;
+    private Map<String, String> customMetadataMap = null;
 
     /**
      * Retrieve tenant domain
@@ -99,4 +105,77 @@ public class MicroGatewayInitializationDTO {
         this.hostName = hostName;
     }
 
+    /**
+     * Get the gateway's URL which will be shown in the cloud dashboard.
+     * Can be null if not set in the configuration.
+     *
+     * @return String
+     */
+    public String getGwUrl() {
+        return gwUrl;
+    }
+
+    /**
+     * Set the gateway URL.
+     *
+     * @param gwUrl gateway Url
+     */
+    public void setGwUrl(String gwUrl) {
+        this.gwUrl = gwUrl;
+    }
+
+    /**
+     * Get the label configured for this micro GW instance. Can be null if no label
+     * is configured.
+     *
+     * @return label
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * Set the label configured for this GW.
+     *
+     * @param label configured label
+     */
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    /**
+     * Get system environment specific metadata
+     *
+     * @return envMetadataMap
+     */
+    public Map<String, String> getEnvMetadataMap() {
+        return envMetadataMap;
+    }
+
+    /**
+     * Set the system environment specific metadata
+     *
+     * @param envMetadataMap
+     */
+    public void setEnvMetadataMap(Map<String, String> envMetadataMap) {
+        this.envMetadataMap = envMetadataMap;
+    }
+
+    /**
+     * Get the custom configured metadata (which are not related to system environments)
+     *
+     * @return customMetadataMap
+     */
+    public Map<String, String> getCustomMetadataMap() {
+        return customMetadataMap;
+    }
+
+    /**
+     * Set the custom configured metadata (which are not related to system environments)
+     *
+     * @param customMetadataMap
+     */
+    public void setCustomMetadataMap(Map<String, String> customMetadataMap) {
+        this.customMetadataMap = customMetadataMap;
+    }
 }
