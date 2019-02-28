@@ -38,6 +38,7 @@ public class ConfigConstants {
     public static final String HOST_NAME = "hostname";
     public static final String MAC_ADDRESS = "macAddress";
     public static final String PORT = "port";
+    public static final String LAST_WUM_UPDATE = "lastWumUpdate";
 
     public static final String CONFIGURE_LOCK_FILE_NAME = "configure.lck";
     public static final String CONFIG_TOOL_CONFIG_FILE_NAME = "gateway-config-tool.properties";

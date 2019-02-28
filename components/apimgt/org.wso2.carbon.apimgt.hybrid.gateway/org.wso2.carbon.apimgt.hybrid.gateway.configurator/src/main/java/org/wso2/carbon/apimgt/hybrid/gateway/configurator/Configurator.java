@@ -493,6 +493,7 @@ public class Configurator {
 
     /**
      * Retrieves environment metadata keys from properties file and maps with system property values accordingly
+     * Adds last wum update date also to the metadata map
      *
      * @param gatewayProperties
      * @return environment metadata map
@@ -510,35 +511,35 @@ public class Configurator {
                     envMetaData.put(metaDataKey, System.getProperty("user.name", "unknown"));
                 case "jdk":
                     envMetaData.put(metaDataKey, System.getProperty("java.version", "unknown"));
-                case "wum.timestamp":
-                    Path wumDir = Paths.get(carbonHome, ConfigConstants.UPDATES_DIR, ConfigConstants.WUM_DIR);
-                    if (Files.exists(wumDir)) {
-                        OptionalLong max = OptionalLong.empty();
-                        try {
-                            max = Files.list(wumDir).filter(path -> !Files.isDirectory(path))
-                                       .map(path -> path.getFileName().toString()).filter(StringUtils::isNumeric)
-                                       .mapToLong(Long::parseLong).max();
-                        } catch (IOException e) {
-                            log.error("An error occurred when retrieving last wum update time.", e);
-                        }
-
-                        if (max.isPresent()) {
-                            Date lastWumUpdate = new Date(max.getAsLong());
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy z");
-                            envMetaData.put(metaDataKey, dateFormat.format(lastWumUpdate));
-                        } else {
-                            log.warn("No WUM update information found in the file path: " + wumDir.toString());
-                            envMetaData.put(metaDataKey, "-");
-                        }
-                    } else {
-                        log.warn("WUM directory not found in the file path: " + wumDir.toString());
-                    }
                 case "cores":
                     envMetaData.put(metaDataKey, String.valueOf(Runtime.getRuntime().availableProcessors()));
                 default:
                     log.warn("Unknown env metadata key: " + metaDataKey + ". Ignoring");
             }
             envMetaData.put(metaDataKey, properties.get(key));
+        }
+
+        // Adds last wum update date to the environment metadata map
+        Path wumDir = Paths.get(carbonHome, ConfigConstants.UPDATES_DIR, ConfigConstants.WUM_DIR);
+        if (Files.exists(wumDir)) {
+            OptionalLong max = OptionalLong.empty();
+            try {
+                max = Files.list(wumDir).filter(path -> !Files.isDirectory(path))
+                           .map(path -> path.getFileName().toString()).filter(StringUtils::isNumeric)
+                           .mapToLong(Long::parseLong).max();
+            } catch (IOException e) {
+                log.error("An error occurred when retrieving last wum update time.", e);
+            }
+            if (max.isPresent()) {
+                Date lastWumUpdate = new Date(max.getAsLong());
+                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy z");
+                envMetaData.put(ConfigConstants.LAST_WUM_UPDATE, dateFormat.format(lastWumUpdate));
+            } else {
+                log.warn("No WUM update information found in the file path: " + wumDir.toString());
+                envMetaData.put(ConfigConstants.LAST_WUM_UPDATE, "-");
+            }
+        } else {
+            log.warn("WUM directory not found in the file path: " + wumDir.toString());
         }
         if (log.isDebugEnabled()) {
             log.debug("Found modified property map for environment metadata: " + envMetaData);
