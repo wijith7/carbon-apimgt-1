@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.apimgt.usage.publisher.dto;
 
+import java.util.ArrayList;
+
 public class DataBridgeThrottlePublisherDTO extends ThrottlePublisherDTO {
 
     public DataBridgeThrottlePublisherDTO(ThrottlePublisherDTO throttlePublisherDTO) {
@@ -50,5 +52,37 @@ public class DataBridgeThrottlePublisherDTO extends ThrottlePublisherDTO {
 
     public Object createMetaData() {
         return new Object[] { getKeyType()};
+    }
+
+    public ArrayList<String> getMissingMandatoryValues() {
+        ArrayList<String> missingMandatoryValues = new ArrayList<String>();
+        if (getApiname() == null) {
+            missingMandatoryValues.add("API name");
+        }
+        if (getContext() == null) {
+            missingMandatoryValues.add("API context");
+        }
+        if (getVersion() == null) {
+            missingMandatoryValues.add("API version");
+        }
+        if (getApiCreator() == null) {
+            missingMandatoryValues.add("API creator");
+        }
+        if (getApiCreatorTenantDomain() == null) {
+            missingMandatoryValues.add("API creator tenant domain");
+        }
+        if (getApplicationName() == null) {
+            missingMandatoryValues.add("Application names");
+        }
+        if (getApplicationId() == null) {
+            missingMandatoryValues.add("Application ID");
+        }
+        if (getThrottledOutReason() == null) {
+            missingMandatoryValues.add("Throttle out reason");
+        }
+        if (getHostName() == null) {
+            missingMandatoryValues.add("API host name");
+        }
+        return missingMandatoryValues;
     }
 }

@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.apimgt.usage.publisher.dto;
 
+import java.util.ArrayList;
+
 public class DataBridgeRequestResponseStreamPublisherDTO extends RequestResponseStreamDTO {
 
     public DataBridgeRequestResponseStreamPublisherDTO(RequestResponseStreamDTO requestResponseStreamDTO) {
@@ -71,5 +73,55 @@ public class DataBridgeRequestResponseStreamPublisherDTO extends RequestResponse
 
     public Object[] createMetaData() {
         return new Object[] { getMetaClientType() };
+    }
+
+    public ArrayList<String> getMissingMandatoryValues() {
+        ArrayList<String> missingMandatoryValues = new ArrayList<String>();
+        if (getApplicationConsumerKey() == null) {
+            missingMandatoryValues.add("Application consumer key");
+        }
+        if (getApplicationName() == null) {
+            missingMandatoryValues.add("Application name");
+        }
+        if (getApplicationId() == null) {
+            missingMandatoryValues.add("Application ID");
+        }
+        if (getApiContext() == null) {
+            missingMandatoryValues.add("API context");
+        }
+        if (getApiName() == null) {
+            missingMandatoryValues.add("API name");
+        }
+        if (getApiCreator() == null) {
+            missingMandatoryValues.add("API creator");
+        }
+        if (getApiVersion() == null) {
+            missingMandatoryValues.add("API version");
+        }
+        if (getApiResourceTemplate() == null) {
+            missingMandatoryValues.add("API resource template");
+        }
+        if (getApiMethod() == null) {
+            missingMandatoryValues.add("API method");
+        }
+        if (getApiCreator() == null) {
+            missingMandatoryValues.add("API creator");
+        }
+        if (getApiCreatorTenantDomain() == null) {
+            missingMandatoryValues.add("API creator tenant domain");
+        }
+        if (getApiHostname() == null) {
+            missingMandatoryValues.add("API hostname");
+        }
+        if (getDestination() == null) {
+            missingMandatoryValues.add("Destination");
+        }
+        if (getUserIp() == null) {
+            missingMandatoryValues.add("User IP");
+        }
+        if (getUserAgent() == null) {
+            missingMandatoryValues.add("User agent");
+        }
+        return missingMandatoryValues;
     }
 }

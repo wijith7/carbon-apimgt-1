@@ -20,6 +20,8 @@ package org.wso2.carbon.apimgt.usage.publisher.dto;
 
 import org.wso2.carbon.apimgt.usage.publisher.DataPublisherUtil;
 
+import java.util.ArrayList;
+
 public class DataBridgeFaultPublisherDTO extends FaultPublisherDTO{
 
     public DataBridgeFaultPublisherDTO(FaultPublisherDTO faultPublisherDTO){
@@ -54,5 +56,43 @@ public class DataBridgeFaultPublisherDTO extends FaultPublisherDTO{
 
     public Object createMetaData() {
         return new Object[] { getMetaClientType() };
+    }
+
+    public ArrayList<String> getMissingMandatoryValues() {
+        ArrayList<String> missingMandatoryValues = new ArrayList<String>();
+        if (getApplicationConsumerKey() == null) {
+            missingMandatoryValues.add("Application consumer key");
+        }
+        if (getApiName() == null) {
+            missingMandatoryValues.add("API name");
+        }
+        if (getApiVersion() == null) {
+            missingMandatoryValues.add("API version");
+        }
+        if (getApiContext() == null) {
+            missingMandatoryValues.add("API context");
+        }
+        if (getApiResourcePath() == null) {
+            missingMandatoryValues.add("API resource path");
+        }
+        if (getApiMethod() == null) {
+            missingMandatoryValues.add("API method");
+        }
+        if (getApiCreator() == null) {
+            missingMandatoryValues.add("API creator");
+        }
+        if (getApiCreatorTenantDomain() == null) {
+            missingMandatoryValues.add("API creator tenant domain");
+        }
+        if (getApplicationName() == null) {
+            missingMandatoryValues.add("Application anme");
+        }
+        if (getApplicationId() == null) {
+            missingMandatoryValues.add("Application ID");
+        }
+        if (getHostname() == null) {
+            missingMandatoryValues.add("API hostname");
+        }
+        return missingMandatoryValues;
     }
 }
