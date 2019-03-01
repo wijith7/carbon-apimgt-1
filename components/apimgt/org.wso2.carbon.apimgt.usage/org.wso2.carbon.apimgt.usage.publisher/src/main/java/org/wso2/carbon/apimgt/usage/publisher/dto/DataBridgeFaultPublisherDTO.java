@@ -95,4 +95,17 @@ public class DataBridgeFaultPublisherDTO extends FaultPublisherDTO{
         }
         return missingMandatoryValues;
     }
+
+    @Override
+    public String toString() {
+        return "Application consumer key: " + DataPublisherUtil.maskValue(getApplicationConsumerKey()) +
+                ", Application name: " + getApplicationName() + ", Application ID: " + getApplicationId() +
+                ", API name: " + getApiName() + ", API version: " + getApiVersion() +
+                ", API context: " + getApiContext() + ", API resource path: " + getApiResourcePath() +
+                ", API method: " + getApiMethod() + ", API creator: " + getApiCreator() +
+                ", API creator tenant domain: " + getApiCreatorTenantDomain() + ", Username: " + getUsername() +
+                ", User tenant domain: " + getUserTenantDomain() + ", Host name: " + getHostname() +
+                ", Protocol: " + getProtocol() + ", Error code: " + getErrorCode() +
+                ", Error message: " + getErrorMessage() + ", Request timestamp: " + getRequestTimestamp();
+    }
 }

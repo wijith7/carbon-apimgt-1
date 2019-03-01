@@ -116,4 +116,9 @@ public class DataPublisherUtil {
     public static APIManagerAnalyticsConfiguration getApiManagerAnalyticsConfiguration() {
         return UsageComponent.getAmConfigService().getAPIAnalyticsConfiguration();
     }
+
+    public static String maskValue(String value) {
+        String maskValuePart = value.substring(0,value.length() - 3);
+        return maskValuePart.replaceAll(".", "*") + value.substring(value.length() - 3);
+    }
 }

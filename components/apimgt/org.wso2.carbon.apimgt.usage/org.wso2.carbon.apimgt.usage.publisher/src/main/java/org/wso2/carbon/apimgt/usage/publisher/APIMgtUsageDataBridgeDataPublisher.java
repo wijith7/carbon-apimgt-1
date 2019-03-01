@@ -68,7 +68,7 @@ public class APIMgtUsageDataBridgeDataPublisher implements APIMgtUsageDataPublis
 
         } else {
             log.error("Faulty invocation event dropped due to missing mandatory data: "
-                    + missingMandatoryValues.toString());
+                    + missingMandatoryValues.toString() + " in event: " + dataBridgeFaultPublisherDTO.toString());
         }
     }
 
@@ -90,7 +90,7 @@ public class APIMgtUsageDataBridgeDataPublisher implements APIMgtUsageDataPublis
             }
         } else {
             log.error("Throttling event dropped due to missing mandatory data: "
-                    + missingMandatoryValues.toString());
+                    + missingMandatoryValues.toString() + " in event: " + dataBridgeThrottlePublisherDTO.toString());
         }
     }
 
@@ -171,7 +171,7 @@ public class APIMgtUsageDataBridgeDataPublisher implements APIMgtUsageDataPublis
             }
         } else {
             log.error("RequestResponse event dropped due to unavailability of mandatory data: "
-            + missingMandatoryValues.toString());
+            + missingMandatoryValues.toString() + " in event: " + dataBridgeRequestStreamPublisherDTO.toString());
         }
     }
 

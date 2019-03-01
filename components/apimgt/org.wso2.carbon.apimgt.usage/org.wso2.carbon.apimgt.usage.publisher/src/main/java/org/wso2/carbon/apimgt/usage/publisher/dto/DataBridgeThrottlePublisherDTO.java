@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.apimgt.usage.publisher.dto;
 
+import org.wso2.carbon.apimgt.usage.publisher.DataPublisherUtil;
+
 import java.util.ArrayList;
 
 public class DataBridgeThrottlePublisherDTO extends ThrottlePublisherDTO {
@@ -84,5 +86,16 @@ public class DataBridgeThrottlePublisherDTO extends ThrottlePublisherDTO {
             missingMandatoryValues.add("API host name");
         }
         return missingMandatoryValues;
+    }
+
+    @Override
+    public String toString() {
+        return "Application name: " + getApplicationName() + ", Application ID: " + getApplicationId() +
+                ", API name: " + getApiname() + ", API version: " + getVersion() +
+                ", API context: " + getContext() + ", API creator: " + getApiCreator() +
+                ", API creator tenant domain: " + getApiCreatorTenantDomain() + ", Username: " + getUsername() +
+                ", Tenant domain: " + getTenantDomain() + ", Host name: " + getHostName() +
+                ", Subscriber: " + getSubscriber() + ", Gateway type: " + getGatewayType() +
+                ", Throttled out reason: " + getThrottledOutReason() + ", Throttled time: " + getThrottledTime();
     }
 }

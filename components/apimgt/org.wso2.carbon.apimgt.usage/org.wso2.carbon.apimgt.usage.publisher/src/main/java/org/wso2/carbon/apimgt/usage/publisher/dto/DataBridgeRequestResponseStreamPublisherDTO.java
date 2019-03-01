@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.apimgt.usage.publisher.dto;
 
+import org.wso2.carbon.apimgt.usage.publisher.DataPublisherUtil;
+
 import java.util.ArrayList;
 
 public class DataBridgeRequestResponseStreamPublisherDTO extends RequestResponseStreamDTO {
@@ -123,5 +125,31 @@ public class DataBridgeRequestResponseStreamPublisherDTO extends RequestResponse
             missingMandatoryValues.add("User agent");
         }
         return missingMandatoryValues;
+    }
+
+    @Override
+    public String toString() {
+        return "Application consumer key: " + DataPublisherUtil.maskValue(getApplicationConsumerKey()) +
+                ", Application name: " + getApplicationName() + ", Application ID: " + getApplicationId() +
+                ", Application owner: " + getApplicationOwner() + ", API name: " + getApiName() +
+                ", API version: " + getApiVersion() + ", API context: " + getApiContext() +
+                ", API resource path: " + getApiResourcePath() +
+                ", API resource template: " + getApiResourceTemplate() + ", API method: " + getApiMethod() +
+                ", API creator: " + getApiCreator() + ", API creator tenant domain: " + getApiCreatorTenantDomain() +
+                ", API tier: " + getApiTier() + ", Username: " + getUsername() +
+                ", User tenant domain: " + getUserTenantDomain() + ", Host name: " + getApiHostname() +
+                ", User IP: " + getUserIp() + ", User Agent :" + getUserAgent() +
+                ", Is throttled: " + isThrottledOut() + ", Request timestamp: " + getRequestTimestamp() +
+                ", Response time: " + getResponseTime() + ", Service time: " + getServiceTime() +
+                ", Backend time: " + getBackendTime() + ", Is response cache hit: " + isResponseCacheHit() +
+                ", Response size: " + getResponseSize() +  ", Protocol: " + getProtocol() +
+                ", Response code: " + getResponseCode() + ", Destination: " +getDestination() +
+                ", Security latency: " + getExecutionTime().getSecurityLatency() +
+                ", Throttling latency: " +  getExecutionTime().getThrottlingLatency() +
+                ", Mediation latency: " + getExecutionTime().getRequestMediationLatency() +
+                ", Response mediation latency: " + getExecutionTime().getResponseMediationLatency() +
+                ", Backend latency: " + getExecutionTime().getBackEndLatency() +
+                ", Other latency: " + getExecutionTime().getOtherLatency() + ", Gateway type: " + getGatewayType() +
+                ", Label: " + getLabel();
     }
 }
