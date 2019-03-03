@@ -505,18 +505,27 @@ public class Configurator {
         for (String key : properties.keySet()) {
             String metaDataKey = key.substring(ConfigConstants.MICRO_GATEWAY_ENV_METADATA.length());
             switch (metaDataKey.toLowerCase()) {
-                case "os":
-                    envMetaData.put(metaDataKey, System.getProperty("os.name", "unknown"));
-                case "user":
-                    envMetaData.put(metaDataKey, System.getProperty("user.name", "unknown"));
-                case "jdk":
-                    envMetaData.put(metaDataKey, System.getProperty("java.version", "unknown"));
-                case "cores":
+                case ConfigConstants.ENV_KEY_OS:
+                    envMetaData.put(metaDataKey, System.getProperty(ConfigConstants.SYSTEM_PROPERTY_OS,
+                                                                    ConfigConstants.SYSTEM_PROPERTY_DEFAULT_VALUE));
+                    break;
+                case ConfigConstants.ENV_KEY_USER:
+                    envMetaData.put(metaDataKey, System.getProperty(ConfigConstants.SYSTEM_PROPERTY_USER,
+                                                                    ConfigConstants.SYSTEM_PROPERTY_DEFAULT_VALUE));
+                    break;
+                case ConfigConstants.ENV_KEY_JDK:
+                    envMetaData.put(metaDataKey, System.getProperty(ConfigConstants.SYSTEM_PROPERTY_JDK,
+                                                                    ConfigConstants.SYSTEM_PROPERTY_DEFAULT_VALUE));
+                    break;
+                case ConfigConstants.ENV_KEY_CORES:
                     envMetaData.put(metaDataKey, String.valueOf(Runtime.getRuntime().availableProcessors()));
+                    break;
                 default:
                     log.warn("Unknown env metadata key: " + metaDataKey + ". Ignoring");
             }
-            envMetaData.put(metaDataKey, properties.get(key));
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("System property metadata retrieved as per the configurations: " + envMetaData);
         }
 
         // Adds last wum update date to the environment metadata map
@@ -532,7 +541,7 @@ public class Configurator {
             }
             if (max.isPresent()) {
                 Date lastWumUpdate = new Date(max.getAsLong());
-                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy z");
+                SimpleDateFormat dateFormat = new SimpleDateFormat(ConfigConstants.WUM_UPDATE_DATE_FORMAT);
                 envMetaData.put(ConfigConstants.LAST_WUM_UPDATE, dateFormat.format(lastWumUpdate));
             } else {
                 log.warn("No WUM update information found in the file path: " + wumDir.toString());

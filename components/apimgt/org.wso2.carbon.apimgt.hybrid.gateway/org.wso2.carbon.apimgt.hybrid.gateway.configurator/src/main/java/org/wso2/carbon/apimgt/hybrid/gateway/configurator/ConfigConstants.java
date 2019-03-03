@@ -89,4 +89,14 @@ public class ConfigConstants {
     public static final String DEFAULT_MAC_ADDRESS = "00:00:00:00:00";
     public static final String START_OFFSET_TAG = "<Offset>";
     public static final String END_OFFSET_TAG = "</Offset>";
+
+    public static final String WUM_UPDATE_DATE_FORMAT = "EEE, d MMM yyyy z";
+    public static final String ENV_KEY_OS = "os";
+    public static final String ENV_KEY_USER = "user";
+    public static final String ENV_KEY_JDK = "jdk";
+    public static final String ENV_KEY_CORES = "cores";
+    public static final String SYSTEM_PROPERTY_OS = "os.name";
+    public static final String SYSTEM_PROPERTY_USER = "user.name";
+    public static final String SYSTEM_PROPERTY_JDK = "java.version";
+    public static final String SYSTEM_PROPERTY_DEFAULT_VALUE = "unknown";
 }

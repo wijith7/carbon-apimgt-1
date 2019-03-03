@@ -143,6 +143,13 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
             mediationPolicyUrl = apiPublisherUrl + APISynchronizationConstants.API_VIEW_GLOBAL_MEDIATION_POLICY_PATH
                     .replace(APISynchronizationConstants.API_VERSION_PARAM, apiVersion)
                     .replace("//", APISynchronizationConstants.URL_PATH_SEPARATOR);
+
+            label = ConfigManager.getConfigManager().getProperty(OnPremiseGatewayConstants.GATEWAY_LABEL_PROPERTY_KEY);
+            if (StringUtils.isNotEmpty(label)) {
+                log.info("Found configured label: " + label);
+            } else {
+                log.info("GateWay is not configured with a label.");
+            }
         } catch (OnPremiseGatewayException e) {
             throw new APISynchronizationException(
                     "An error occurred while retrieving micro gateway configuration.", e);
@@ -365,10 +372,7 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
                             APISynchronizationConstants.PAGINATION_LIMIT_PREFIX +
                             APISynchronizationConstants.PAGINATION_LIMIT;
         try {
-            String label =
-                    ConfigManager.getConfigManager().getProperty(OnPremiseGatewayConstants.GATEWAY_LABEL_PROPERTY_KEY);
             if (StringUtils.isNotEmpty(label)) {
-                this.label = label;
                 apiViewUrl = apiViewUrl + APISynchronizationConstants.AMPERSAND +
                              APISynchronizationConstants.API_SEARCH_LABEL_QUERY_PREFIX +
                              URLEncoder.encode(label, APISynchronizationConstants.CHARSET_UTF8);
@@ -376,8 +380,6 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
                     log.debug("API get URL after adding label property value: " + apiViewUrl);
                 }
             }
-        } catch (OnPremiseGatewayException e) {
-            log.error("An error occurred when loading Gateway label from properties.", e);
         } catch (UnsupportedEncodingException e) {
             log.error("An Error occurred when encoding the URL with label: " + label, e);
         }
