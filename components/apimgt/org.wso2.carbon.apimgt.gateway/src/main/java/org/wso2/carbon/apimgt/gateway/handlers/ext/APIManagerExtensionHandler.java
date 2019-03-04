@@ -77,10 +77,10 @@ public class APIManagerExtensionHandler extends AbstractHandler {
         long executionStartTime = System.nanoTime();
         try {
             boolean isMediated = mediate(messageContext, DIRECTION_IN);
-            if(isMediated) {
+            if (isMediated) {
                 String requestDestination = ((Axis2MessageContext) messageContext).getAxis2MessageContext()
                         .getOptions().getTo().getAddress();
-                if(requestDestination != null) {
+                if (requestDestination != null) {
                     messageContext.setProperty(APIMgtGatewayConstants.SYNAPSE_ENDPOINT_ADDRESS, requestDestination);
                 }
             }
