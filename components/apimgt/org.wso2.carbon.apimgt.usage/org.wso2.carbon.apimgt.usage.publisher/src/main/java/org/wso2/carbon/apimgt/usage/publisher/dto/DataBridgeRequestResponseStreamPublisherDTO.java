@@ -91,6 +91,9 @@ public class DataBridgeRequestResponseStreamPublisherDTO extends RequestResponse
         if (getApiContext() == null) {
             missingMandatoryValues.add("API context");
         }
+        if (getUsername() == null) {
+            missingMandatoryValues.add("Username");
+        }
         if (getApiName() == null) {
             missingMandatoryValues.add("API name");
         }
@@ -105,9 +108,6 @@ public class DataBridgeRequestResponseStreamPublisherDTO extends RequestResponse
         }
         if (getApiMethod() == null) {
             missingMandatoryValues.add("API method");
-        }
-        if (getApiCreator() == null) {
-            missingMandatoryValues.add("API creator");
         }
         if (getApiCreatorTenantDomain() == null) {
             missingMandatoryValues.add("API creator tenant domain");
@@ -129,11 +129,12 @@ public class DataBridgeRequestResponseStreamPublisherDTO extends RequestResponse
 
     @Override
     public String toString() {
+
         return "Application consumer key: " + DataPublisherUtil.maskValue(getApplicationConsumerKey()) +
                 ", Application name: " + getApplicationName() + ", Application ID: " + getApplicationId() +
                 ", Application owner: " + getApplicationOwner() + ", API name: " + getApiName() +
                 ", API version: " + getApiVersion() + ", API context: " + getApiContext() +
-                ", API resource path: " + getApiResourcePath() +
+                ", Username: " + getUsername() + ", API resource path: " + getApiResourcePath() +
                 ", API resource template: " + getApiResourceTemplate() + ", API method: " + getApiMethod() +
                 ", API creator: " + getApiCreator() + ", API creator tenant domain: " + getApiCreatorTenantDomain() +
                 ", API tier: " + getApiTier() + ", Username: " + getUsername() +
@@ -142,10 +143,10 @@ public class DataBridgeRequestResponseStreamPublisherDTO extends RequestResponse
                 ", Is throttled: " + isThrottledOut() + ", Request timestamp: " + getRequestTimestamp() +
                 ", Response time: " + getResponseTime() + ", Service time: " + getServiceTime() +
                 ", Backend time: " + getBackendTime() + ", Is response cache hit: " + isResponseCacheHit() +
-                ", Response size: " + getResponseSize() +  ", Protocol: " + getProtocol() +
-                ", Response code: " + getResponseCode() + ", Destination: " +getDestination() +
+                ", Response size: " + getResponseSize() + ", Protocol: " + getProtocol() +
+                ", Response code: " + getResponseCode() + ", Destination: " + getDestination() +
                 ", Security latency: " + getExecutionTime().getSecurityLatency() +
-                ", Throttling latency: " +  getExecutionTime().getThrottlingLatency() +
+                ", Throttling latency: " + getExecutionTime().getThrottlingLatency() +
                 ", Mediation latency: " + getExecutionTime().getRequestMediationLatency() +
                 ", Response mediation latency: " + getExecutionTime().getResponseMediationLatency() +
                 ", Backend latency: " + getExecutionTime().getBackEndLatency() +

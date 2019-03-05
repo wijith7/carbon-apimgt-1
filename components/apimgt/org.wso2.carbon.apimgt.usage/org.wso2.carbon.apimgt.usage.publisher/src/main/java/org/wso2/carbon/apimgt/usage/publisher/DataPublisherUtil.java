@@ -118,7 +118,8 @@ public class DataPublisherUtil {
     }
 
     public static String maskValue(String value) {
-        if (value != null) {
+
+        if (value != null && value.length() >= 3) {
             String maskValuePart = value.substring(0, value.length() - 3);
             return maskValuePart.replaceAll(".", "*") + value.substring(value.length() - 3);
         } else {
