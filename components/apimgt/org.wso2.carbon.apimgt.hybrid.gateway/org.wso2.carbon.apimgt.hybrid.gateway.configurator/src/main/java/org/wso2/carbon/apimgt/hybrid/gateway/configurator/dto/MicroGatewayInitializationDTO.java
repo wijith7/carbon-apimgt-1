@@ -106,25 +106,6 @@ public class MicroGatewayInitializationDTO {
     }
 
     /**
-     * Get the gateway's URL which will be shown in the cloud dashboard.
-     * Can be null if not set in the configuration.
-     *
-     * @return String
-     */
-    public String getGwUrl() {
-        return gwUrl;
-    }
-
-    /**
-     * Set the gateway URL.
-     *
-     * @param gwUrl gateway Url
-     */
-    public void setGwUrl(String gwUrl) {
-        this.gwUrl = gwUrl;
-    }
-
-    /**
      * Get the label configured for this micro GW instance. Can be null if no label
      * is configured.
      *

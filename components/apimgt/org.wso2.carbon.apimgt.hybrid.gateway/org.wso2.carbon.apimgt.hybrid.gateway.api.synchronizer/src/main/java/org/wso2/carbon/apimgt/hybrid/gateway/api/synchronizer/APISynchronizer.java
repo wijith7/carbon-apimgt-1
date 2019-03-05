@@ -145,10 +145,10 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
                     .replace("//", APISynchronizationConstants.URL_PATH_SEPARATOR);
 
             label = ConfigManager.getConfigManager().getProperty(OnPremiseGatewayConstants.GATEWAY_LABEL_PROPERTY_KEY);
-            if (StringUtils.isNotEmpty(label)) {
-                log.info("Found configured label: " + label);
-            } else {
-                log.info("GateWay is not configured with a label.");
+            if (StringUtils.isNotBlank(label) && log.isDebugEnabled()) {
+                log.debug("Found configured label: " + label);
+            } else if (log.isDebugEnabled()){
+                log.debug("Gateway is not configured with a label.");
             }
         } catch (OnPremiseGatewayException e) {
             throw new APISynchronizationException(
@@ -247,18 +247,20 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
      * @return A list of APIDTO objects
      */
     private List<APIDTO> getDetailsOfAllAPIs(AccessTokenDTO accessTokenDTO) throws APISynchronizationException {
-        APIListDTO summarizedApiDTOList = getAPIList(accessTokenDTO);
+        APIListDTO summarizedApiDTOList = getAPIList(accessTokenDTO, 0);
         List<APIInfoDTO> apiInfoList = summarizedApiDTOList.getList();
         APIListPaginationDTO pagination = summarizedApiDTOList.getPagination();
+
+        // If APIs count exceeds configured pagination limit(500), below logic will iteratively call 'getAPIList()'
+        // with new offset value and get all the remaining APIs.
         while (pagination != null && pagination.getOffset() + pagination.getLimit() < pagination.getTotal()) {
             int newOffset = pagination.getOffset() + pagination.getLimit();
             if (log.isDebugEnabled()) {
-                log.debug("Retrieving paginated APIs for the offset value: " + newOffset);
+                log.debug("Retrieving paginated APIs from offset value:" + newOffset + " to: " +
+                          (newOffset + pagination.getLimit()));
             }
-
             summarizedApiDTOList = getAPIList(accessTokenDTO, newOffset);
             pagination = summarizedApiDTOList.getPagination();
-
             apiInfoList.addAll(summarizedApiDTOList.getList());
         }
 
@@ -324,13 +326,6 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
     }
 
     /**
-     * @see #getAPIList(AccessTokenDTO, int)
-     */
-    private APIListDTO getAPIList(AccessTokenDTO accessTokenDTO) throws APISynchronizationException {
-        return getAPIList(accessTokenDTO, 0);
-    }
-
-    /**
      * Method to retrieve a list of all APIs
      *
      * @param accessTokenDTO Access token DTO
@@ -372,21 +367,24 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
                             APISynchronizationConstants.PAGINATION_LIMIT_PREFIX +
                             APISynchronizationConstants.PAGINATION_LIMIT;
         try {
-            if (StringUtils.isNotEmpty(label)) {
+            // Check whether a label is configured, if true set label as a query param to the URL
+            if (StringUtils.isNotBlank(label)) {
                 apiViewUrl = apiViewUrl + APISynchronizationConstants.AMPERSAND +
                              APISynchronizationConstants.API_SEARCH_LABEL_QUERY_PREFIX +
                              URLEncoder.encode(label, APISynchronizationConstants.CHARSET_UTF8);
                 if (log.isDebugEnabled()) {
-                    log.debug("API get URL after adding label property value: " + apiViewUrl);
+                    log.debug("API GET URL after adding label property value: " + apiViewUrl);
                 }
             }
         } catch (UnsupportedEncodingException e) {
-            log.error("An Error occurred when encoding the URL with label: " + label, e);
+            // If an error occurred during URL encoding, log the error as below and proceed with the URL without
+            // label query param. Therefore at this case, All the APIs will be synced.
+            log.error("An error occurred when encoding the URL with label: " + label, e);
         }
 
         try {
             if (log.isDebugEnabled()) {
-                log.debug("Sending request to GET details of all APIs for the URL: " + apiViewUrl);
+                log.debug("Sending request to GET details of APIs for the URL: " + apiViewUrl);
             }
             HttpGet httpGet = new HttpGet(apiViewUrl);
             String authHeaderValue = OnPremiseGatewayConstants.AUTHORIZATION_BEARER + accessTokenDTO.getAccessToken();
@@ -470,9 +468,9 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
                 APIDTO apiDTO = getAPI(id, detailedAPIViewUrl, accessTokenDTO);
                 // If a label is configured, only the APIs with the given label should be
                 // synced out of the APIs that have been updated.
-                if (StringUtils.isNotEmpty(label)) {
+                if (StringUtils.isNotBlank(label)) {
                     for (LabelDTO labelDTO : apiDTO.getLabels()) {
-                        if (labelDTO.getName().equals(label)) {
+                        if (label.equals(labelDTO.getName())) {
                             apiDtoList.add(apiDTO);
                             break;
                         }

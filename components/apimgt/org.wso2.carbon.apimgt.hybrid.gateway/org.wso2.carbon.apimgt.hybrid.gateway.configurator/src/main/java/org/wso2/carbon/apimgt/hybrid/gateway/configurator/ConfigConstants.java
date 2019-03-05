@@ -46,10 +46,9 @@ public class ConfigConstants {
     public static final String GATEWAY_CARBON_FILE_NAME = "carbon.xml";
 
     public static final String API_KEY_VALIDATION_CLIENT_TYPE = "api.key.validator.client.type";
-    public static final String MICRO_GATEWAY_URL_PROPERTY = "api.micro.gateway.url";
-    public static final String MICRO_GATEWAY_LABEL_PROPERTY = "api.micro.gateway.label";
-    public static final String MICRO_GATEWAY_ENV_METADATA = "api.micro.meta.env.";
-    public static final String MICRO_GATEWAY_CUSTOM_METADATA = "api.micro.meta.custom.";
+    public static final String HYBRID_GATEWAY_LABEL_PROPERTY = "api.hybrid.gateway.label";
+    public static final String HYBRID_GATEWAY_ENV_METADATA = "api.hybrid.meta.env.";
+    public static final String HYBRID_GATEWAY_CUSTOM_METADATA = "api.hybrid.meta.custom.";
 
     public static final String PUBLIC_CLOUD_SETUP = "public.cloud.setup";
     public static final String STRATOS_PUBLIC_CLOUD_SETUP = "stratos.public.cloud.setup";
@@ -89,14 +88,4 @@ public class ConfigConstants {
     public static final String DEFAULT_MAC_ADDRESS = "00:00:00:00:00";
     public static final String START_OFFSET_TAG = "<Offset>";
     public static final String END_OFFSET_TAG = "</Offset>";
-
-    public static final String WUM_UPDATE_DATE_FORMAT = "EEE, d MMM yyyy z";
-    public static final String ENV_KEY_OS = "os";
-    public static final String ENV_KEY_USER = "user";
-    public static final String ENV_KEY_JDK = "jdk";
-    public static final String ENV_KEY_CORES = "cores";
-    public static final String SYSTEM_PROPERTY_OS = "os.name";
-    public static final String SYSTEM_PROPERTY_USER = "user.name";
-    public static final String SYSTEM_PROPERTY_JDK = "java.version";
-    public static final String SYSTEM_PROPERTY_DEFAULT_VALUE = "unknown";
 }
