@@ -16,6 +16,11 @@
 
 package org.wso2.carbon.apimgt.rest.api.util.interceptors.auth;
 
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.client.Options;
+import org.apache.axis2.client.ServiceClient;
+import org.apache.axis2.context.ServiceContext;
+import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,9 +34,16 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
 import org.wso2.carbon.CarbonException;
+import org.wso2.carbon.apimgt.impl.APIConstants;
+import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
+import org.wso2.carbon.apimgt.impl.internal.ServiceReferenceHolder;
+import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.apimgt.rest.api.util.RestApiConstants;
 import org.wso2.carbon.apimgt.rest.api.util.dto.ErrorDTO;
 import org.wso2.carbon.apimgt.rest.api.util.utils.RestApiUtil;
+import org.wso2.carbon.authenticator.stub.AuthenticationAdminStub;
+import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
+import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.AnonymousSessionUtil;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -42,6 +54,10 @@ import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
@@ -145,14 +161,30 @@ public class BasicAuthenticationInterceptor extends AbstractPhaseInterceptor {
                     return false;
                 }
             }
-            String tenantAwareUsername = MultitenantUtils.getTenantAwareUsername(username);
+            APIManagerConfiguration config = ServiceReferenceHolder.getInstance().getAPIManagerConfigurationService()
+                    .getAPIManagerConfiguration();
+            String url = config.getFirstProperty(APIConstants.AUTH_MANAGER_URL);
+            AuthenticationAdminStub authAdminStub = new AuthenticationAdminStub(null, url +
+                    RestApiConstants.AUTHENTICATION_ADMIN_SERVICE_ENDPOINT);
+            ServiceClient client = authAdminStub._getServiceClient();
+            Options options = client.getOptions();
+            options.setManageSession(true);
+            String host = new URL(url).getHost();
             // if authenticated
-            if (certObject != null || userRealm.getUserStoreManager().authenticate(tenantAwareUsername, password)) {
+            if (certObject != null || authAdminStub.login(username, password, host)) {
                 // set the correct tenant info for downstream code.
-                RestApiUtil.setThreadLocalRequestedTenant(username);
+                ServiceContext serviceContext = authAdminStub._getServiceClient().getLastOperationContext()
+                        .getServiceContext();
+                String sessionCookie = (String) serviceContext.getProperty(HTTPConstants.COOKIE_STRING);
+                String domainAwareUserName = APIUtil.getLoggedInUserInfo(sessionCookie, url).getUserName();
+                domainAwareUserName = APIUtil.setDomainNameToUppercase(domainAwareUserName);
+                if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+                    domainAwareUserName = domainAwareUserName + "@" + tenantDomain;
+                } 
+                RestApiUtil.setThreadLocalRequestedTenant(MultitenantUtils.getTenantAwareUsername(domainAwareUserName));
                 carbonContext.setTenantDomain(tenantDomain);
                 carbonContext.setTenantId(tenantId);
-                carbonContext.setUsername(username);
+                carbonContext.setUsername(domainAwareUserName);
                 return true;
             } else {
                 logger.error(String.format("Authentication failed. Please check your username/password"));
@@ -167,6 +199,9 @@ public class BasicAuthenticationInterceptor extends AbstractPhaseInterceptor {
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             logger.error("Authentication failed for user: " + username, e);
             return false;
-        }
+        } catch (Exception e) {
+            logger.error("Authentication failed for user: " + username, e);
+            return false;
+        } 
     }
 }
