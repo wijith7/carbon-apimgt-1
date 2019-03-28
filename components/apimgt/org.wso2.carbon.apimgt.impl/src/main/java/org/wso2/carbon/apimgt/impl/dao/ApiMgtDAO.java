@@ -5693,6 +5693,12 @@ public class ApiMgtDAO {
                 application.setTier(rs.getString("APPLICATION_TIER"));
                 application.setTokenType(rs.getString("TOKEN_TYPE"));
                 subscriber.setId(rs.getInt("SUBSCRIBER_ID"));
+
+                if (multiGroupAppSharingEnabled) {
+                    if (StringUtils.isEmpty(application.getGroupId())) {
+                        application.setGroupId(getGroupId(applicationId));
+                    }
+                }
             }
             if (application != null) {
                 Map<String,String> applicationAttributes = getApplicationAttributes(connection, applicationId);
@@ -5749,7 +5755,7 @@ public class ApiMgtDAO {
                 subscriber.setId(rs.getInt("SUBSCRIBER_ID"));
 
                 if (multiGroupAppSharingEnabled) {
-                    if (application.getGroupId().isEmpty()) {
+                    if (StringUtils.isEmpty(application.getGroupId())) {
                         application.setGroupId(getGroupId(application.getId()));
                     }
                 }
@@ -11760,7 +11766,7 @@ public class ApiMgtDAO {
                 application.setKeyType(rs.getString("KEY_TYPE"));
 
                 if (multiGroupAppSharingEnabled) {
-                    if (application.getGroupId().isEmpty()) {
+                    if (StringUtils.isEmpty(application.getGroupId())) {
                         application.setGroupId(getGroupId(application.getId()));
                     }
                 }
