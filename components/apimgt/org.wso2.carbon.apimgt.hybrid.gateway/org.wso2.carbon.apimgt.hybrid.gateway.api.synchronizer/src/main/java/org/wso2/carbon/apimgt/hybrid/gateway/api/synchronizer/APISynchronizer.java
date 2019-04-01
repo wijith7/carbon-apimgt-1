@@ -146,9 +146,7 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
 
             label = ConfigManager.getConfigManager().getProperty(OnPremiseGatewayConstants.GATEWAY_LABEL_PROPERTY_KEY);
             if (StringUtils.isNotBlank(label) && log.isDebugEnabled()) {
-                log.debug("Found configured label: " + label);
-            } else if (log.isDebugEnabled()) {
-                log.debug("Gateway is not configured with a label.");
+                log.debug("Configured label for the gateway is: " + label);
             }
         } catch (OnPremiseGatewayException e) {
             throw new APISynchronizationException(
