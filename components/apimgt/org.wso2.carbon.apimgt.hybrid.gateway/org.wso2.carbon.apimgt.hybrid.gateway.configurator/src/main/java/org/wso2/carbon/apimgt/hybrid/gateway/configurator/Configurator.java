@@ -474,6 +474,8 @@ public class Configurator {
                 log.warn("Unknown environment metadata key: " + key + ". Hence Ignoring.");
             }
         }
+        // Put carbon home and last wum update timestamp as mandatory entries to the environment data map
+        envMetadata.put(ConfigConstants.CARBON_HOME, carbonHome);
         envMetadata.put(ConfigConstants.LAST_WUM_UPDATE, getLastWumUpdatedTimestamp());
         if (log.isDebugEnabled()) {
             log.debug("System property metadata and wum updated timestamp retrieved as per the configurations is: " +

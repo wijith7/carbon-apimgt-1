@@ -147,7 +147,7 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
             label = ConfigManager.getConfigManager().getProperty(OnPremiseGatewayConstants.GATEWAY_LABEL_PROPERTY_KEY);
             if (StringUtils.isNotBlank(label) && log.isDebugEnabled()) {
                 log.debug("Found configured label: " + label);
-            } else if (log.isDebugEnabled()){
+            } else if (log.isDebugEnabled()) {
                 log.debug("Gateway is not configured with a label.");
             }
         } catch (OnPremiseGatewayException e) {
@@ -377,9 +377,8 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
                 }
             }
         } catch (UnsupportedEncodingException e) {
-            // If an error occurred during URL encoding, log the error as below and proceed with the URL without
-            // label query param. Therefore at this case, All the APIs will be synced.
-            log.error("An error occurred when encoding the URL with label: " + label, e);
+            // If an error occurred during URL encoding, throw the error to break synchronization for that label.
+            throw new APISynchronizationException("An error occurred when encoding the URL with label: " + label, e);
         }
 
         try {
