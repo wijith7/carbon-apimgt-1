@@ -148,7 +148,7 @@ public class JWTGenerator extends AbstractJWTGenerator {
                     if (manager.isExistingUser(tenantAwareUserName)) {
                         return claimsRetriever.getClaims(userName);
                     } else {
-                        log.warn("User " + userName + " cannot be found by user store manager");
+                        log.warn("User " + tenantAwareUserName + " cannot be found by user store manager");
                     }
                 } else {
                     log.error("Tenant cannot be found for username: " + userName);
