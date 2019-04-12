@@ -19,6 +19,7 @@
 
 package org.wso2.carbon.apimgt.hybrid.gateway.common.api;
 
+import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -26,6 +27,7 @@ import org.w3c.dom.Element;
 import org.wso2.carbon.apimgt.hybrid.gateway.common.exception.OnPremiseGatewayException;
 import org.wso2.carbon.apimgt.hybrid.gateway.common.internal.ServiceReferenceHolder;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.core.multitenancy.utils.TenantAxisUtils;
 import org.wso2.carbon.governance.lcm.util.CommonUtil;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -76,6 +78,9 @@ public class GatewayUtil {
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
+            ConfigurationContext ctx = org.wso2.carbon.apimgt.impl.internal.ServiceReferenceHolder.getContextService()
+                    .getServerConfigContext();
+            TenantAxisUtils.getTenantAxisConfiguration(tenantDomain, ctx);
 
             String adminName = ServiceReferenceHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getRealmConfiguration().getAdminUserName();
