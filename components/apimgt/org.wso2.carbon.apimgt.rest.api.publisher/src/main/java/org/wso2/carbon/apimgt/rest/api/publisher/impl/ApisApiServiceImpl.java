@@ -276,8 +276,7 @@ public class ApisApiServiceImpl extends ApisApiService {
                                 provider + ") overridden with current user (" + username + ")");
                     }
                     provider = username;
-                } else {
-                    if (!MultitenantUtils.getTenantDomain(username).equals(MultitenantUtils
+                } else if (!MultitenantUtils.getTenantDomain(username).equals(MultitenantUtils
                             .getTenantDomain(provider))) {
                         String errorMessage = "Error while adding new API : " + body.getProvider() + "-" +
                                 body.getName() + "-" + body.getVersion() + ". The tenant " +
@@ -285,11 +284,10 @@ public class ApisApiServiceImpl extends ApisApiService {
                                 + "' is not compatible with admin's('" + username + "') tenant domain '" +
                                 MultitenantUtils.getTenantDomain(username) + "'";
                         RestApiUtil.handleBadRequest(errorMessage, log);
-                    } else {
+                } else {
                         //When tenant domain contains upper case characters, this will convert those to lowercase
                         provider = MultitenantUtils.getTenantAwareUsername(provider) + "@" +
                                 MultitenantUtils.getTenantDomain(provider);
-                    }
                 }
             } else {
                 //Set username in case provider is null or empty
