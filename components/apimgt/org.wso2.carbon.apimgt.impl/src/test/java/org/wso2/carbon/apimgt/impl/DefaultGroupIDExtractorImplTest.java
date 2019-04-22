@@ -53,7 +53,7 @@ public class DefaultGroupIDExtractorImplTest {
                 (apiManagerConfigurationService);
         Mockito.when(apiManagerConfigurationService.getAPIManagerConfiguration()).thenReturn(apiManagerConfiguration);
         Mockito.when(apiManagerConfiguration.getFirstProperty(APIConstants.API_STORE_GROUP_EXTRACTOR_CLAIM_URI))
-                .thenReturn("http://wso2.org/claims/organization");
+                .thenReturn(APIConstants.DEFAULT_GROUP_CLAIM);
         Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
         Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
 
@@ -61,7 +61,7 @@ public class DefaultGroupIDExtractorImplTest {
         Mockito.when(realmService.getTenantUserRealm(-1234)).thenReturn(userRealm);
         Mockito.when(userRealm.getUserStoreManager()).thenReturn(userStoreManager);
         Mockito.when(userStoreManager.getUserClaimValue(MultitenantUtils.
-                getTenantAwareUsername("user"), "http://wso2.org/claims/organization", null)).
+                getTenantAwareUsername("user"), APIConstants.DEFAULT_GROUP_CLAIM, null)).
                 thenReturn("organization");
 
         DefaultGroupIDExtractorImpl defaultGroupIDExtractor = new DefaultGroupIDExtractorImpl();
@@ -91,12 +91,12 @@ public class DefaultGroupIDExtractorImplTest {
         Mockito.when(realmService.getTenantUserRealm(-1234)).thenReturn(userRealm);
         Mockito.when(userRealm.getUserStoreManager()).thenReturn(userStoreManager);
         Mockito.when(userStoreManager.getUserClaimValue(MultitenantUtils.getTenantAwareUsername("user"),
-                "http://wso2.org/claims/organization", null)).thenReturn("org1,org2,org3");
+                APIConstants.DEFAULT_GROUP_CLAIM, null)).thenReturn("org1,org2,org3");
         Mockito.when(serviceReferenceHolder.getAPIManagerConfigurationService()).thenReturn
                 (apiManagerConfigurationService);
         Mockito.when(apiManagerConfigurationService.getAPIManagerConfiguration()).thenReturn(apiManagerConfiguration);
         Mockito.when(apiManagerConfiguration.getFirstProperty(APIConstants.API_STORE_GROUP_EXTRACTOR_CLAIM_URI))
-                .thenReturn("http://wso2.org/claims/organization");
+                .thenReturn(APIConstants.DEFAULT_GROUP_CLAIM);
 
         DefaultGroupIDExtractorImpl defaultGroupIDExtractor = new DefaultGroupIDExtractorImpl();
 
@@ -113,12 +113,12 @@ public class DefaultGroupIDExtractorImplTest {
                 getGroupingIdentifierList("{\"user\":\"user\", \"isSuperTenant\":false}")[0]);
 
         Mockito.when(userStoreManager.getUserClaimValue(MultitenantUtils.getTenantAwareUsername("user"),
-                "http://wso2.org/claims/organization", null)).thenReturn("org1|org2|org3");
+                APIConstants.DEFAULT_GROUP_CLAIM, null)).thenReturn("org1|org2|org3");
         Assert.assertEquals("org1|org2|org3", defaultGroupIDExtractor.
                 getGroupingIdentifierList("{\"user\":\"user\", \"isSuperTenant\":false}")[0]);
 
         Mockito.when(userStoreManager.getUserClaimValue(MultitenantUtils.getTenantAwareUsername("user"),
-                "http://wso2.org/claims/organization", null)).thenReturn(null);
+                APIConstants.DEFAULT_GROUP_CLAIM, null)).thenReturn(null);
         Assert.assertEquals( 0, defaultGroupIDExtractor.getGroupingIdentifierList("{\"user\":\"user\", " +
                 "\"isSuperTenant\":false}").length);
     }

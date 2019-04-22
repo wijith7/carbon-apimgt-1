@@ -29,7 +29,7 @@ public class DefaultGroupIDExtractorImpl implements NewPostLoginExecutor {
                 getAPIManagerConfigurationService().getAPIManagerConfiguration();
         String claim = config.getFirstProperty(APIConstants.API_STORE_GROUP_EXTRACTOR_CLAIM_URI);
         if (StringUtils.isBlank(claim)) {
-            claim = "http://wso2.org/claims/organization";
+            claim = APIConstants.DEFAULT_GROUP_CLAIM;
         }
         String organization = null;
         try {
@@ -73,7 +73,7 @@ public class DefaultGroupIDExtractorImpl implements NewPostLoginExecutor {
                 getAPIManagerConfigurationService().getAPIManagerConfiguration();
         String claim = config.getFirstProperty(APIConstants.API_STORE_GROUP_EXTRACTOR_CLAIM_URI);
         if (StringUtils.isBlank(claim)) {
-            claim = "http://wso2.org/claims/organization";
+            claim = APIConstants.DEFAULT_GROUP_CLAIM;
         }
         String organization = null;
         String[] groupIdArray = null;
