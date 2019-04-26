@@ -48,7 +48,8 @@ $(document).ready(function () {
             applicationAttributesNew[attributeKeyNew] = attributeNew;
         }
         var tokenType = $("#tokenType").val();
-        jagg.post("/site/blocks/application/application-update/ajax/application-update.jag", {
+        jagg.post("/site/blocks/application/application-update/ajax/application-update.jag?name=" + application +
+        "&appId=" + appId, {
             action:"updateApplication",
             applicationNew:application,
             applicationOld:applicationOld,
