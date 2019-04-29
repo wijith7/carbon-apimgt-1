@@ -24,7 +24,6 @@ function triggerSubscribe() {
     applicationId, {
         action:"addSubscription",
         applicationId:applicationId,
-        name:api.name,
         version:api.version,
         provider:api.provider,
         tier:tier,
