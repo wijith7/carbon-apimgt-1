@@ -72,14 +72,6 @@ public class ConfiguratorTest {
     }
 
     @Test
-    public void updateConfigDetails() {
-        String cloudConfigPath = System.getProperty(ConfigConstants.CARBON_HOME) + File.separator +
-                                       ConfigConstants.RESOURCES_DIR + File.separator +
-                                       ConfigConstants.CLOUD_CONFIG_FILE_NAME;
-        Configurator.updateGatewayConfigDetails(cloudConfigPath, gatewayConfigPath);
-    }
-
-    @Test
     public void initializeGateway() throws Exception {
         //Collect device details
         Map<String, String> deviceDetails = Configurator.getDeviceDetails();
