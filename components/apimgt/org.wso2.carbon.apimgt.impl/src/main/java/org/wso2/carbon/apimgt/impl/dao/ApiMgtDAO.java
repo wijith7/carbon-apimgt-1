@@ -6007,7 +6007,7 @@ public class ApiMgtDAO {
         try(Connection connection = APIMgtDBUtil.getConnection();
                 PreparedStatement prepStmt = connection.prepareStatement(getAPIProviderQuery)) {
             if (!isSuperTenant) {
-                prepStmt.setString(3, "%" + tenant + "%");
+                prepStmt.setString(3, "%" + tenant + "/%");
             }
             prepStmt.setString(1, apiName);
             prepStmt.setString(2, apiVersion);
