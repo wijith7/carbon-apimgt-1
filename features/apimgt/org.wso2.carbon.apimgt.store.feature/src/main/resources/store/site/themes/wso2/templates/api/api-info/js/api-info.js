@@ -20,10 +20,10 @@ function triggerSubscribe() {
         + '<span class="spinner"><i class="fw fw-loader5" title="button-loader"></i></span>'
     ).attr('disabled', 'disabled');
 
-    jagg.post("/site/blocks/subscription/subscription-add/ajax/subscription-add.jag", {
+    jagg.post("/site/blocks/subscription/subscription-add/ajax/subscription-add.jag?name=" + api.name + "&appId=" +
+    applicationId, {
         action:"addSubscription",
         applicationId:applicationId,
-        name:api.name,
         version:api.version,
         provider:api.provider,
         tier:tier,
