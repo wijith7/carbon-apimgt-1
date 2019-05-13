@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.apimgt.keymgt.token;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.apache.axiom.util.base64.Base64Utils;
 import org.apache.commons.codec.binary.Base64;
@@ -228,7 +229,15 @@ public abstract class AbstractJWTGenerator implements TokenGenerator {
                     String claimURI = it.next();
                     String claimVal = standardClaims.get(claimURI);
                     List<String> claimList = new ArrayList<String>();
-                    if (userAttributeSeparator != null && claimVal != null && claimVal.contains(userAttributeSeparator)) {
+                    if (claimVal != null && claimVal.contains("{")) {
+                        ObjectMapper mapper = new ObjectMapper();
+                        try {
+                            Map<String, String> map = mapper.readValue(claimVal, Map.class);
+                            jwtClaimsSetBuilder.claim(claimURI, map);
+                        } catch (Exception e) {
+                            log.error("Error while reading claim values", e);
+                        }
+                    } else if (userAttributeSeparator != null && claimVal != null && claimVal.contains(userAttributeSeparator)) {
                         StringTokenizer st = new StringTokenizer(claimVal, userAttributeSeparator);
                         while (st.hasMoreElements()) {
                             String attValue = st.nextElement().toString();
