@@ -88,12 +88,9 @@ public class Configurator {
             Runtime.getRuntime().exit(1);
         }
         carbonConfigDirPath = CarbonUtils.getCarbonConfigDirPath();
-        //Update Gateway properties file with API cloud related configs
-        String cloudConfigsPath = carbonHome + File.separator + ConfigConstants.RESOURCES_DIR + File.separator
-                + ConfigConstants.CLOUD_CONFIG_DIR + File.separator + ConfigConstants.CLOUD_CONFIG_FILE_NAME;
-        String gatewayConfigPath = carbonConfigDirPath + File.separator + OnPremiseGatewayConstants.CONFIG_FILE_NAME;
-        updateGatewayConfigDetails(cloudConfigsPath, gatewayConfigPath);
+
         //Read Gateway properties
+        String gatewayConfigPath = carbonConfigDirPath + File.separator + OnPremiseGatewayConstants.CONFIG_FILE_NAME;
         Properties gatewayProperties = getGatewayProperties(gatewayConfigPath, args);
         String configToolPropertyFilePath = carbonConfigDirPath + File.separator +
                                                     ConfigConstants.CONFIG_TOOL_CONFIG_FILE_NAME;
@@ -166,26 +163,6 @@ public class Configurator {
         //Update token in gateway properties file
         String gatewayConfigPath = carbonConfigDirPath + File.separator + OnPremiseGatewayConstants.CONFIG_FILE_NAME;
         updateOnPremGatewayUniqueId(gatewayConfigPath, token);
-    }
-
-    /**
-     * Update the default Micro Gateway configs with Cloud specific configs
-     *
-     * @param cloudConfigsPath String
-     * @param gatewayConfigPath String
-     */
-    protected static void updateGatewayConfigDetails(String cloudConfigsPath, String gatewayConfigPath) {
-        File gatewayConfigFile = new File(gatewayConfigPath);
-        File cloudConfigFile = new File(cloudConfigsPath);
-        try {
-            String cloudConfigContent = FileUtils.readFileToString(cloudConfigFile,
-                                                                   OnPremiseGatewayConstants.DEFAULT_CHARSET);
-            FileUtils.writeStringToFile(gatewayConfigFile, cloudConfigContent,
-                                        OnPremiseGatewayConstants.DEFAULT_CHARSET);
-        } catch (IOException e) {
-            log.error("Error occurred while updating default Gateway configs with Cloud configs", e);
-            Runtime.getRuntime().exit(1);
-        }
     }
 
     /**

@@ -19,14 +19,15 @@
 
 package org.wso2.carbon.apimgt.hybrid.gateway.common.api;
 
+import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.wso2.carbon.apimgt.hybrid.gateway.common.exception.OnPremiseGatewayException;
 import org.wso2.carbon.apimgt.hybrid.gateway.common.internal.ServiceReferenceHolder;
-import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.core.multitenancy.utils.TenantAxisUtils;
 import org.wso2.carbon.governance.lcm.util.CommonUtil;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -53,7 +54,7 @@ import javax.xml.transform.stream.StreamResult;
 public class GatewayUtil {
     private static final Log log = LogFactory.getLog(GatewayUtil.class);
     private static final String CUSTOM_API_EXECUTOR_CLASS =
-            "APIExecutionHandler";
+            "org.wso2.carbon.apimgt.hybrid.gateway.common.api.APIExecutionHandler";
     private static final String CLASS = "class";
     private static final String FOR_EVENT = "forEvent";
     private static final String STATE = "state";
@@ -65,21 +66,21 @@ public class GatewayUtil {
     private static final String PUBLISH_ATTRIBUTE = "Publish";
     private static final String PUBLISHED_STATE = "Published";
 
-    private static String tenantDomain;
-
     /**
      * Method to execute APILifecycleConfig xml changes required for synchronizing API updates with micro API gateway
      *
      */
-    public static void updateAPILifecycleConfig() throws OnPremiseGatewayException {
+    public static void updateAPILifecycleConfig(String tenantDomain) throws OnPremiseGatewayException {
         try {
-            tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
             int tenantId = ServiceReferenceHolder.getInstance().getRealmService().getTenantManager().
                     getTenantId(tenantDomain);
 
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
+            ConfigurationContext ctx = org.wso2.carbon.apimgt.impl.internal.ServiceReferenceHolder.getContextService()
+                    .getServerConfigContext();
+            TenantAxisUtils.getTenantAxisConfiguration(tenantDomain, ctx);
 
             String adminName = ServiceReferenceHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getRealmConfiguration().getAdminUserName();
