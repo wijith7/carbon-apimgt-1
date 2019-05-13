@@ -47,6 +47,7 @@ import org.wso2.carbon.user.core.UserStoreManager;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.*;
 import java.security.cert.Certificate;
@@ -234,7 +235,8 @@ public abstract class AbstractJWTGenerator implements TokenGenerator {
                         try {
                             Map<String, String> map = mapper.readValue(claimVal, Map.class);
                             jwtClaimsSetBuilder.claim(claimURI, map);
-                        } catch (Exception e) {
+                        } catch (IOException e) {
+                            //catch the exception and continue the loop with next claim value
                             log.error("Error while reading claim values", e);
                         }
                     } else if (userAttributeSeparator != null && claimVal != null && claimVal.contains(userAttributeSeparator)) {
