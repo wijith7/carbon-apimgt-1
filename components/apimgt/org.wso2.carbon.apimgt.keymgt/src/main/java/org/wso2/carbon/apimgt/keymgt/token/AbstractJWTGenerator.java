@@ -224,7 +224,7 @@ public abstract class AbstractJWTGenerator implements TokenGenerator {
 
             JWTClaimsSet.Builder jwtClaimsSetBuilder = new JWTClaimsSet.Builder();
 
-            if(standardClaims != null) {
+            if (standardClaims != null) {
                 Iterator<String> it = new TreeSet(standardClaims.keySet()).iterator();
                 while (it.hasNext()) {
                     String claimURI = it.next();
@@ -236,10 +236,12 @@ public abstract class AbstractJWTGenerator implements TokenGenerator {
                             Map<String, String> map = mapper.readValue(claimVal, Map.class);
                             jwtClaimsSetBuilder.claim(claimURI, map);
                         } catch (IOException e) {
-                            //catch the exception and continue the loop with next claim value
+                            // Exception isn't thrown in order to generate jwt without claim, even if an error is
+                            // occurred during the retrieving claims.
                             log.error("Error while reading claim values", e);
                         }
-                    } else if (userAttributeSeparator != null && claimVal != null && claimVal.contains(userAttributeSeparator)) {
+                    } else if (userAttributeSeparator != null && claimVal != null &&
+                            claimVal.contains(userAttributeSeparator)) {
                         StringTokenizer st = new StringTokenizer(claimVal, userAttributeSeparator);
                         while (st.hasMoreElements()) {
                             String attValue = st.nextElement().toString();
