@@ -205,7 +205,6 @@ public class APIMgtResponseHandler extends APIMgtCommonExecutionPublisher {
             stream.setRequestTimestamp(
                     Long.parseLong((String) mc.getProperty(APIMgtGatewayConstants.REQUEST_START_TIME)));
             stream.setResponseCacheHit(cacheHit);
-            stream.setResponseCode((Integer) axis2MC.getProperty(SynapseConstants.HTTP_SC));
             stream.setResponseSize(responseSize);
             stream.setServiceTime(serviceTime);
             stream.setThrottledOut(throttleOutHappened);
@@ -217,6 +216,14 @@ public class APIMgtResponseHandler extends APIMgtCommonExecutionPublisher {
             stream.setCorrelationID(correlationID);
             stream.setGatewayType(APIMgtGatewayConstants.GATEWAY_TYPE);
             stream.setLabel(APIMgtGatewayConstants.SYNAPDE_GW_LABEL);
+
+            int responseCode;
+            if(axis2MC.getProperty(SynapseConstants.HTTP_SC) instanceof  String){
+                responseCode = Integer.parseInt((String) axis2MC.getProperty(SynapseConstants.HTTP_SC));
+            } else {
+                responseCode = (Integer) axis2MC.getProperty(SynapseConstants.HTTP_SC);
+            }
+            stream.setResponseCode(responseCode);
             
             if (log.isDebugEnabled()) {
                 log.debug("Publishing success API invocation event from gateway to analytics for: "
