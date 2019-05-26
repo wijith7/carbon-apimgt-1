@@ -2102,8 +2102,7 @@ public class SQLConstants {
 
     public static final String ADD_SCOPE_LINK_SQL =
             " INSERT INTO AM_API_SCOPES (API_ID, SCOPE_ID) VALUES (?,?)";
-
-
+    
     public static final String GET_API_SCOPES_SQL =
             " SELECT A.SCOPE_ID, A.NAME, A.DISPLAY_NAME, A.DESCRIPTION, C.SCOPE_BINDING " +
             " FROM  " +
