@@ -2276,7 +2276,7 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
 
     public Integer getSubscriptionCount(Subscriber subscriber,String applicationName,String groupingId)
             throws APIManagementException {
-        return apiMgtDAO.getSubscriptionCount(subscriber,applicationName,groupingId);
+        return apiMgtDAO.getSubscriptionCount(subscriber,applicationName, groupingId);
     }
 
     @Override
@@ -3453,6 +3453,30 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
     	return true;
     }
 
+    public JSONArray getScopesForApplicationSubscription(String username, int applicationId)
+            throws APIManagementException {
+        Set<Scope> scopeSet = new LinkedHashSet<Scope>();
+        JSONObject scopeList = new JSONObject();
+        JSONArray scopeArray = new JSONArray();
+
+        Subscriber subscriber = new Subscriber(username);
+        scopeSet = apiMgtDAO.getScopeListForApplicationSubscription(subscriber, applicationId);
+
+        for (Scope scope : scopeSet) {
+            JSONObject scopeObj = new JSONObject();
+            scopeObj.put("scopeKey", scope.getKey());
+            scopeObj.put("scopeName", scope.getName());
+
+            scopeArray.add(scopeObj);
+        }
+        return scopeArray;
+    }
+
+    public Set<Scope> getScopesForApplicationSubscription(Subscriber subscriber, int applicationId)
+            throws APIManagementException {
+        return apiMgtDAO.getScopesForApplicationSubscription(subscriber, applicationId);
+    }
+
 	@Override
 	public Set<API> searchAPI(String searchTerm, String searchType, String tenantDomain)
 	                                                                                    throws APIManagementException {
@@ -3465,8 +3489,8 @@ public class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
 	}
 
 	public String getScopesByToken(String accessToken) throws APIManagementException {
-		return null;
-	}
+        return null;
+    }
 
 	public Set<Scope> getScopesByScopeKeys(String scopeKeys, int tenantId)
 			throws APIManagementException {
