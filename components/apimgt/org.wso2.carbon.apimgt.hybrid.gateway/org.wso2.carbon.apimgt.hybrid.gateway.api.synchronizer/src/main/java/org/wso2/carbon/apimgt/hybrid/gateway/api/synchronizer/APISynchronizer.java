@@ -97,6 +97,7 @@ import javax.xml.transform.stream.StreamResult;
 public class APISynchronizer implements OnPremiseGatewayInitListener {
     private static final Log log = LogFactory.getLog(APISynchronizer.class);
     private String apiViewUrl = APISynchronizationConstants.EMPTY_STRING;
+    private String apiViewAdminUrl = APISynchronizationConstants.EMPTY_STRING;
     private String mediationPolicyUrl = APISynchronizationConstants.EMPTY_STRING;
     /** Label configured for this gateway (if configured) */
     private String label;
@@ -139,6 +140,8 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
             //Remove '//' which is created in cloud case.
             apiViewUrl = apiPublisherUrl + APISynchronizationConstants.API_VIEW_PATH
                     .replace(APISynchronizationConstants.API_VERSION_PARAM, apiVersion)
+                    .replace("//", APISynchronizationConstants.URL_PATH_SEPARATOR);
+            apiViewAdminUrl = apiPublisherUrl + APISynchronizationConstants.API_VIEW_ADMIN_PATH
                     .replace("//", APISynchronizationConstants.URL_PATH_SEPARATOR);
             mediationPolicyUrl = apiPublisherUrl + APISynchronizationConstants.API_VIEW_GLOBAL_MEDIATION_POLICY_PATH
                     .replace(APISynchronizationConstants.API_VERSION_PARAM, apiVersion)
@@ -544,12 +547,15 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
                                     log.debug("No matching policies were found for " +
                                             "custom sequence " + name + " of the API " + apiId);
                                 }
-                                continue;
+                            } else {
+                                // Deploying the global sequence
+                                deployGlobalSequence(api, apiId, sequenceId, accessTokenDTO);
                             }
                         }
+                    } else {
+                        // Deploying sequence
+                        deploySequence(api, apiId, sequenceId, accessTokenDTO);
                     }
-                    // Deploying sequence
-                    deploySequence(api, apiId, sequenceId, accessTokenDTO);
                 }
             } catch (OnPremiseGatewayException e) {
                 throw new APISynchronizationException("An error occurred while retrieving a summary of all " +
@@ -617,7 +623,7 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
     }
 
     /**
-     * Method to deploy sequences of an API
+     * Method to set custom sequence get uri and call sequence deploy from uri
      *
      * @param api            APIDTO object
      * @param seqId          id of the sequence to be recreated
@@ -625,9 +631,48 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
      */
     private void deploySequence(APIDTO api, String apiId, String seqId, AccessTokenDTO accessTokenDTO)
             throws APISynchronizationException {
-        String uri = apiViewUrl + APISynchronizationConstants.URL_PATH_SEPARATOR + apiId
-                + APISynchronizationConstants.API_VIEW_MEDIATION_POLICY_PATH
-                + APISynchronizationConstants.URL_PATH_SEPARATOR + seqId;
+        try {
+            String uri = apiViewUrl + APISynchronizationConstants.URL_PATH_SEPARATOR + apiId
+                    + APISynchronizationConstants.API_VIEW_MEDIATION_POLICY_PATH
+                    + APISynchronizationConstants.URL_PATH_SEPARATOR + seqId;
+            deploySequenceFromUrl(api, apiId, seqId, accessTokenDTO, uri);
+        } catch (APISynchronizationException e) {
+            throw new APISynchronizationException("An error occurred while deploying custom sequences of API " + apiId,
+                    e);
+        }
+    }
+
+    /**
+     * Method to set global sequence get uri and call sequence deploy from uri
+     *
+     * @param api            APIDTO object
+     * @param seqId          id of the sequence to be recreated
+     * @param accessTokenDTO access token DTO
+     */
+    private void deployGlobalSequence(APIDTO api, String apiId, String seqId, AccessTokenDTO accessTokenDTO)
+            throws APISynchronizationException {
+        try {
+            String uri = apiViewAdminUrl + APISynchronizationConstants.URL_PATH_SEPARATOR
+                    + APISynchronizationConstants.API_VIEW_MEDIATION_POLICY_PATH
+                    + APISynchronizationConstants.URL_PATH_SEPARATOR + seqId;
+            deploySequenceFromUrl(api, apiId, seqId, accessTokenDTO, uri);
+        } catch (APISynchronizationException e) {
+            throw new APISynchronizationException("An error occurred while deploying global sequence of API " + apiId,
+                    e);
+        }
+    }
+
+    /**
+     * Method to deploy
+     * @param api
+     * @param apiId
+     * @param seqId
+     * @param accessTokenDTO
+     * @param uri
+     * @throws APISynchronizationException
+     */
+    private void deploySequenceFromUrl(APIDTO api, String apiId, String seqId, AccessTokenDTO accessTokenDTO,
+                                       String uri) throws APISynchronizationException {
         try {
             String apiPublisherUrl = ConfigManager.getConfigManager()
                     .getProperty(OnPremiseGatewayConstants.API_PUBLISHER_URL_PROPERTY_KEY);
