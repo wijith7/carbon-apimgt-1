@@ -6007,7 +6007,7 @@ public class ApiMgtDAO {
         try(Connection connection = APIMgtDBUtil.getConnection();
                 PreparedStatement prepStmt = connection.prepareStatement(getAPIProviderQuery)) {
             if (!isSuperTenant) {
-                prepStmt.setString(3, "%" + tenant + "%");
+                prepStmt.setString(3, "%" + tenant + "/%");
             }
             prepStmt.setString(1, apiName);
             prepStmt.setString(2, apiVersion);
@@ -7620,14 +7620,20 @@ public class ApiMgtDAO {
                 if (scopeHashMap.containsKey(scopeId)) {
                     // scope already exists append roles.
                     scope = scopeHashMap.get(scopeId);
-                    scope.setRoles(scope.getRoles().concat("," + resultSet.getString(5)).trim());
+                    String roles = resultSet.getString(5);
+                    if (StringUtils.isNotEmpty(roles)) {
+                        scope.setRoles(scope.getRoles().concat("," + roles.trim()));
+                    }
                 } else {
                     scope = new Scope();
                     scope.setId(scopeId);
                     scope.setKey(resultSet.getString(2));
                     scope.setName(resultSet.getString(3));
                     scope.setDescription(resultSet.getString(4));
-                    scope.setRoles(resultSet.getString(5).trim());
+                    String roles = resultSet.getString(5);
+                    if (StringUtils.isNotEmpty(roles)) {
+                        scope.setRoles(roles.trim());
+                    }
                 }
                 scopeHashMap.put(scopeId, scope);
             }
@@ -7733,9 +7739,9 @@ public class ApiMgtDAO {
                 if (scopeHashMap.containsKey(scopeKey)) {
                     // scope already exists append roles.
                     scope = scopeHashMap.get(scopeKey);
-                    String roles = scope.getRoles();
+                    String roles = resultSet.getString(4);
                     if (StringUtils.isNotEmpty(roles)) {
-                        scope.setRoles(scope.getRoles().concat("," + resultSet.getString(4)).trim());
+                        scope.setRoles(scope.getRoles().concat("," + roles).trim());
                     }
                 } else {
                     scope = new Scope();
@@ -7776,14 +7782,20 @@ public class ApiMgtDAO {
                 if (scopeHashMap.containsKey(scopeId)) {
                     // scope already exists append roles.
                     scope = scopeHashMap.get(scopeId);
-                    scope.setRoles(scope.getRoles().concat("," + resultSet.getString(5)).trim());
+                    String roles = resultSet.getString(5);
+                    if (StringUtils.isNotEmpty(roles)) {
+                        scope.setRoles(scope.getRoles().concat("," + roles.trim()));
+                    }
                 } else {
                     scope = new Scope();
                     scope.setId(scopeId);
                     scope.setKey(resultSet.getString(2));
                     scope.setName(resultSet.getString(3));
                     scope.setDescription(resultSet.getString(4));
-                    scope.setRoles(resultSet.getString(5).trim());
+                    String roles = resultSet.getString(5);
+                    if (StringUtils.isNotEmpty(roles)) {
+                        scope.setRoles(roles.trim());
+                    }
                 }
                 scopeHashMap.put(scopeId, scope);
             }
@@ -7830,14 +7842,20 @@ public class ApiMgtDAO {
                 if (scopeHashMap.containsKey(scopeId)) {
                     // scope already exists append roles.
                     scope = scopeHashMap.get(scopeId);
-                    scope.setRoles(scope.getRoles().concat("," + resultSet.getString(6)).trim());
+                    String roles = resultSet.getString(6);
+                    if (StringUtils.isNotEmpty(roles)) {
+                        scope.setRoles(scope.getRoles().concat("," + roles).trim());
+                    }
                 } else {
                     scope = new Scope();
                     scope.setId(scopeId);
                     scope.setKey(resultSet.getString(2));
                     scope.setName(resultSet.getString(3));
                     scope.setDescription(resultSet.getString(4));
-                    scope.setRoles(resultSet.getString(6).trim());
+                    String roles = resultSet.getString(6);
+                    if (StringUtils.isNotEmpty(roles)) {
+                        scope.setRoles(roles.trim());
+                    }
                 }
                 scopeHashMap.put(scopeId, scope);
             }

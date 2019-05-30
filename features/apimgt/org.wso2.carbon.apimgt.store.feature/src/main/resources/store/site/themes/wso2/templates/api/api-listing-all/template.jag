@@ -178,7 +178,11 @@ if (<%=isEnabledTutorialForThisTenant%>) {
                             }else{
                                 thumbURL = jagg.getRegistryPath(thumbURL);
                             }
-                            path = jagg.getMappedUrl("/site/pages/item-info.jag") + "?name=" + name+ "&version=" + version + urlPrefix;
+                            if(api.provider != null) {
+                                path = jagg.getMappedUrl("/site/pages/item-info.jag") + "?name=" + name + "&version=" + version + "&provider=" + api.provider + urlPrefix;
+                            } else {
+                                path = jagg.getMappedUrl("/site/pages/item-info.jag") + "?name=" + name + "&version=" + version + urlPrefix;
+                            }
                             if(tag != null){
                                 path+="&tag="+encode.forUriComponent(tag);
                             }
