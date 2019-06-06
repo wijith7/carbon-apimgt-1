@@ -1424,6 +1424,7 @@ public class APIMgtDAOTest {
             APIMgtDBUtil.closeAllConnections(ps, conn, rs);
         }
     }
+
     private Set<URITemplate> getUriTemplateSet(){
         Set<URITemplate> uriTemplates = new HashSet<URITemplate>();
         uriTemplates.add(getUriTemplate("/abc", "GET", "Any", "read",
@@ -1432,7 +1433,9 @@ public class APIMgtDAOTest {
                 "Unlimited"));
         return uriTemplates;
     }
-    private URITemplate getUriTemplate(String resourceString,String httpVerb,String authType,String scope, String throtlingTier){
+
+    private URITemplate getUriTemplate(String resourceString, String httpVerb, String authType, String scope,
+                                       String throtlingTier) {
         URITemplate uriTemplate = new URITemplate();
         uriTemplate.setUriTemplate(resourceString);
         uriTemplate.setHTTPVerb(httpVerb);
@@ -1450,6 +1453,7 @@ public class APIMgtDAOTest {
         }
         return uriTemplate;
     }
+
     private Set<Scope> getScopes(){
         Scope scope1 = new Scope();
         scope1.setId(1);
