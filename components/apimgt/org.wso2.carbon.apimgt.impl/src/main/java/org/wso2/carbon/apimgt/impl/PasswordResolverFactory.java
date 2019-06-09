@@ -57,7 +57,7 @@ public class PasswordResolverFactory {
                     log.error("Illegal access to " + passwordResolverImplClass, e);
                     throw new APIManagementException("Illegal access to " + passwordResolverImplClass);
                 } catch (ClassNotFoundException e) {
-                    log.error(" " + passwordResolverImplClass + e);
+                    log.error("Cannot find the class " + passwordResolverImplClass + e);
                     throw new APIManagementException("Cannot find the class " + passwordResolverImplClass);
                 }
             }
