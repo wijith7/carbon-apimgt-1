@@ -2080,6 +2080,22 @@ public class SQLConstants {
             " WHERE " +
             "   ES.API_ID = ? ";
 
+    public static final String GET_SUBSCRIBED_API_IDs_BY_APP_ID_SQL =
+            " SELECT " +
+                    "   API.API_ID " +
+                    " FROM " +
+                    "   AM_SUBSCRIBER SUB," +
+                    "   AM_APPLICATION APP, " +
+                    "   AM_SUBSCRIPTION SUBS, " +
+                    "   AM_API API " +
+                    " WHERE " +
+                    "   SUB.TENANT_ID = ? " +
+                    "   AND SUB.SUBSCRIBER_ID=APP.SUBSCRIBER_ID " +
+                    "   AND APP.APPLICATION_ID=SUBS.APPLICATION_ID " +
+                    "   AND API.API_ID=SUBS.API_ID" +
+                    "   AND APP.APPLICATION_ID= ? " +
+                    "   AND SUBS.SUBS_CREATE_STATE = '" + APIConstants.SubscriptionCreatedStatus.SUBSCRIBE + "'";
+
     public static final String ADD_SCOPE_ENTRY_SQL =
             " INSERT INTO IDN_OAUTH2_SCOPE (NAME, DISPLAY_NAME , DESCRIPTION, TENANT_ID) " +
             " VALUES(?,?,?,?)";
