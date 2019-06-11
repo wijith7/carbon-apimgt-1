@@ -19,7 +19,7 @@ jagg.module("subscription", {
     },
 
     getAllScopesOfApplicationSubscription:function () {
-        	return jagg.require(jagg.getModulesDir() + "subscription/list.jag").getAllScopesOfApplicationSubscription.apply(this, arguments);
+        return jagg.require(jagg.getModulesDir() + "subscription/list.jag").getAllScopesOfApplicationSubscription.apply(this, arguments);
     },
 
     cleanUpApplicationRegistration:function () {
