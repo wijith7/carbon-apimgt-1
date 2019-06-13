@@ -332,7 +332,7 @@
                             javax.net.ssl,
                             javax.xml.namespace,
                             org.apache.http.*,
-                            org.apache.commons.lang3; version="[3.3.0, 3.4.0)",
+                            org.apache.commons.lang3; version="${imp.pkg.version.org.apache.commons.lang3}",
                             org.apache.commons.*,
                             org.apache.synapse.*,
                             org.apache.thrift.*; version="${libthrift.import.version.range}",
