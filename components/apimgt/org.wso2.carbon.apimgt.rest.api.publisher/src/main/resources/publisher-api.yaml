@@ -1048,14 +1048,16 @@ paths:
         description: |
 
           Supported checklist items are as follows.
-          1. **Deprecate Old Versions**: Setting this to true will deprecate older versions of a particular API when it is promoted to Published state from Created state.
-          2. **Require Re-Subscription**: If you set this to true, users need to re subscribe to the API although they may have subscribed to an older version.
+          1. **Deprecate old versions after publish the API**: Setting this to true will deprecate older versions of a particular API when it is promoted to Published state from Created state.
+          2. **Requires re-subscription when publish the API**: If you set this to true, users need to re subscribe to the API although they may have subscribed to an older version.
 
           You can specify additional checklist items by using an **"attribute:"** modifier.
 
-          Eg: "Deprecate Old Versions:true" will deprecate older versions of a particular API when it is promoted to Published state from Created state. Multiple checklist items can be given in "attribute1:true, attribute2:false" format.
+          Eg: "Deprecate old versions after publish the API:true" will deprecate older versions of a particular API when it is promoted to Published state from Created state. Multiple checklist items can be given in "attribute1:true, attribute2:false" format.
 
-          **Sample CURL :**  curl -k -H "Authorization: Bearer ae4eae22-3f65-387b-a171-d37eaa366fa8" -X POST "https://localhost:9443/api/am/publisher/v0.14/apis/change-lifecycle?apiId=890a4f4d-09eb-4877-a323-57f6ce2ed79b&action=Publish&lifecycleChecklist=Deprecate Old Versions:true,Require Re-Subscription:true"
+          **Sample CURL :**  curl -k -H "Authorization: Bearer ae4eae22-3f65-387b-a171-d37eaa366fa8" -X POST "https://localhost:9443/api/am/publisher/v0.14/apis/change-lifecycle?apiId=890a4f4d-09eb-4877-a323-57f6ce2ed79b&action=Publish&lifecycleChecklist=Requires%20re-subscription%20when%20publish%20the%20API:true,Deprecate%20old%20versions%20after%20publish%20the%20API:true"
+
+          **Note :** lifecycleChecklist parameters needs to URL encoded since the values are having spaces
 
         type: string
         in: query
