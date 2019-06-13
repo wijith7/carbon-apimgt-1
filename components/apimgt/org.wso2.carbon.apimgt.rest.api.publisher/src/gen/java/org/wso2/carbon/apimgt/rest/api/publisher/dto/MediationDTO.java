@@ -17,7 +17,7 @@ public class MediationDTO  {
   
   private String id = null;
   
-  @NotNull
+  
   private String name = null;
   
   public enum TypeEnum {
@@ -44,7 +44,7 @@ public class MediationDTO  {
   
   /**
    **/
-  @ApiModelProperty(required = true, value = "")
+  @ApiModelProperty(value = "")
   @JsonProperty("name")
   public String getName() {
     return name;

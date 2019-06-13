@@ -89,7 +89,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -105,6 +107,7 @@ import java.util.Set;
 public class ApisApiServiceImpl extends ApisApiService {
 
     private static final Log log = LogFactory.getLog(ApisApiServiceImpl.class);
+    public static final String UTF8 = "UTF-8";
 
     /**
      * Retrieves APIs qualifying under given search condition
@@ -714,7 +717,7 @@ public class ApisApiServiceImpl extends ApisApiService {
                             (apiResourcePath, uuid);
                     MediationDTO updatedMediationDTO =
                             MediationMappingUtil.fromMediationToDTO(updatedMediation);
-                    URI uploadedMediationUri = new URI(updatedPolicyUrl);
+                    URI uploadedMediationUri = new URI(URLEncoder.encode(updatedPolicyUrl,UTF8));
                     return Response.ok(uploadedMediationUri).entity(updatedMediationDTO).build();
                 }
             } else {
@@ -804,7 +807,7 @@ public class ApisApiServiceImpl extends ApisApiService {
                         (apiResourcePath, uuid);
                 MediationDTO createdPolicy =
                         MediationMappingUtil.fromMediationToDTO(createdMediation);
-                URI uploadedMediationUri = new URI(mediationPolicyUrl);
+                URI uploadedMediationUri = new URI(URLEncoder.encode(mediationPolicyUrl, UTF8));
                 return Response.created(uploadedMediationUri).entity(createdPolicy).build();
             }
         } catch (APIManagementException e) {
@@ -820,7 +823,7 @@ public class ApisApiServiceImpl extends ApisApiService {
                         "of API " + apiId;
                 RestApiUtil.handleInternalServerError(errorMessage, e, log);
             }
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
             String errorMessage = "Error while getting location header for created " +
                     "mediation policy " + body.getName();
             RestApiUtil.handleInternalServerError(errorMessage, e, log);
