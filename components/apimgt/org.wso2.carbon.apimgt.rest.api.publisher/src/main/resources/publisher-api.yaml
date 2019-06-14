@@ -4238,7 +4238,6 @@ definitions:
   Mediation:
     title: Mediation
     required:
-    - name
     - type
     - config
     properties:
