@@ -717,7 +717,7 @@ public class ApisApiServiceImpl extends ApisApiService {
                             (apiResourcePath, uuid);
                     MediationDTO updatedMediationDTO =
                             MediationMappingUtil.fromMediationToDTO(updatedMediation);
-                    URI uploadedMediationUri = new URI(URLEncoder.encode(updatedPolicyUrl,UTF8));
+                    URI uploadedMediationUri = new URI(URLEncoder.encode(updatedPolicyUrl, UTF8));
                     return Response.ok(uploadedMediationUri).entity(updatedMediationDTO).build();
                 }
             } else {
