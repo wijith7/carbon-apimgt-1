@@ -314,6 +314,16 @@ var log = new Log();
         }
 
         jsonObj.paths = paths;
+        // Method to remove "x-mediation-script" from jsonObj
+        for (var path in jsonObj.paths) {
+            for (var method in jsonObj.paths[path]) {
+                log.debug("paths method: " + method);
+                if (jsonObj.paths[path][method]["x-mediation-script"]) {
+                    log.debug("x-mediation-script element found");
+                    delete jsonObj.paths[path][method]["x-mediation-script"];
+                }
+            }
+        }
         print(JSON.stringify(jsonObj));
     }
     }
