@@ -164,6 +164,7 @@ var api = outputs.api;%>
           url: url,
           dom_id: '#swagger-ui-container',
           deepLinking: true,
+          showExtensions: true,
           presets: [
               SwaggerUIBundle.presets.apis
           ],
