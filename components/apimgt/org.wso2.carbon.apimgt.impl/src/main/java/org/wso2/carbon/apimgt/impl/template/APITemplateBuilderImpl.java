@@ -260,7 +260,6 @@ public class APITemplateBuilderImpl implements APITemplateBuilder {
                 velocityengine.setProperty( "runtime.log.logsystem.log4j.logger", getVelocityLogger());
             }
 
-
             initVelocityEngine(velocityengine);
 
             context.put("type", endpointType);
@@ -327,6 +326,11 @@ public class APITemplateBuilderImpl implements APITemplateBuilder {
         }
     }
 
+    /**
+     * Initialize velocity engine
+     * @param velocityengine velocity engine object reference
+     * @throws APITemplateException in case of an error
+     */
     private void initVelocityEngine(VelocityEngine velocityengine) throws APITemplateException {
         Thread thread = Thread.currentThread();
         ClassLoader loader = thread.getContextClassLoader();
