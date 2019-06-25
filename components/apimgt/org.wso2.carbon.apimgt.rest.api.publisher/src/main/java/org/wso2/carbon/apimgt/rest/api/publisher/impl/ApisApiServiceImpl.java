@@ -1885,7 +1885,7 @@ public class ApisApiServiceImpl extends ApisApiService {
     }
 
     /***
-     * To get if the API is modified or not when the given sequence is in API.
+     * To check if the API is modified or not when the given sequence is in API.
      *
      * @param api
      * @param mediation
@@ -1918,6 +1918,6 @@ public class ApisApiServiceImpl extends ApisApiService {
     }
 
     private boolean isSequenceExistsInAPI(String sequenceName, Mediation mediation) {
-        return sequenceName != null && !sequenceName.isEmpty() && mediation.getName().equals(sequenceName);
+        return StringUtils.isNotEmpty(sequenceName) && mediation.getName().equals(sequenceName);
     }
 }
