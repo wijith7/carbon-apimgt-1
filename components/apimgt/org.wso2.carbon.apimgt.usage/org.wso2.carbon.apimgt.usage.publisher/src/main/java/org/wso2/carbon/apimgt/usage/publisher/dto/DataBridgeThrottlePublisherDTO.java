@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.apimgt.usage.publisher.dto;
 
-import org.wso2.carbon.apimgt.usage.publisher.DataPublisherUtil;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 
@@ -53,7 +53,11 @@ public class DataBridgeThrottlePublisherDTO extends ThrottlePublisherDTO {
     }
 
     public Object createMetaData() {
-        return new Object[] { getKeyType()};
+        JSONObject obj = new JSONObject();
+        obj.put("keyType", getKeyType());
+        obj.put("correlationID", getCorrelationID());
+        String metaClientType = obj.toJSONString();
+        return new Object[]{metaClientType};
     }
 
     public ArrayList<String> getMissingMandatoryValues() {
