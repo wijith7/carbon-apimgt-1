@@ -359,10 +359,6 @@
         var a = document.createElement('a');
         a.href = url;
 
-        if (!isValidURL(url)) {
-            return undefined;
-        }
-
         var hostname = a.hostname;
         var port = a.port;
         var protocol = a.protocol;
@@ -390,14 +386,4 @@
         return endpoints;
     };
 
-    //Check whether the endpoints are valid.
-    var isValidURL = function (url) {
-        var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
-            '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-            '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-            '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
-        return pattern.test(url);
-    }
 })(jQuery, window, document);
