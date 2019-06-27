@@ -912,7 +912,7 @@ if(jagg.isCSRFTokenValid())
                     return;
                 }
             } catch (e) {
-        	    print({error: true, message: " contains an invalid swagger definition."});
+        	    print({error: true, message: "Invalid API definition provided. Re-import with valid definition"});
             }
         } else {
             print({
