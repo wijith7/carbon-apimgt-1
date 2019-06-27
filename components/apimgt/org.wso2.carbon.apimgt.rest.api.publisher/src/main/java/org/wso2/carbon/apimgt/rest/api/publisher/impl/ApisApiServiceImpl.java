@@ -1904,7 +1904,7 @@ public class ApisApiServiceImpl extends ApisApiService {
                 }
             } else if (swagger.get(APIConstants.OPEN_API) != null) {
                 // logic to validate open api 3.0.x
-                if (!swagger.get(APIConstants.OPEN_API).asText().matches(APIConstants.OPEN_API_VERSION_REGEX)) {
+                if (!(swagger.get(APIConstants.OPEN_API).asText().matches(APIConstants.OPEN_API_VERSION_REGEX))) {
                     RestApiUtil.handleBadRequest("Unsupported OpenAPI version provided. Please add with OpenAPI " +
                             "version " + APIConstants.OPEN_API_V3, log);
                 } else if (swagger.get(APIConstants.SWAGGER_INFO) == null ||

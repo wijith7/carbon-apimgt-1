@@ -1891,8 +1891,9 @@ public class APIStoreHostObject extends ScriptableObject {
                 if (!StringUtils.isEmpty(apiDefinition)) {
                     JSONParser parser = new JSONParser();
                     JSONObject apiDefinitionJson = (JSONObject) parser.parse(apiDefinition);
-                    if (apiDefinitionJson.get(APIConstants.OPEN_API) != null && APIConstants.OPEN_API_V3
-                            .equals(apiDefinitionJson.get(APIConstants.OPEN_API).toString())) {
+                    if (apiDefinitionJson.get(APIConstants.OPEN_API) != null &&
+                            ((apiDefinitionJson.get(APIConstants.OPEN_API).toString())
+                                    .matches(APIConstants.OPEN_API_VERSION_REGEX))) {
                         isOpenAPI3APIDefinition = true;
                     }
                 }
