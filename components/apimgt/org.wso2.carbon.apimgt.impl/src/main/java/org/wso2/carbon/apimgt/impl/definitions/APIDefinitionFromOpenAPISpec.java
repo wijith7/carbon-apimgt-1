@@ -86,16 +86,15 @@ public class APIDefinitionFromOpenAPISpec extends APIDefinition {
                         continue;
                     }
 
-                    boolean isGlobalParameterDefined = false;
                     boolean isHttpVerbDefined = false;
 
                     for (Object o1 : path.keySet()) {
                         String httpVerb = (String) o1;
 
-                        if (APIConstants.PARAMETERS.equals(httpVerb.toLowerCase())) {
-                            isGlobalParameterDefined = true;
-                        } else if (APIConstants.SWAGGER_SUMMARY.equals(httpVerb.toLowerCase())
+                        if (APIConstants.SWAGGER_SUMMARY.equals(httpVerb.toLowerCase())
                                 || APIConstants.SWAGGER_DESCRIPTION.equals(httpVerb.toLowerCase())
+                                || APIConstants.SWAGGER_SERVERS.equals(httpVerb.toLowerCase())
+                                || APIConstants.PARAMETERS.equals(httpVerb.toLowerCase())
                                 || httpVerb.startsWith("x-")
                                 || httpVerb.startsWith("X-")) {
                             // openapi 3.x allow 'summary', 'description' and extensions in PathItem Object.
@@ -142,9 +141,8 @@ public class APIDefinitionFromOpenAPISpec extends APIDefinition {
                         }
                     }
 
-                    if (isGlobalParameterDefined && !isHttpVerbDefined) {
-                        handleException("Resource '" + uriTempVal + "' has global parameters without " +
-                                "HTTP methods");
+                    if (!isHttpVerbDefined) {
+                        handleException("Resource '" + uriTempVal + "' does not have any HTTP method");
                     }
                 }
             }
