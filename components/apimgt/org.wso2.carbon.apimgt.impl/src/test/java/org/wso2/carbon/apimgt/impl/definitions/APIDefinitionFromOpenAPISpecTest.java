@@ -276,7 +276,6 @@ public class APIDefinitionFromOpenAPISpecTest {
         Assert.assertEquals(actualTemplates, expectedTemplates);
     }
 
-
     protected URITemplate getUriTemplate(String httpVerb, String authType, String uriTemplateString) {
         URITemplate uriTemplate = new URITemplate();
         uriTemplate.setAuthTypes(authType);
