@@ -27,3 +27,10 @@ var convertTimeStringUTC = function(date){
     var formattedDate = d.getUTCFullYear() + "-" + formatTimeChunk((d.getUTCMonth()+1)) + "-" + formatTimeChunk(d.getUTCDate())+" "+formatTimeChunk(d.getUTCHours())+":"+formatTimeChunk(d.getUTCMinutes());
     return formattedDate;
 };
+
+function dateDiffInYears(startDate, endDate) {
+    var a = new moment(startDate);
+    var b = new moment(endDate);
+    var diffYears = b.diff(a, 'years');
+    return diffYears;
+}
