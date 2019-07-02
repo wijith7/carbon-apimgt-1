@@ -81,7 +81,7 @@ $( document ).ready(function() {
          }); 
                    //date picker
         $('#date-range').daterangepicker({
-                        timePicker: true,
+                        timePicker: false,
                         timePickerIncrement: 30,
                         format: 'YYYY-MM-DD h:mm',
                         opens: 'left'
@@ -90,12 +90,63 @@ $( document ).ready(function() {
                         btnActiveToggle(this);
                         from = picker.startDate;
                         to = picker.endDate;
-                        var fromStr = convertTimeString(from).split(" ");
-                        var toStr = convertTimeString(to).split(" ");
-                        var dateStr = fromStr[0] + " <i>" + fromStr[1] + "</i> <b>to</b> " + toStr[0] + " <i>" + toStr[1] + "</i>";
-                        $("#date-range span").html(dateStr);
-                        renderGraph(from, to);
-                         });
+
+            // If the selected duration is more than 1 year, or the selected start date is older than 1 year,
+            // adjust the start date so that the date will be
+            // the 1st date of that selected month. The year won't be changed
+            // var durationInYears = dateDiffInYears(picker.startDate, picker.endDate);
+            var startDateAdjusted = false;
+            var endDateAdjusted = false;
+
+            var isStartDateOlderThanYear = dateDiffInYears(picker.startDate, new Date()) > 0;
+
+            if (isStartDateOlderThanYear) {
+                if (picker.startDate.date() != 1) {
+                    picker.startDate.date(1);
+                    var startDateAdjusted = true;
+                    from = convertTimeString(picker.startDate);
+                }
+
+                if (
+                    picker.endDate.isBefore(new Date) &&
+                    picker.endDate.date() != 0 &&
+                    picker.endDate.month() < new Date().getMonth()
+                ) {
+                    picker.endDate.month(picker.endDate.month() + 1);
+                    // this is done to do the next call picker.endDate.date(0); in order ot get the last
+                    // date of current month.
+                    // picker.endDate.date(0) sets the date to the last date of previous month, so needs to
+                    // increase the current month by 1.
+                    picker.endDate.date(0);
+                    var endDateAdjusted = true;
+                    to = convertTimeString(picker.endDate);
+                    $('#date-range').data("daterangepicker").setStartDate(picker.startDate);
+                    $('#date-range').data("daterangepicker").setEndDate(picker.endDate);
+                }
+                var reasonMsg = " start date of the selected duration is older than 1 year";
+                if (startDateAdjusted && endDateAdjusted) {
+                    jagg.message({
+                        content: "Adjusted the start date to the 1st day of the selected month, and " +
+                        "end date to the last date of selected month as the" + reasonMsg, type: "info"
+                    });
+                } else if (startDateAdjusted && !endDateAdjusted) {
+                    jagg.message({
+                        content: "Adjusted the start date to the 1st day of the selected month, as " +
+                        reasonMsg, type: "info"
+                    });
+                } else if (endDateAdjusted && !startDateAdjusted) {
+                    jagg.message({
+                        content: "Adjusted the end date to the last day of the selected month, as " +
+                        reasonMsg, type: "info"
+                    });
+                }
+            }
+            var fromStr = convertTimeString(from).split(" ");
+            var toStr = convertTimeString(to).split(" ");
+            var dateStr = fromStr[0] + " <i>" + fromStr[1] + "</i> <b>to</b> " + toStr[0] + " <i>" + toStr[1] + "</i>";
+            $("#date-range span").html(dateStr);
+            renderGraph(from, to);
+        });
 });
 var populateAPIList = function(){
            jagg.post("/site/blocks/stats/ajax/stats.jag", { action : "getAPIList" ,currentLocation:currentLocation},
