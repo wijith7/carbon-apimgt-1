@@ -261,7 +261,7 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
                 Map<String, Integer> durationBreakdown = this.getDurationBreakdown(startDate, endDate);
                 LocalDateTime currentDate = LocalDateTime.now(DateTimeZone.UTC);
                 DateTimeFormatter formatter = DateTimeFormat.forPattern(APIUsageStatisticsClientConstants.TIMESTAMP_PATTERN);
-                LocalDateTime fromLocalDateTime = LocalDateTime.parse(fromDate, formatter);//GMT time
+                LocalDateTime fromLocalDateTime = LocalDateTime.parse(startDate, formatter);//GMT time
 
                 if (fromLocalDateTime.isBefore(currentDate.minusYears(1))) {
                     granularity = APIUsageStatisticsClientConstants.MONTHS_GRANULARITY;
@@ -474,7 +474,7 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
                 Map<String, Integer> durationBreakdown = this.getDurationBreakdown(startDate, endDate);
                 LocalDateTime currentDate = LocalDateTime.now(DateTimeZone.UTC);
                 DateTimeFormatter formatter = DateTimeFormat.forPattern(APIUsageStatisticsClientConstants.TIMESTAMP_PATTERN);
-                LocalDateTime fromLocalDateTime = LocalDateTime.parse(fromDate, formatter);//GMT time
+                LocalDateTime fromLocalDateTime = LocalDateTime.parse(startDate, formatter);//GMT time
 
                 if (fromLocalDateTime.isBefore(currentDate.minusYears(1))) {
                     granularity = APIUsageStatisticsClientConstants.MONTHS_GRANULARITY;
@@ -591,7 +591,7 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
                 Map<String, Integer> durationBreakdown = this.getDurationBreakdown(startDate, endDate);
                 LocalDateTime currentDate = LocalDateTime.now(DateTimeZone.UTC);
                 DateTimeFormatter formatter = DateTimeFormat.forPattern(APIUsageStatisticsClientConstants.TIMESTAMP_PATTERN);
-                LocalDateTime fromLocalDateTime = LocalDateTime.parse(fromDate, formatter);//GMT time
+                LocalDateTime fromLocalDateTime = LocalDateTime.parse(startDate, formatter);//GMT time
 
                 if (fromLocalDateTime.isBefore(currentDate.minusYears(1))) {
                     granularity = APIUsageStatisticsClientConstants.MONTHS_GRANULARITY;
@@ -721,7 +721,7 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
                 Map<String, Integer> durationBreakdown = this.getDurationBreakdown(startDate, endDate);
                 LocalDateTime currentDate = LocalDateTime.now(DateTimeZone.UTC);
                 DateTimeFormatter formatter = DateTimeFormat.forPattern(APIUsageStatisticsClientConstants.TIMESTAMP_PATTERN);
-                LocalDateTime fromLocalDateTime = LocalDateTime.parse(fromDate, formatter);//GMT time
+                LocalDateTime fromLocalDateTime = LocalDateTime.parse(startDate, formatter);//GMT time
 
                 if (fromLocalDateTime.isBefore(currentDate.minusYears(1))) {
                     granularity = APIUsageStatisticsClientConstants.MONTHS_GRANULARITY;
