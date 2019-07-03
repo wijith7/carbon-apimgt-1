@@ -589,8 +589,11 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
                 String granularity = APIUsageStatisticsClientConstants.HOURS_GRANULARITY;//default granularity
 
                 Map<String, Integer> durationBreakdown = this.getDurationBreakdown(startDate, endDate);
+                LocalDateTime currentDate = LocalDateTime.now(DateTimeZone.UTC);
+                DateTimeFormatter formatter = DateTimeFormat.forPattern(APIUsageStatisticsClientConstants.TIMESTAMP_PATTERN);
+                LocalDateTime fromLocalDateTime = LocalDateTime.parse(fromDate, formatter);//GMT time
 
-                if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_YEARS) > 0) {
+                if (fromLocalDateTime.isBefore(currentDate.minusYears(1))) {
                     granularity = APIUsageStatisticsClientConstants.MONTHS_GRANULARITY;
                 } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_MONTHS) > 0) {
                     granularity = APIUsageStatisticsClientConstants.DAYS_GRANULARITY;
@@ -716,8 +719,11 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
                 String endDate = toDate + ":00";
                 String granularity = APIUsageStatisticsClientConstants.HOURS_GRANULARITY;//default granularity
                 Map<String, Integer> durationBreakdown = this.getDurationBreakdown(startDate, endDate);
+                LocalDateTime currentDate = LocalDateTime.now(DateTimeZone.UTC);
+                DateTimeFormatter formatter = DateTimeFormat.forPattern(APIUsageStatisticsClientConstants.TIMESTAMP_PATTERN);
+                LocalDateTime fromLocalDateTime = LocalDateTime.parse(fromDate, formatter);//GMT time
 
-                if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_YEARS) > 0) {
+                if (fromLocalDateTime.isBefore(currentDate.minusYears(1))) {
                     granularity = APIUsageStatisticsClientConstants.MONTHS_GRANULARITY;
                 } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_MONTHS) > 0) {
                     granularity = APIUsageStatisticsClientConstants.DAYS_GRANULARITY;
@@ -1711,8 +1717,11 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
                 String granularity = APIUsageStatisticsClientConstants.HOURS_GRANULARITY;//default granularity
 
                 Map<String, Integer> durationBreakdown = this.getDurationBreakdown(fromDate, toDate);
+                LocalDateTime currentDate = LocalDateTime.now(DateTimeZone.UTC);
+                DateTimeFormatter formatter = DateTimeFormat.forPattern(APIUsageStatisticsClientConstants.TIMESTAMP_PATTERN);
+                LocalDateTime fromLocalDateTime = LocalDateTime.parse(fromDate, formatter);//GMT time
 
-                if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_YEARS) > 0) {
+                if (fromLocalDateTime.isBefore(currentDate.minusYears(1))) {
                     granularity = APIUsageStatisticsClientConstants.MONTHS_GRANULARITY;
                 } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_MONTHS) > 0) {
                     granularity = APIUsageStatisticsClientConstants.DAYS_GRANULARITY;
@@ -2068,9 +2077,11 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
 
             if (fromLocalDateTime.isBefore(currentDate.minusYears(1))) {
                 granularity = APIUsageStatisticsClientConstants.MONTHS_GRANULARITY;
-            } else if ((durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_MONTHS) > 0) ||
-                    (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_DAYS) > 0)) {
+            } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_MONTHS) > 0
+                    || durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_WEEKS) > 0) {
                 granularity = APIUsageStatisticsClientConstants.DAYS_GRANULARITY;
+            } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_DAYS) > 0) {
+                granularity = APIUsageStatisticsClientConstants.HOURS_GRANULARITY;
             }
 
             StringBuilder query = new StringBuilder(
@@ -2599,9 +2610,13 @@ public class APIUsageStatisticsRestClientImpl extends APIUsageStatisticsClient {
 
                 if (fromLocalDateTime.isBefore(currentDate.minusYears(1))) {
                     granularity = APIUsageStatisticsClientConstants.MONTHS_GRANULARITY;
-                } else if ((durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_MONTHS) > 0) ||
-                        (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_DAYS) > 0)) {
+                } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_MONTHS) > 0
+                        || durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_WEEKS) > 0) {
                     granularity = APIUsageStatisticsClientConstants.DAYS_GRANULARITY;
+                } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_DAYS) > 0) {
+                    granularity = APIUsageStatisticsClientConstants.HOURS_GRANULARITY;
+                } else if (durationBreakdown.get(APIUsageStatisticsClientConstants.DURATION_HOURS) > 0) {
+                    granularity = APIUsageStatisticsClientConstants.MINUTES_GRANULARITY;
                 }
                 apiUsageByAppQuery
                         .append("') within " + getTimestamp(fromDate) + "L, " + getTimestamp(toDate) + "L per '"
