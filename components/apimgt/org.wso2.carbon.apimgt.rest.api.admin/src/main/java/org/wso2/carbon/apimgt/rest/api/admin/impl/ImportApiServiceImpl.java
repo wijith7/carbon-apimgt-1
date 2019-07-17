@@ -181,13 +181,13 @@ public class ImportApiServiceImpl extends ImportApiService {
      * @param oAuthApplicationInfo OAuth Application information
      * @return An APIKey containing keys from OAuthApplication
      */
-    private APIKey getAPIKeyFromOauthApp(String type, OAuthApplicationInfo oAuthApplicationInfo){
+    private APIKey getAPIKeyFromOauthApp(String type, OAuthApplicationInfo oAuthApplicationInfo) {
         APIKey apiKey = new APIKey();
         apiKey.setType(type);
         apiKey.setConsumerKey(oAuthApplicationInfo.getClientId());
         apiKey.setConsumerSecret(oAuthApplicationInfo.getClientSecret());
         apiKey.setGrantTypes((String) oAuthApplicationInfo.getParameter(GRANT_TYPES));
-        if (apiKey.getGrantTypes().contains(GRANT_TYPE_IMPLICIT) && apiKey.getGrantTypes().contains(GRANT_TYPE_CODE)){
+        if (apiKey.getGrantTypes().contains(GRANT_TYPE_IMPLICIT) && apiKey.getGrantTypes().contains(GRANT_TYPE_CODE)) {
             apiKey.setCallbackUrl((String) oAuthApplicationInfo.getParameter(REDIRECT_URIS));
         }
         apiKey.setValidityPeriod(DEFAULT_VALIDITY_PERIOD);
