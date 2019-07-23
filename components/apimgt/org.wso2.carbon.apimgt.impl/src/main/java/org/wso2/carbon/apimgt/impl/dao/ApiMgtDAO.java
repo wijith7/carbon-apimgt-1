@@ -5695,6 +5695,11 @@ public class ApiMgtDAO {
                 application.setTokenType(rs.getString("TOKEN_TYPE"));
                 subscriber.setId(rs.getInt("SUBSCRIBER_ID"));
 
+                Map<String, OAuthApplicationInfo> keyMap = getOAuthApplications(application.getId());
+                for (Map.Entry<String, OAuthApplicationInfo> entry : keyMap.entrySet()) {
+                    application.addOAuthApp(entry.getKey(), entry.getValue());
+                }
+
                 if (multiGroupAppSharingEnabled) {
                     if (StringUtils.isEmpty(application.getGroupId())) {
                         application.setGroupId(getGroupId(applicationId));
