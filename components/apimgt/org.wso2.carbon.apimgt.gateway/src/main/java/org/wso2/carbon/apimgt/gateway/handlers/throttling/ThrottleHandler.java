@@ -372,7 +372,7 @@ public class ThrottleHandler extends AbstractHandler implements ManagedLifecycle
                             if (!isApplicationLevelThrottled) {
                                 boolean keyTemplatesAvailable = getThrottleDataHolder().isKeyTemplatesPresent();
                                 if (!keyTemplatesAvailable || !validateCustomPolicy(authorizedUser, applicationLevelThrottleKey,
-                                                                                    subscriptionLevelThrottleKey, apiLevelThrottleKey, subscriptionLevelThrottleKey, apiContext,
+                                        resourceLevelThrottleKey, apiLevelThrottleKey, subscriptionLevelThrottleKey, apiContext,
                                                                                     apiVersion, subscriberTenantDomain, apiTenantDomain, applicationId,
                                                                                     getThrottleDataHolder().getKeyTemplateMap(), synCtx)) {
                                     //Pass message context and continue to avoid performance issue.
