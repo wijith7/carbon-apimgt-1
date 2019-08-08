@@ -32,6 +32,7 @@ import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.mediation.initializer.configurations.ConfigurationManager;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.utils.AbstractAxis2ConfigurationContextObserver;
+import org.wso2.carbon.apimgt.impl.caching.CacheProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -127,6 +128,12 @@ public class TenantServiceCreator extends AbstractAxis2ConfigurationContextObser
         } catch (Exception e) {
             log.error("Failed to create Tenant's synapse sequences.", e);
         }
+
+        //Create caches for tenants
+        CacheProvider.createGatewayKeyCache();
+        CacheProvider.createResourceCache();
+        CacheProvider.createGatewayTokenCache();
+        CacheProvider.createInvalidTokenCache();
     }
 
     /**
