@@ -134,8 +134,6 @@
           Other than this config, also <EnableGatewayTokenCache> and <EnableKeyManagerTokenCache> should have been set
           as 'false' to completely disable JWTClaimCache.
          -->
-        <!-- Expiry time for resource cache-->
-        <!-- GatewayResourceCacheExpiry>900</GatewayResourceCacheExpiry -->
         <EnableJWTClaimCache>true</EnableJWTClaimCache>
     </CacheConfigurations>
 
