@@ -462,7 +462,7 @@ public class APIGatewayManager {
                 "           expression=\"$ctx:fullUrl\"/>\n" +
                 "   <send>\n" +
                 "      <endpoint>\n" +
-                endpointConf + "\n"+
+                endpointConf + "\n" +
                 "      </endpoint>\n" +
                 "   </send>\n" +
                 "</sequence>";
