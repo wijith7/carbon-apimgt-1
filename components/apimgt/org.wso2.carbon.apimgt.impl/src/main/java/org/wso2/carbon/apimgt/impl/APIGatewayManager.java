@@ -424,7 +424,7 @@ public class APIGatewayManager {
         String timeout = endpointConfig[0];
         String suspendOnFailure = endpointConfig[1];
         String markForSuspension = endpointConfig[2];
-        String endpoint = "<default>\n" +
+        String endpointConf = "<default>\n" +
                 "\t<timeout>\n" +
                 timeout +
                 "\t</timeout>\n" +
@@ -462,7 +462,7 @@ public class APIGatewayManager {
                 "           expression=\"$ctx:fullUrl\"/>\n" +
                 "   <send>\n" +
                 "      <endpoint>\n" +
-                endpoint + "\n"+
+                endpointConf + "\n"+
                 "      </endpoint>\n" +
                 "   </send>\n" +
                 "</sequence>";
