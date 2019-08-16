@@ -955,9 +955,9 @@ public class APIGatewayManager {
     private String[] websocketEndpointConfig(API api, String urlType) throws JSONException {
         JSONObject obj = new JSONObject(api.getEndpointConfig());
         JSONObject endpointObj = null;
-        if (ENDPOINT_PRODUCTION.equalsIgnoreCase(urlType)){
+        if (ENDPOINT_PRODUCTION.equalsIgnoreCase(urlType)) {
             endpointObj = obj.getJSONObject(APIConstants.API_DATA_PRODUCTION_ENDPOINTS).getJSONObject("config");
-        }else if (ENDPOINT_SANDBOX.equalsIgnoreCase(urlType)){
+        } else if (ENDPOINT_SANDBOX.equalsIgnoreCase(urlType)) {
             endpointObj = obj.getJSONObject(APIConstants.API_DATA_SANDBOX_ENDPOINTS).getJSONObject("config");
         }
         String duration = (endpointObj.has("actionDuration")) ? "\t\t<duration>" + endpointObj.get("actionDuration") + "</duration>\n" : "";
@@ -976,7 +976,7 @@ public class APIGatewayManager {
                 return new String[]{timeout, suspendOnFailure, markForSuspension};
             }
         }
-        if (endpointObj.has("suspendErrorCode")){
+        if (endpointObj.has("suspendErrorCode")) {
             //When there are/is multiple/single suspend error codes
             if (endpointObj.get("suspendErrorCode") instanceof JSONArray) {
                 String suspendCodeList = "";
@@ -994,7 +994,7 @@ public class APIGatewayManager {
         String suspendMaxDuration = (endpointObj.has("suspendMaxDuration")) ? "\t\t<maximumDuration>" + endpointObj.get("suspendMaxDuration") + "</maximumDuration>" : "";
         String factor = (endpointObj.has("factor")) ? "\t\t<progressionFactor>" + endpointObj.get("factor") + "</progressionFactor>" : "";
         String suspendOnFailure = suspendErrorCode + "\n" + suspendDuration + "\n" + suspendMaxDuration + "\n" + factor;
-        if (endpointObj.has("retryErroCode")){
+        if (endpointObj.has("retryErroCode")) {
             //When there are/is multiple/single retry error codes
             if (endpointObj.get("retryErroCode") instanceof JSONArray) {
                 String retryCodeList = "";
