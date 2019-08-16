@@ -1330,7 +1330,7 @@ $(document).ready(function(){
                 }
                 jagg.post("/site/blocks/item-design/ajax/add.jag", {
                     action: "validateSwagger",
-                    swaggerDefinition: jsonFile.result
+                    swaggerDefinition: JSON.stringify(data)
                 }, function (result) {
                     if (result.error) {
                         jagg.message({
