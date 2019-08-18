@@ -959,14 +959,14 @@ public class APIGatewayManager {
         JSONObject endpointObj = null;
         if (ENDPOINT_PRODUCTION.equalsIgnoreCase(urlType)) {
             if (obj.getJSONObject(APIConstants.API_DATA_PRODUCTION_ENDPOINTS).get("config") instanceof JSONObject) {
-                //if congig is not a JSONObject(happens when save the api without changing enpoint config at very first time)
+                //if config is not a JSONObject(happens when save the api without changing enpoint config at very first time)
                 endpointObj = obj.getJSONObject(APIConstants.API_DATA_PRODUCTION_ENDPOINTS).getJSONObject("config");
             } else {
                 return new String[]{"", "", ""};
             }
         } else if (ENDPOINT_SANDBOX.equalsIgnoreCase(urlType)) {
             if (obj.getJSONObject(APIConstants.API_DATA_SANDBOX_ENDPOINTS).get("config") instanceof JSONObject) {
-                //if congig is not a JSONObject(happens when save the api without changing enpoint config at very first time)
+                //if config is not a JSONObject(happens when save the api without changing enpoint config at very first time)
                 endpointObj = obj.getJSONObject(APIConstants.API_DATA_SANDBOX_ENDPOINTS).getJSONObject("config");
             } else {
                 return new String[]{"", "", ""};
