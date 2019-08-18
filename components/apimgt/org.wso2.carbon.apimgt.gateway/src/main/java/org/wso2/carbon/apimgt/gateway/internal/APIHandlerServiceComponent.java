@@ -71,7 +71,7 @@ public class APIHandlerServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("API handlers component activated");
         }
-        // This need to fix properly
+        // Getting ConfigurationContext need to fix properly
         try {
             ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem
                     (getClientRepoLocation(), getAxis2ClientXmlLocation());
