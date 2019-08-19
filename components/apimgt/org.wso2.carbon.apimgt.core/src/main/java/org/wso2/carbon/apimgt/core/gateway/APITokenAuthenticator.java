@@ -29,9 +29,9 @@ import org.wso2.carbon.apimgt.impl.dao.ApiMgtDAO;
 import org.wso2.carbon.apimgt.impl.dto.APIInfoDTO;
 import org.wso2.carbon.apimgt.impl.dto.ResourceInfoDTO;
 import org.wso2.carbon.apimgt.impl.dto.VerbInfoDTO;
-import org.wso2.carbon.apimgt.impl.caching.CacheProvider;
 
 import javax.cache.Cache;
+import javax.cache.Caching;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -184,6 +184,6 @@ public class APITokenAuthenticator {
     }
 
     protected Cache getResourceCache(){
-        return CacheProvider.getResourceCache();
+        return Caching.getCacheManager(APIConstants.API_MANAGER_CACHE_MANAGER).getCache(APIConstants.RESOURCE_CACHE_NAME);
     }
 }
