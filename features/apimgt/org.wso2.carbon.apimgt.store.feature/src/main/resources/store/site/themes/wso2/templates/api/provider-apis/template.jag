@@ -6,10 +6,10 @@
 
 %>
 <%if(outputs.apiOwner!=null && outputs.apis && outputs.apis.length > 0){%>
-<div class="page-header add-margin-top-4x">
+<div id="provider-apis-header" class="page-header add-margin-top-4x">
   <h2 class="truncate-children"><span><%=i18n.localize("More APIs from")%>  '<%= owner %>'</span></h2>
 </div>
-  <div class="page-content">
+  <div id="provider-apis-content" class="page-content">
   	<div class="row">
     <%
     var urlPrefix;
