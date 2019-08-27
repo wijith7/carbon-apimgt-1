@@ -35,6 +35,7 @@ import org.wso2.carbon.apimgt.api.model.SubscribedAPI;
 import org.wso2.carbon.apimgt.api.model.Subscriber;
 import org.wso2.carbon.apimgt.api.model.Tier;
 import org.wso2.carbon.apimgt.impl.APIConstants;
+import org.wso2.carbon.apimgt.impl.APIManagerFactory;
 import org.wso2.carbon.apimgt.impl.dao.ApiMgtDAO;
 import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.apimgt.rest.api.util.utils.RestApiUtil;
@@ -68,8 +69,7 @@ public class ApplicationImportExportManager {
         String groupId = apiConsumer.getGroupId(appId);
         application = apiConsumer.getApplicationById(appId);
 
-        ApiMgtDAO apiMgtDAO = ApiMgtDAO.getInstance();
-        Map<String, OAuthApplicationInfo> keyMap = apiMgtDAO.getOAuthApplications(application.getId());
+        Map<String, OAuthApplicationInfo> keyMap = apiConsumer.getOAuthApplications(application.getId());
         for (Map.Entry<String, OAuthApplicationInfo> entry : keyMap.entrySet()) {
             application.addOAuthApp(entry.getKey(), entry.getValue());
         }
