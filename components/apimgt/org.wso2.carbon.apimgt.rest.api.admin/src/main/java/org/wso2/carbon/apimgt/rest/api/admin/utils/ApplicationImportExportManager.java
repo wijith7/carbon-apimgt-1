@@ -30,6 +30,7 @@ import org.wso2.carbon.apimgt.api.model.APIIdentifier;
 import org.wso2.carbon.apimgt.api.model.APIKey;
 import org.wso2.carbon.apimgt.api.model.Application;
 import org.wso2.carbon.apimgt.api.model.ApplicationConstants;
+import org.wso2.carbon.apimgt.api.model.OAuthApplicationInfo;
 import org.wso2.carbon.apimgt.api.model.SubscribedAPI;
 import org.wso2.carbon.apimgt.api.model.Subscriber;
 import org.wso2.carbon.apimgt.api.model.Tier;
@@ -65,6 +66,12 @@ public class ApplicationImportExportManager {
         int appId = APIUtil.getApplicationId(appName, username);
         String groupId = apiConsumer.getGroupId(appId);
         application = apiConsumer.getApplicationById(appId);
+
+        Map<String, OAuthApplicationInfo> keyMap = apiConsumer.getOAuthApplications(application.getId());
+        for (Map.Entry<String, OAuthApplicationInfo> entry : keyMap.entrySet()) {
+            application.addOAuthApp(entry.getKey(), entry.getValue());
+        }
+
         if (application != null) {
             application.setGroupId(groupId);
             application.setOwner(application.getSubscriber().getName());
