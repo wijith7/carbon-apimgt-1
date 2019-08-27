@@ -1879,7 +1879,7 @@ public class ApiMgtDAO {
     }
 
 
-    private Map<String, OAuthApplicationInfo> getOAuthApplications(int applicationId) throws APIManagementException {
+    public Map<String, OAuthApplicationInfo> getOAuthApplications(int applicationId) throws APIManagementException {
         Map<String, OAuthApplicationInfo> map = new HashMap<String, OAuthApplicationInfo>();
         OAuthApplicationInfo prodApp = getClientOfApplication(applicationId, "PRODUCTION");
         if (prodApp != null) {
@@ -5694,11 +5694,6 @@ public class ApiMgtDAO {
                 application.setTier(rs.getString("APPLICATION_TIER"));
                 application.setTokenType(rs.getString("TOKEN_TYPE"));
                 subscriber.setId(rs.getInt("SUBSCRIBER_ID"));
-
-                Map<String, OAuthApplicationInfo> keyMap = getOAuthApplications(application.getId());
-                for (Map.Entry<String, OAuthApplicationInfo> entry : keyMap.entrySet()) {
-                    application.addOAuthApp(entry.getKey(), entry.getValue());
-                }
 
                 if (multiGroupAppSharingEnabled) {
                     if (StringUtils.isEmpty(application.getGroupId())) {
