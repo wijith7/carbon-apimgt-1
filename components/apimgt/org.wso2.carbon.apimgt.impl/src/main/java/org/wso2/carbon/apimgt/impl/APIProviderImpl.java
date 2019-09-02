@@ -1002,7 +1002,6 @@ class APIProviderImpl extends AbstractAPIManager implements APIProvider {
                 updatePermissions = true;
             }
 
-            //to keep the old endpointsecurity username and password if the new password is empty
             if (api.isEndpointSecured() && StringUtils.isBlank(api.getEndpointUTPassword()) &&
                     !StringUtils.isBlank(oldApi.getEndpointUTPassword())) {
                 log.debug("Given endpointsecurity password is empty");
@@ -2710,7 +2709,6 @@ class APIProviderImpl extends AbstractAPIManager implements APIProvider {
             throw new APIManagementException(errorMessage);
         }
 
-        //not allow to add apis with empty
         if (api.isEndpointSecured() && StringUtils.isEmpty(api.getEndpointUTPassword())) {
             String errorMessage = "Empty password is given for endpointSecurity when creating API "
                     + api.getId().getApiName();
