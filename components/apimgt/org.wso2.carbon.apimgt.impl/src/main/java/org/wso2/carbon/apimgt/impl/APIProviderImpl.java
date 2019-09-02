@@ -1001,6 +1001,15 @@ class APIProviderImpl extends AbstractAPIManager implements APIProvider {
                             !api.getVisibleRoles().equals(oldApi.getVisibleRoles()))) {
                 updatePermissions = true;
             }
+
+            if (api.isEndpointSecured() && StringUtils.isBlank(api.getEndpointUTPassword()) &&
+                    !StringUtils.isBlank(oldApi.getEndpointUTPassword())) {
+                log.debug("Given endpointsecurity password is empty");
+                api.setEndpointUTUsername(oldApi.getEndpointUTUsername());
+                api.setEndpointUTPassword(oldApi.getEndpointUTPassword());
+                log.debug("Using the previous username and password for endpoint security");
+            }
+
             updateApiArtifact(api, true, updatePermissions);
             if (!oldApi.getContext().equals(api.getContext())) {
                 api.setApiHeaderChanged(true);
@@ -2699,6 +2708,14 @@ class APIProviderImpl extends AbstractAPIManager implements APIProvider {
             log.error(errorMessage);
             throw new APIManagementException(errorMessage);
         }
+
+        if (api.isEndpointSecured() && StringUtils.isEmpty(api.getEndpointUTPassword())) {
+            String errorMessage = "Empty password is given for endpointSecurity when creating API "
+                    + api.getId().getApiName();
+            log.error(errorMessage);
+            throw new APIManagementException(errorMessage);
+        }
+
         //Validate Transports
         validateAndSetTransports(api);
         validateAndSetAPISecurity(api);
