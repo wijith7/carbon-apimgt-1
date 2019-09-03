@@ -71,11 +71,7 @@ function validateInputs(){
     if (!validateInputCharactors(applicationNameTxt,applicationName,illegalChars)){
         return false;
     }
- 
-     if (!validateForSpaces(applicationNameTxt, applicationName, errorHasSpacesMsg)) {
-         return false;
-     }
- 
+
          var isInvalidAttribute = false;
          $('#custom-attribute-tbody tr').each(function() {
                  var attributeElement= $(this).find('input[name^=attributeName]');
