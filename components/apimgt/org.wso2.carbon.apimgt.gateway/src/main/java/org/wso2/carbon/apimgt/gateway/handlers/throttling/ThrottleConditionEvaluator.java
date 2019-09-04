@@ -360,41 +360,39 @@ public class ThrottleConditionEvaluator {
                                                List<ConditionDto> conditionDtoList) {
 
         ThrottleProperties throttleProperties = ServiceReferenceHolder.getInstance().getThrottleProperties();
-        boolean status = false;
+        boolean status = true;
         for (ConditionDto condition : conditionDtoList) {
+            status = true;
             if (condition.getIpCondition() != null) {
-                if (isMatchingIP(axis2MessageContext, condition.getIpCondition())) {
-                    status = true;
-                    break;
+                if (!isMatchingIP(axis2MessageContext, condition.getIpCondition())) {
+                    status = false;
                 }
             } else if (condition.getIpRangeCondition() != null) {
-                if (isWithinIP(axis2MessageContext, condition.getIpRangeCondition())) {
-                    status = true;
-                    break;
+                if (!isWithinIP(axis2MessageContext, condition.getIpRangeCondition())) {
+                    status = false;
                 }
             }
             if (condition.getHeaderConditions() != null && throttleProperties.isEnableHeaderConditions() &&
                     !condition.getHeaderConditions().getValues().isEmpty()) {
-                if (isHeaderPresent(axis2MessageContext, condition.getHeaderConditions())) {
-                    status = true;
-                    break;
+                if (!isHeaderPresent(axis2MessageContext, condition.getHeaderConditions())) {
+                    status = false;
                 }
             }
             if (condition.getJwtClaimConditions() != null && throttleProperties.isEnableJwtConditions() &&
                     !condition.getJwtClaimConditions().getValues().isEmpty()) {
-                if (isJWTClaimPresent(authContext, condition.getJwtClaimConditions())) {
-                    status = true;
-                    break;
+                if (!isJWTClaimPresent(authContext, condition.getJwtClaimConditions())) {
+                    status = false;
                 }
             }
             if (condition.getQueryParameterConditions() != null && throttleProperties.isEnableQueryParamConditions() &&
                     !condition.getQueryParameterConditions().getValues().isEmpty()) {
-                if (isQueryParamPresent(axis2MessageContext, condition.getQueryParameterConditions())) {
-                    status = true;
-                    break;
+                if (!isQueryParamPresent(axis2MessageContext, condition.getQueryParameterConditions())) {
+                    status = false;
                 }
             }
-
+            if (status) {
+                break;
+            }
         }
         return status;
     }
