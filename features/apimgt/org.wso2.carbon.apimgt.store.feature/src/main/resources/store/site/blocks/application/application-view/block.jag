@@ -32,7 +32,7 @@ jagg.block("application/application-view", {
                 }
             }
 
-            if (Object.keys(result2.result).length > 0){
+            if (Object.keys(result2.result).length > 0) {
                 //@todo handle error
                 result2 = result2.result;
                 for(i=0;i < result2.applications.length;i++){
