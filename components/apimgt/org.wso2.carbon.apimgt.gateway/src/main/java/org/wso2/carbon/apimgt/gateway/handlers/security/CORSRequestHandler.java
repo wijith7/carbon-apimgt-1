@@ -48,6 +48,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CORSRequestHandler extends AbstractHandler implements ManagedLifecycle {
 
@@ -335,6 +337,15 @@ public class CORSRequestHandler extends AbstractHandler implements ManagedLifecy
         } else if (allowedOrigins.contains(origin)) {
             return origin;
         } else {
+            for (String allowedOrigin : allowedOrigins) {
+                if (allowedOrigin.contains("*")) {
+                    Pattern pattern = Pattern.compile(allowedOrigin.replace("*", ".*"));
+                    Matcher matcher = pattern.matcher(origin);
+                    if (matcher.find()) {
+                        return origin;
+                    }
+                }
+            }
             return null;
         }
     }
