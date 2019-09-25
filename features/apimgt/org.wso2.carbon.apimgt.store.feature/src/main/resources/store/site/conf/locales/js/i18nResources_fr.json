@@ -94,5 +94,9 @@
     "restricted": "Limité par roles",
     "retired": "RETRAITÉE",
     "roles": "Visible par Roles",
-    "tenants": "Visible par gestionnaires"
+    "tenants": "Visible par gestionnaires",
+    "Number of API Calls" : "Nombre d'appels d'API",
+    "API Name" : "Nom de l'API",
+    "Application Name" : "Nom de l'Application",
+    " User(s)" : " Utilisateur(s)"
 }
