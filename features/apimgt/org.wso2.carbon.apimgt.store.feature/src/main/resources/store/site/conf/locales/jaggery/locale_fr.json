@@ -68,7 +68,7 @@
 	"By API Properties [Syntax - {property name}:{property value}]" : "Par propriétés de l'API [Syntaxe - {nom de la propriété}: {valeur de la propriété}]]",
 	"By Description [ Syntax - description:xxxx ] or": "Par Description [ Syntaxe - description:xxxx ] ou",
 	"By Documentation Content [ Syntax - doc:xxxx ]": "Par Documentation [ Syntaxe - doc:xxxx ]",
-	"By Sub-Context [ Syntax - subcontext:xxxx ] or": "Par Sous-ContexteSub-Context [ subcontext - subcontext:xxxx ] ou",
+	"By Sub-Context [ Syntax - subcontext:xxxx ] or": "Par Sous-ContexteSub-Context [ Syntaxe - subcontext:xxxx ] ou",
 	"By Tags [ Syntax - tags:xxxx ] or": "Par Tags [ Syntaxe - tags:xxxx ] ou",
 	"By Microgateway Label [ Syntax - label:xxxx ]": "Par étiquette Microgateway [Syntaxe - label: xxxx]",
 	"By:": "Par:",
