@@ -68,9 +68,9 @@
 	"By API Properties [Syntax - {property name}:{property value}]" : "Par propriétés de l'API [Syntaxe - {nom de la propriété}: {valeur de la propriété}]]",
 	"By Description [ Syntax - description:xxxx ] or": "Par Description [ Syntaxe - description:xxxx ] ou",
 	"By Documentation Content [ Syntax - doc:xxxx ]": "Par Documentation [ Syntaxe - doc:xxxx ]",
-	"By Sub-Context [ Syntax - subcontext:xxxx ] or": "Par Sous-ContexteSub-Context [ Syntaxe - subcontext:xxxx ] ou",
+	"By Sub-Context [ Syntax - subcontext:xxxx ] or": "Par Sous-ContexteSub-Context [ subcontext - subcontext:xxxx ] ou",
 	"By Tags [ Syntax - tags:xxxx ] or": "Par Tags [ Syntaxe - tags:xxxx ] ou",
-	"By Microgateway Label [ Syntax - label:xxxx ]": "Par étiquette Microgateway [Syntaxe - étiquette: xxxx]",
+	"By Microgateway Label [ Syntax - label:xxxx ]": "Par étiquette Microgateway [Syntaxe - label: xxxx]",
 	"By:": "Par:",
 	"Callback URL": "URL de retour",
 	"Cancel": "Annuler",
@@ -394,5 +394,9 @@
 	"Groups" : "Groupes",
 	"Type a group and enter" : "Tapez un groupe et entrez",
 	"No groups assigned" : "Aucun groupe assigné",
-	"API Store walkthrough" : "Procédure pas à pas d'api store"
+	"API Store walkthrough" : "Procédure pas à pas d'api store",
+	"Download client-side SDKs for this API." : "Téléchargez les kits SDK côté client pour cette API.",
+	"Try" : "Essayer",
+	"Using" : "En utilisant",
+	"Set Request Header" : "Définir l'en-tête de demande"
 }
