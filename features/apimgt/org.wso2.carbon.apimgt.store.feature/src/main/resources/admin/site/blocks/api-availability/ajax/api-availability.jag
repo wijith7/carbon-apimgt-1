@@ -80,15 +80,8 @@ include("/jagg/jagg.jag");
             for (i = 0; i < parsedDataResult.length; i++) {
                 apiName = parsedDataResult[i]["values"]["api"];
                 apiVersion = parsedDataResult[i]["values"]["api_version"];
-                apiProvider = parsedDataResult[i]["values"]["apiPublisher"]
-
-                var providerNameSpltArr = apiProvider.split("@");
-                if (providerNameSpltArr[providerNameSpltArr.length -1] == 'carbon.super') { //if super tenant
-                    apiProvider = providerNameSpltArr[0]; //remove carbon.super 
-                } else {
-                    apiProvider = apiProvider.replace(new RegExp('@', 'g'), '-AT-'); //replace all @ with -AT-
-                }
-                
+                apiProvider = MultitenantUtils.getTenantAwareUsername(provider) + ""; //from java String obj to JS string
+                apiProvider = apiProvider.replace(new RegExp('@', 'g'), '-AT-'); //replace @ with -AT- if email was used as username
 
                 isExists = APIManagerFactory.getInstance().getAPIProvider(provider).isAPIAvailable(
                         new APIIdentifier(apiProvider, apiName, apiVersion));
