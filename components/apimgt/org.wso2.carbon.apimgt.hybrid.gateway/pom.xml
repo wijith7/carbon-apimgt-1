@@ -39,6 +39,7 @@
         <module>org.wso2.carbon.apimgt.hybrid.gateway.api.synchronizer</module>
         <module>org.wso2.carbon.apimgt.hybrid.gateway.configurator</module>
         <module>org.wso2.carbon.apimgt.hybrid.gateway.status.checker</module>
+        <module>org.wso2.carbon.apimgt.hybrid.gateway.registry.synchronizer</module>
     </modules>
 
 </project>

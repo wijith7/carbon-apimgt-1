@@ -26,10 +26,12 @@ public class OnPremiseGatewayConstants {
     public static final String CONFIG_FILE_NAME = "on-premise-gateway.properties";
 
     public static final String API_GATEWAY_URL_PROPERTY_KEY = "api.gateway.url";
+    public static final String API_MANAGEMENT_CONSOLE_URL_PROPERTY_KEY = "api.management.console.url";
     public static final String API_PUBLISHER_URL_PROPERTY_KEY = "api.publisher.url";
     public static final String DEFAULT_API_PUBLISHER_URL = "https://localhost:9443";
     public static final String API_ADMIN_URL_PROPERTY_KEY = "api.admin.url";
     public static final String GATEWAY_LABEL_PROPERTY_KEY = "api.hybrid.gateway.label";
+    public static final String REGISTRY_PATHS_PROPERTY_KEY="gov.reg.paths";
     public static final int DEFAULT_PORT = 9443;
     public static final int DEFAULT_GATEWAY_PORT = 8243;
     public static final String UPDATED_API_INFO_RETRIEVAL_DURATION = "updated.api.info.retrieval.duration";
