@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-# Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+# Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,28 +14,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.wso2.carbon.apimgt</groupId>
         <artifactId>org.wso2.carbon.apimgt.hybrid.gateway</artifactId>
+        <groupId>org.wso2.carbon.apimgt</groupId>
         <version>6.4.50</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.apimgt.hybrid.gateway.api.synchronizer</artifactId>
+    <artifactId>org.wso2.carbon.apimgt.hybrid.gateway.registry.synchronizer</artifactId>
     <packaging>bundle</packaging>
 
-    <name>WSO2 Carbon - Hybrid API Gateway API synchronization</name>
-    <description>API synchronization in hybrid API gateway</description>
+    <name>WSO2 Carbon - Hybrid API Gateway Registry Synchronization</name>
+    <description>Registry Synchronization in Hybrid API Gateway</description>
     <url>http://www.wso2.com</url>
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon.multitenancy</groupId>
-            <artifactId>org.wso2.carbon.tenant.mgt</artifactId>
-            <version>${carbon.multitenancy.version}</version>
+            <groupId>slf4j.wso2</groupId>
+            <artifactId>slf4j</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.apimgt</groupId>
+            <artifactId>org.wso2.carbon.apimgt.hybrid.gateway.common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.ws.client</artifactId>
+            <version>${carbon.registry.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.utils</artifactId>
@@ -53,19 +65,7 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.googlecode.json-simple.wso2</groupId>
-            <artifactId>json-simple</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>${httpclient.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents.wso2</groupId>
-            <artifactId>httpcore</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.core</artifactId>
@@ -105,45 +105,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>slf4j.wso2</groupId>
-            <artifactId>slf4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.apimgt</groupId>
-            <artifactId>org.wso2.carbon.apimgt.hybrid.gateway.common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jacoco</groupId>
-            <artifactId>org.jacoco.agent</artifactId>
-            <classifier>runtime</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <scope>test</scope>
-        </dependency>
+
     </dependencies>
 
     <build>
@@ -167,7 +129,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Private-Package>org.wso2.carbon.apimgt.hybrid.gateway.api.synchronizer.internal
+                        <Private-Package>org.wso2.carbon.apimgt.hybrid.gateway.registry.synchronizer.internal
                         </Private-Package>
                         <Import-Package>
                             org.wso2.carbon.utils.*; version="${carbon.kernel.package.import.version.range}",
@@ -176,11 +138,11 @@
                             org.slf4j,
                             org.wso2.carbon.tenant.mgt.services.*; version="${carbon.multitenancy.version}",
                             org.wso2.carbon.context.*;  version="${carbon.kernel.package.import.version.range}",
-                            org.wso2.carbon.core.multitenancy.*;  version="${carbon.kernel.package.import.version.range}",
                             org.wso2.carbon.stratos.common.*; version="${carbon.commons.imp.pkg.version}",
                             org.wso2.carbon.core.*; version="${carbon.kernel.package.import.version.range}",
                             org.osgi.framework.*,
                             org.json.*,
+                            org.wso2.carbon.registry.ws.client.*,
                             org.wso2.carbon.registry.*; version="${carbon.registry.imp.pkg.version}",
                             org.wso2.carbon.user.core.*; version="${carbon.platform.package.import.version.range}",
                             org.wso2.carbon.apimgt.api.*; version="${carbon.apimgt.imp.pkg.version}",
@@ -192,11 +154,10 @@
                             org.apache.commons.io.*,
                             com.fasterxml.jackson.databind.*; version="${fasterxml.jackson.version}",
                             com.fasterxml.jackson.annotation.*; version="${fasterxml.jackson.version}",
-                            org.apache.axiom.om.*;
                         </Import-Package>
                         <Export-Package>
-                            !org.wso2.carbon.apimgt.hybrid.gateway.api.synchronizer.internal,
-                            org.wso2.carbon.apimgt.hybrid.gateway.api.synchronizer.*;version="${project.version}"
+                            !org.wso2.carbon.apimgt.hybrid.gateway.registry.synchronizer.internal,
+                            org.wso2.carbon.apimgt.hybrid.gateway.registry.synchronizer.*;version="${project.version}"
                         </Export-Package>
                     </instructions>
                 </configuration>
@@ -217,21 +178,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${maven.checkstyleplugin.version}</version>
-                <configuration>
-                    <!-- Excluding the DTO classes taken from apimgt.rest.api.publisher -->
-                    <excludes>
-                        <exclude>org/wso2/carbon/apimgt/hybrid/gateway/api/synchronizer/dto/*</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
                 <version>${maven.findbugsplugin.version}</version>
-                <configuration>
-                    <!-- Excluding the DTO classes and Mapping Utils taken from apimgt.rest.api.admin -->
-                    <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -244,4 +195,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
