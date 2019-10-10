@@ -101,6 +101,7 @@ public class APIMgtGatewayConstants {
     public static final String SYNAPDE_GW_LABEL = "Synapse";
     public static final String CLIENT_USER_AGENT = "clientUserAgent";
     public static final String CLIENT_IP = "clientIp";
-    
+
+    public static final String HTTP_RESPONSE_STATUS_CODE = "HTTP_RESPONSE_STATUS_CODE";
 }
 
