@@ -12,6 +12,8 @@ i18n.init(request,localeResourcesBasePath);
     </script>
  <%     var mod,httpUrl,httpsUrl;
         mod = jagg.module("manager");
+        var encode = require('encode');
+        encode = new encode.Encode();
 
         httpsUrl= mod.getHTTPsURL();
         var httpsURL =  httpsUrl + request.getRequestURI();
