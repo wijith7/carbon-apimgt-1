@@ -221,6 +221,21 @@ public class JMSMessageListener implements MessageListener {
                     String resourceKey = throttleKey.substring(0, throttleKey.indexOf("_" + condition));
                     return new APICondition(resourceKey, condition);
                 }
+            } else {
+                // git issue: https://github.com/wso2/carbon-apimgt/issues/7489
+                String context = throttleKey.substring(0, throttleKey.indexOf(":"));
+                String conditionChecker = throttleKey.substring(throttleKey.lastIndexOf(":") + 1);
+                if (conditionChecker.indexOf("_condition") != -1) {
+                    String version = conditionChecker.substring(0, conditionChecker.indexOf("_condition"));
+                    String condition = conditionChecker.substring(conditionChecker.lastIndexOf("_condition") + 1);
+                    String resourceKey = context + ":" + version;
+                    return new APICondition(resourceKey, condition);
+                } else {
+                    String version = conditionChecker.substring(0, conditionChecker.indexOf("_default"));
+                    String condition = conditionChecker.substring(conditionChecker.lastIndexOf("_default") + 1);
+                    String resourceKey = context + ":" + version;
+                    return new APICondition(resourceKey, condition);
+                }
             }
         }
         return null;
