@@ -32,7 +32,6 @@ import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
-
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 
@@ -84,7 +83,7 @@ public class APIExecutionHandler extends APIExecutor {
             // Add API publish/Re-publish events to database
             APIIdentifier apiId = api.getId();
             OnPremiseGatewayDAO onPremiseGatewayDao = new OnPremiseGatewayDAO();
-            onPremiseGatewayDao.addAPIPublishEvent(domain, apiId.toString());
+            onPremiseGatewayDao.addAPIPublishEvent(domain, artifactId);
 
             if (log.isDebugEnabled()) {
                 log.debug("Successfully captured publish/re-publish event of API: " + apiId);
