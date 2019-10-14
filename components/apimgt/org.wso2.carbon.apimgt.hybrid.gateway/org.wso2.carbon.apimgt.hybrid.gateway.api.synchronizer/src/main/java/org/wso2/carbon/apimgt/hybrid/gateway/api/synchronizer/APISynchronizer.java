@@ -723,7 +723,7 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
             APISynchronizationException {
         String seqFileName = APISynchronizationConstants.EMPTY_STRING;
         String tenantDomain = APISynchronizationConstants.EMPTY_STRING;
-        String sequenceName = APISynchronizationConstants.SEQUENCE_NAME;
+        String name = APISynchronizationConstants.NAME;
         try {
             String type = sequenceInfo.getType().name();
             String xmlStr = sequenceInfo.getConfig();
@@ -751,7 +751,7 @@ public class APISynchronizer implements OnPremiseGatewayInitListener {
             }
             OMElement element = AXIOMUtil.stringToOM(xmlStr);
 
-            String originalSeqName = element.getAttributeValue(new QName(sequenceName));
+            String originalSeqName = element.getAttributeValue(new QName(name));
             String newXML = xmlStr.replace(originalSeqName, seqElementName);
 
             APIManagerConfiguration apimConfig = ServiceDataHolder.getInstance().
