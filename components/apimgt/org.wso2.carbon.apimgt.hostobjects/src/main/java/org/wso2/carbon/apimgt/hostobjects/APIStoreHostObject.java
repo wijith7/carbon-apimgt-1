@@ -1036,6 +1036,7 @@ public class APIStoreHostObject extends ScriptableObject {
                             currentApi.put("thumbnailurl", currentApi,
                                            APIUtil.prependWebContextRoot(api.getThumbnailUrl()));
                         }
+                        currentApi.put("apiBusinessOwner",currentApi,api.getBusinessOwner());
                         currentApi.put("visibility", currentApi, api.getVisibility());
                         currentApi.put("visibleRoles", currentApi, api.getVisibleRoles());
                         currentApi.put("description", currentApi, api.getDescription());
@@ -1077,6 +1078,7 @@ public class APIStoreHostObject extends ScriptableObject {
                             currentApi.put("thumbnailurl", currentApi,
                                            APIUtil.prependWebContextRoot(api.getThumbnailUrl()));
                         }
+                        currentApi.put("apiBusinessOwner",currentApi,api.getBusinessOwner());
                         currentApi.put("visibility", currentApi, api.getVisibility());
                         currentApi.put("visibleRoles", currentApi, api.getVisibleRoles());
                         currentApi.put("description", currentApi, api.getDescription());
