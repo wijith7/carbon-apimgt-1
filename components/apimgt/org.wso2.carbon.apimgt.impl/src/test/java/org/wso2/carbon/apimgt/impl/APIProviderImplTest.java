@@ -25,6 +25,7 @@ import org.apache.axis2.clustering.ClusteringAgent;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.util.JavaUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Assert;
@@ -102,6 +103,7 @@ import org.wso2.carbon.governance.custom.lifecycles.checklist.beans.LifecycleBea
 import org.wso2.carbon.governance.custom.lifecycles.checklist.util.CheckListItem;
 import org.wso2.carbon.governance.custom.lifecycles.checklist.util.LifecycleBeanPopulator;
 import org.wso2.carbon.governance.custom.lifecycles.checklist.util.Property;
+import org.wso2.carbon.governance.lcm.util.CommonUtil;
 import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.CollectionImpl;
@@ -150,11 +152,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(PowerMockRunner.class)
-@SuppressStaticInitializationFor("org.wso2.carbon.context.PrivilegedCarbonContext")
-@PrepareForTest({ServiceReferenceHolder.class, ApiMgtDAO.class, APIUtil.class, APIGatewayManager.class,
-        GovernanceUtils.class, PrivilegedCarbonContext.class, WorkflowExecutorFactory.class, JavaUtils.class,
-        APIProviderImpl.class, APIManagerFactory.class, RegistryUtils.class, ThrottlePolicyDeploymentManager.class,
-        LifecycleBeanPopulator.class, Caching.class, PaginationContext.class, MultitenantUtils.class})
+@SuppressStaticInitializationFor("org.wso2.carbon.context.PrivilegedCarbonContext") @PrepareForTest({
+        ServiceReferenceHolder.class, ApiMgtDAO.class, APIUtil.class, APIGatewayManager.class, GovernanceUtils.class,
+        PrivilegedCarbonContext.class, WorkflowExecutorFactory.class, JavaUtils.class, APIProviderImpl.class,
+        APIManagerFactory.class, RegistryUtils.class, ThrottlePolicyDeploymentManager.class,
+        LifecycleBeanPopulator.class, Caching.class, PaginationContext.class, MultitenantUtils.class,
+        ServiceReferenceHolder.class, ConcurrentHashMap.class })
 public class APIProviderImplTest {
 
     private static String EP_CONFIG_WSDL = "{\"production_endpoints\":{\"url\":\"http://ws.cdyne.com/phoneverify/phoneverify.asmx?wsdl\""
@@ -1080,16 +1083,27 @@ public class APIProviderImplTest {
     }
 
     @Test
-    public void testAddAPI() throws APIManagementException, GovernanceException {
+    public void testAddAPI() throws APIManagementException, RegistryException {
         APIIdentifier apiId = new APIIdentifier("admin", "API1", "1.0.1");
         API api = new API(apiId);
         api.setContext("/test");
         api.setStatus(APIConstants.CREATED);
         
         APIProviderImplWrapper apiProvider = new APIProviderImplWrapper(apimgtDAO, null, null);
-        
+
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+
         Mockito.when(artifactManager.newGovernanceArtifact(Matchers.any(QName.class))).thenReturn(artifact);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, api)).thenReturn(artifact);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
 
         Mockito.doNothing().when(apimgtDAO).addAPI(api, -1234);
 
@@ -1148,11 +1162,20 @@ public class APIProviderImplTest {
         api.setContext("/test");
         api.setStatus(APIConstants.CREATED);
 
-
         APIProviderImplWrapper apiProvider = new APIProviderImplWrapper(apimgtDAO, null, null);
-        
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+
         Mockito.when(artifactManager.newGovernanceArtifact(Matchers.any(QName.class))).thenReturn(artifact);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, api)).thenReturn(artifact);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
         apiProvider.addAPI(api);
 
         //Existing APIs of the provider
@@ -1207,8 +1230,7 @@ public class APIProviderImplTest {
     }
 
     @Test(expected = APIManagementException.class)
-    public void testUpdateAPIStatus_WithFaultyGateways() throws APIManagementException, FaultGatewaysException,
-            RegistryException, UserStoreException {
+    public void testUpdateAPIStatus_WithFaultyGateways() throws Exception {
         API api = new API(new APIIdentifier("admin", "API1", "1.0.0"));
         api.setContext("/test");
         api.setStatus(APIConstants.CREATED);
@@ -1224,6 +1246,18 @@ public class APIProviderImplTest {
         
         Mockito.when(artifactManager.newGovernanceArtifact(Matchers.any(QName.class))).thenReturn(artifact);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, api)).thenReturn(artifact);
+
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(registryService.getGovernanceUserRegistry(Mockito.anyString(), Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
         apiProvider.addAPI(api);
 
         //Mock Updating API
@@ -1243,20 +1277,22 @@ public class APIProviderImplTest {
                 thenReturn(apiSourcePath);
         Mockito.doNothing().when(artifactManager).updateGenericArtifact(artifact);
 
-        Map<String, String> failedGWEnv = new HashMap<String, String>();
-        failedGWEnv.put("Production", "Failed to publish");
-
-        Mockito.when(gatewayManager.publishToGateway(Matchers.any(API.class), Matchers.any(APITemplateBuilder.class),
-                Matchers.anyString())).thenReturn(failedGWEnv);
-
+        Map map = Mockito.mock(ConcurrentHashMap.class);
+        PowerMockito.whenNew(ConcurrentHashMap.class).withNoArguments().thenReturn((ConcurrentHashMap) map);
+        Mockito.when(map.isEmpty()).thenReturn(false);
+        Mockito.when(map.get(Mockito.anyString())).thenReturn(map);
         String newStatusValue = "PUBLISHED";
 
+        APIManagerConfigurationService configurationService = Mockito.mock(APIManagerConfigurationService.class);
+        APIManagerConfiguration configuration = Mockito.mock(APIManagerConfiguration.class);
+        Mockito.when(serviceReferenceHolder.getAPIManagerConfigurationService()).thenReturn(configurationService);
+        Mockito.when(configurationService.getAPIManagerConfiguration()).thenReturn(configuration);
+        Mockito.when(configuration.getFirstProperty(APIConstants.API_GATEWAY_TYPE)).thenReturn(APIConstants.API_GATEWAY_NONE);
         apiProvider.updateAPIStatus(api.getId(), newStatusValue, true, false, true);
     }
 
     @Test(expected = APIManagementException.class)
-    public void testUpdateAPIStatus_ToRetiredWithFaultyGateways() throws APIManagementException, FaultGatewaysException,
-            RegistryException, UserStoreException {
+    public void testUpdateAPIStatus_ToRetiredWithFaultyGateways() throws Exception {
         API api = new API(new APIIdentifier("admin", "API1", "1.0.0"));
         api.setContext("/test");
         api.setStatus(APIConstants.CREATED);
@@ -1269,6 +1305,18 @@ public class APIProviderImplTest {
         APIProviderImplWrapper apiProvider = new APIProviderImplWrapper(apimgtDAO, null, null);
         Mockito.when(artifactManager.newGovernanceArtifact(Matchers.any(QName.class))).thenReturn(artifact);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, api)).thenReturn(artifact);
+
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(registryService.getGovernanceUserRegistry(Mockito.anyString(), Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
         apiProvider.addAPI(api);
 
         //Mock Updating API
@@ -1288,12 +1336,15 @@ public class APIProviderImplTest {
                 thenReturn(apiSourcePath);
         Mockito.doNothing().when(artifactManager).updateGenericArtifact(artifact);
 
-        Map<String, String> failedGWEnv = new HashMap<String, String>();
-        failedGWEnv.put("Production", "Failed to publish");
-        Mockito.when(gatewayManager.publishToGateway(Matchers.any(API.class), Matchers.any(APITemplateBuilder.class),
-                Matchers.anyString())).thenReturn(failedGWEnv);
-        Mockito.when(gatewayManager.removeFromGateway(Matchers.any(API.class),
-                Matchers.anyString())).thenReturn(failedGWEnv);
+        Map map = Mockito.mock(ConcurrentHashMap.class);
+        PowerMockito.whenNew(ConcurrentHashMap.class).withNoArguments().thenReturn((ConcurrentHashMap) map);
+        Mockito.when(map.isEmpty()).thenReturn(false);
+        Mockito.when(map.get(Mockito.anyString())).thenReturn(map);
+        APIManagerConfigurationService configurationService = Mockito.mock(APIManagerConfigurationService.class);
+        APIManagerConfiguration configuration = Mockito.mock(APIManagerConfiguration.class);
+        Mockito.when(serviceReferenceHolder.getAPIManagerConfigurationService()).thenReturn(configurationService);
+        Mockito.when(configurationService.getAPIManagerConfiguration()).thenReturn(configuration);
+        Mockito.when(configuration.getFirstProperty(APIConstants.API_GATEWAY_TYPE)).thenReturn(APIConstants.API_GATEWAY_NONE);
         String newStatusValue = "RETIRED";
         apiProvider.updateAPIStatus(api.getId(), newStatusValue, true, false, true);
     }
@@ -1451,6 +1502,17 @@ public class APIProviderImplTest {
         String artifactPath = "artifact/path";
         PowerMockito.when(GovernanceUtils.getArtifactPath(apiProvider.registry, artifact.getId())).
                 thenReturn(artifactPath);
+        RegistryService rs = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder srh = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(srh);
+        Mockito.when(srh.getRegistryService()).thenReturn(rs);
+        Mockito.when(rs.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(srh.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
         apiProvider.addAPI(api);
 
         //No state changes
@@ -1533,6 +1595,16 @@ public class APIProviderImplTest {
                 Matchers.anyString())).thenReturn(failedToPubGWEnv);
 
         APIProviderImplWrapper apiProvider = new APIProviderImplWrapper(apimgtDAO, null, null);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
         apiProvider.addAPI(api);
 
         PowerMockito.when(APIUtil.replaceEmailDomain(apiId.getProviderName())).thenReturn("admin");
@@ -1614,8 +1686,19 @@ public class APIProviderImplTest {
 
         final APIProviderImplWrapper apiProvider = new APIProviderImplWrapper(apimgtDAO, documentationList, null);
 
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+
         Mockito.when(artifactManager.newGovernanceArtifact(Matchers.any(QName.class))).thenReturn(artifact);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, api)).thenReturn(artifact);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
 
         GenericArtifact artifactNew = Mockito.mock(GenericArtifact.class);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, newApi)).thenReturn(artifactNew);
@@ -1749,29 +1832,17 @@ public class APIProviderImplTest {
         String newWsdlResourcePath = APIUtil.getWSDLDefinitionFilePath(newApi.getId().getApiName(), newApi
                 .getId().getVersion(), newApi.getId().getProviderName());
         PowerMockito.when(apiProvider.registry.copy(resourcePath, newWsdlResourcePath)).thenReturn(newWsdlResourcePath);
-
-        //Mock Config system registry
-        ServiceReferenceHolder sh = TestUtils.getServiceReferenceHolder();
-        RegistryService registryService = Mockito.mock(RegistryService.class);
-        PowerMockito.when(sh.getRegistryService()).thenReturn(registryService);
-        UserRegistry systemReg = Mockito.mock(UserRegistry.class);
-
-        RealmService realmService = Mockito.mock(RealmService.class);
-        TenantManager tm = Mockito.mock(TenantManager.class);
-
-        PowerMockito.when(sh.getRealmService()).thenReturn(realmService);
-        PowerMockito.when(realmService.getTenantManager()).thenReturn(tm);
-        PowerMockito.when(tm.getTenantId(Matchers.anyString())).thenReturn(-1234);
+        PowerMockito.when(tenantManager.getTenantId(Matchers.anyString())).thenReturn(-1234);
 
         AuthorizationManager authManager = Mockito.mock(AuthorizationManager.class);
         UserRealm userRealm = Mockito.mock(UserRealm.class);
         PowerMockito.when(realmService.getTenantUserRealm(-1234)).thenReturn(userRealm);
         PowerMockito.when(userRealm.getAuthorizationManager()).thenReturn(authManager);
 
-        PowerMockito.when(registryService.getConfigSystemRegistry(-1234)).thenReturn(systemReg);
-        Mockito.when(systemReg.resourceExists(APIConstants.API_TENANT_CONF_LOCATION)).thenReturn(true);
+        PowerMockito.when(registryService.getConfigSystemRegistry(-1234)).thenReturn(userRegistry);
+        Mockito.when(userRegistry.resourceExists(APIConstants.API_TENANT_CONF_LOCATION)).thenReturn(true);
         Resource tenantConfResource = Mockito.mock(Resource.class);
-        Mockito.when(systemReg.get(APIConstants.API_TENANT_CONF_LOCATION)).thenReturn(tenantConfResource);
+        Mockito.when(userRegistry.get(APIConstants.API_TENANT_CONF_LOCATION)).thenReturn(tenantConfResource);
         Mockito.when(tenantConfResource.getContent()).thenReturn(getTenantConfigContent());
 
         apiProvider.createNewAPIVersion(api, newVersion);
@@ -1807,6 +1878,17 @@ public class APIProviderImplTest {
 
         GenericArtifact artifactNew = Mockito.mock(GenericArtifact.class);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, newApi)).thenReturn(artifactNew);
+        RegistryService rs = Mockito.mock(RegistryService.class);
+        UserRegistry ur = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(rs);
+        Mockito.when(rs.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(ur);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
         apiProvider.addAPI(api);
 
         String targetPath = APIConstants.API_LOCATION + RegistryConstants.PATH_SEPARATOR +
@@ -1939,6 +2021,17 @@ public class APIProviderImplTest {
 
         GenericArtifact artifactNew = Mockito.mock(GenericArtifact.class);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, newApi)).thenReturn(artifactNew);
+
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
         apiProvider.addAPI(api);
 
         String targetPath = APIConstants.API_LOCATION + RegistryConstants.PATH_SEPARATOR +
@@ -1976,6 +2069,17 @@ public class APIProviderImplTest {
 
         GenericArtifact artifactNew = Mockito.mock(GenericArtifact.class);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, newApi)).thenReturn(artifactNew);
+
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
         apiProvider.addAPI(api);
 
         String targetPath = APIConstants.API_LOCATION + RegistryConstants.PATH_SEPARATOR +
@@ -2099,6 +2203,17 @@ public class APIProviderImplTest {
         
         Mockito.when(artifactManager.newGovernanceArtifact(Matchers.any(QName.class))).thenReturn(artifact);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, oldApi)).thenReturn(artifact);
+
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
         apiProvider.addAPI(oldApi);
 
         //mock has permission
@@ -2164,9 +2279,19 @@ public class APIProviderImplTest {
         List<Documentation> documentationList = getDocumentationList();
 
         final APIProviderImplWrapper apiProvider = new APIProviderImplWrapper(apimgtDAO, documentationList, null);
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
 
         Mockito.when(artifactManager.newGovernanceArtifact(Matchers.any(QName.class))).thenReturn(artifact);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, oldApi)).thenReturn(artifact);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
         apiProvider.addAPI(oldApi);
 
         //mock has permission
@@ -2291,6 +2416,16 @@ public class APIProviderImplTest {
 
         Mockito.when(artifactManager.newGovernanceArtifact(Matchers.any(QName.class))).thenReturn(artifact);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, oldApi)).thenReturn(artifact);
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
         apiProvider.addAPI(oldApi);
 
         RegistryAuthorizationManager registryAuthorizationManager = Mockito.mock(RegistryAuthorizationManager.class);
@@ -2428,6 +2563,17 @@ public class APIProviderImplTest {
         Mockito.when(artifactManager.newGovernanceArtifact(Matchers.any(QName.class))).thenReturn(artifact);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, oldApi)).thenReturn(artifact);
         Mockito.when(APIUtil.getTiers(APIConstants.TIER_RESOURCE_TYPE, "carbon.super")).thenReturn(tiers);
+
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
         apiProvider.addAPI(oldApi);
 
         //mock has permission
@@ -2522,6 +2668,17 @@ public class APIProviderImplTest {
 
         GenericArtifact artifactNew = Mockito.mock(GenericArtifact.class);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, api)).thenReturn(artifactNew);
+
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
         apiProvider.addAPI(oldApi);
 
         //mock API artifact retrieval for has permission check
@@ -3128,6 +3285,18 @@ public class APIProviderImplTest {
         APIProviderImplWrapper apiProvider = new APIProviderImplWrapper(apimgtDAO, null, null);
         Mockito.when(artifactManager.newGovernanceArtifact(Matchers.any(QName.class))).thenReturn(artifact);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, api)).thenReturn(artifact);
+
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
+
         apiProvider.addAPI(api);
 
         //Mock Updating API
@@ -3168,6 +3337,17 @@ public class APIProviderImplTest {
         APIProviderImplWrapper apiProvider = new APIProviderImplWrapper(apimgtDAO, null, null);
         Mockito.when(artifactManager.newGovernanceArtifact(Matchers.any(QName.class))).thenReturn(artifact);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, api)).thenReturn(artifact);
+
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
         apiProvider.addAPI(api);
 
         //Mock Updating API
@@ -3211,6 +3391,17 @@ public class APIProviderImplTest {
         APIProviderImplWrapper apiProvider = new APIProviderImplWrapper(apimgtDAO, null, null);
         Mockito.when(artifactManager.newGovernanceArtifact(Matchers.any(QName.class))).thenReturn(artifact);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, api)).thenReturn(artifact);
+
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
         apiProvider.addAPI(api);
 
         //Mock Updating API
@@ -3257,6 +3448,17 @@ public class APIProviderImplTest {
         APIProviderImplWrapper apiProvider = new APIProviderImplWrapper(apimgtDAO, null, null);
         Mockito.when(artifactManager.newGovernanceArtifact(Matchers.any(QName.class))).thenReturn(artifact);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, api)).thenReturn(artifact);
+
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
         apiProvider.addAPI(api);
 
         //Mock Updating API
@@ -4183,7 +4385,7 @@ public class APIProviderImplTest {
      * @throws APIManagementException API Management Exception.
      */
     @Test
-    public void testAddFileToDocumentation() throws APIManagementException, GovernanceException {
+    public void testAddFileToDocumentation() throws APIManagementException, RegistryException {
 
         APIIdentifier identifier = new APIIdentifier("admin-AT-carbon.super", "API1", "1.0.0");
         Set<String> environments = new HashSet<String>();
@@ -4215,9 +4417,21 @@ public class APIProviderImplTest {
 
         final APIProviderImplWrapper apiProvider = new APIProviderImplWrapper(apimgtDAO, documentationList, null);
 
+        RegistryService registryService = Mockito.mock(RegistryService.class);
+        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        ServiceReferenceHolder serviceReferenceHolder = TestUtils.getServiceReferenceHolder();
+        RealmService realmService = Mockito.mock(RealmService.class);
+        TenantManager tenantManager = Mockito.mock(TenantManager.class);
+
         Mockito.when(APIUtil.getTiers(APIConstants.TIER_RESOURCE_TYPE, "carbon.super")).thenReturn(tiers);
         Mockito.when(artifactManager.newGovernanceArtifact(Matchers.any(QName.class))).thenReturn(artifact);
         Mockito.when(APIUtil.createAPIArtifactContent(artifact, api)).thenReturn(artifact);
+        PowerMockito.when(ServiceReferenceHolder.getInstance()).thenReturn(serviceReferenceHolder);
+        Mockito.when(serviceReferenceHolder.getRegistryService()).thenReturn(registryService);
+        Mockito.when(registryService.getConfigSystemRegistry(Mockito.anyInt())).thenReturn(userRegistry);
+        Mockito.when(serviceReferenceHolder.getRealmService()).thenReturn(realmService);
+        Mockito.when(realmService.getTenantManager()).thenReturn(tenantManager);
+
         apiProvider.addAPI(api);
 
         String fileName = "test.txt";
