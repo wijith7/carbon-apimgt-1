@@ -153,7 +153,9 @@ public class WebsocketInboundHandler extends ChannelInboundHandlerAdapter {
             // Required headers are stored one by one as validateOAuthHeader()
             // removes some of the headers from the request
             useragent = useragent != null ? useragent : "-";
-            headers.add(HttpHeaders.AUTHORIZATION, authorization);
+            if (authorization != null) {
+                headers.add(HttpHeaders.AUTHORIZATION, authorization);
+            }
             headers.add(HttpHeaders.USER_AGENT, useragent);
 
             if (validateOAuthHeader(req)) {
