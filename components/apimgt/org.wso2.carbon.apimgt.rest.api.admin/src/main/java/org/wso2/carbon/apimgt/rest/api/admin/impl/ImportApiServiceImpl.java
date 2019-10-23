@@ -132,6 +132,8 @@ public class ImportApiServiceImpl extends ImportApiService {
                 Application application = consumer.getApplicationById(appId);
                 applicationDetails.setId(appId);
                 applicationDetails.setUUID(application.getUUID());
+                applicationDetails.setOwner(application.getOwner());
+                applicationDetails.updateSubscriber(application.getSubscriber());
                 consumer.updateApplication(applicationDetails);
             } else {
                 appId = consumer.addApplication(applicationDetails, ownerId);
@@ -140,7 +142,7 @@ public class ImportApiServiceImpl extends ImportApiService {
             List<APIIdentifier> skippedAPIs = new ArrayList<>();
             if (skipSubscriptions == null || !skipSubscriptions) {
                 skippedAPIs = importExportManager
-                        .importSubscriptions(applicationDetails, username, appId, update);
+                        .importSubscriptions(applicationDetails, ownerId, appId, update);
             }
             Application importedApplication = consumer.getApplicationById(appId);
             importedApplication.setOwner(ownerId);
