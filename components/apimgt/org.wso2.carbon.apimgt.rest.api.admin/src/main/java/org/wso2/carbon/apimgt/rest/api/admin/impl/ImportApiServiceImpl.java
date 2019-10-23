@@ -154,7 +154,7 @@ public class ImportApiServiceImpl extends ImportApiService {
                 // Add application keys if present and keys does not exists in the current application
                 if (applicationDetails.getKeys().size() > 0 && importedApplication.getKeys().size() == 0) {
                     for (APIKey apiKey : applicationDetails.getKeys()) {
-                        importExportManager.addApplicationKey(username, importedApplication, apiKey);
+                        importExportManager.addApplicationKey(ownerId, importedApplication, apiKey);
                     }
                 }
             }
