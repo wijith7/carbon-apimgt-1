@@ -153,9 +153,6 @@ public class WebsocketInboundHandler extends ChannelInboundHandlerAdapter {
             // Required headers are stored one by one as validateOAuthHeader()
             // removes some of the headers from the request
             useragent = useragent != null ? useragent : "-";
-            if (authorization != null) {
-                headers.add(HttpHeaders.AUTHORIZATION, authorization);
-            }
             headers.add(HttpHeaders.USER_AGENT, useragent);
 
             if (validateOAuthHeader(req)) {
@@ -224,6 +221,7 @@ public class WebsocketInboundHandler extends ChannelInboundHandlerAdapter {
                 log.error("No Authorization Header Present");
                 return false;
             }
+            headers.add(HttpHeaders.AUTHORIZATION, req.headers().contains(HttpHeaders.AUTHORIZATION));
             String[] auth = req.headers().get(HttpHeaders.AUTHORIZATION).split(" ");
             if (APIConstants.CONSUMER_KEY_SEGMENT.equals(auth[0])) {
                 String cacheKey;
