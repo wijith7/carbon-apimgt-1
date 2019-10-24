@@ -218,6 +218,25 @@ public class RestApiPublisherUtils {
     }
 
     /**
+     * To validate the roles against and tenant roles.
+     *
+     * @param inputRoles Input roles.
+     * @return relevant error string or empty string.
+     * @throws APIManagementException API Management Exception.
+     */
+    public static String validateRoles(List<String> inputRoles) throws APIManagementException {
+        String userName = RestApiUtil.getLoggedInUsername();
+        boolean isMatched = false;
+        if (inputRoles != null && !inputRoles.isEmpty()) {
+            String roleString = String.join(",", inputRoles);
+            isMatched = APIUtil.isRoleNameExist(userName, roleString);
+            if (!isMatched) {
+                return "Invalid user roles found in visibleRoles list";
+            }
+        }
+        return "";
+    }
+    /**
      * To validate the additional properties.
      * Validation will be done for the keys of additional properties. Property keys should not contain spaces in it
      * and property keys should not conflict with reserved key words.
