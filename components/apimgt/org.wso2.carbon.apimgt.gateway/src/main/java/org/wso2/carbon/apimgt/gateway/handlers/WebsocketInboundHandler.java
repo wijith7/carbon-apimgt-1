@@ -221,7 +221,7 @@ public class WebsocketInboundHandler extends ChannelInboundHandlerAdapter {
                 log.error("No Authorization Header Present");
                 return false;
             }
-            headers.add(HttpHeaders.AUTHORIZATION, req.headers().contains(HttpHeaders.AUTHORIZATION));
+            headers.add(HttpHeaders.AUTHORIZATION, req.headers().get(HttpHeaders.AUTHORIZATION));
             String[] auth = req.headers().get(HttpHeaders.AUTHORIZATION).split(" ");
             if (APIConstants.CONSUMER_KEY_SEGMENT.equals(auth[0])) {
                 String cacheKey;
