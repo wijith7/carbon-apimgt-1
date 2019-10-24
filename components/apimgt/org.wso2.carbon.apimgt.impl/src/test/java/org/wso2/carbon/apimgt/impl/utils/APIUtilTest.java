@@ -2020,4 +2020,11 @@ public class APIUtilTest {
         Assert.assertEquals("Test%26123%26test", APIUtil.sanitizeUserRole("Test&123&test"));
         Assert.assertEquals("Test123", APIUtil.sanitizeUserRole("Test123"));
     }
+    
+    @Test
+    public void testGetRolesList() throws Exception {
+        Assert.assertEquals(0, APIUtil.getRolesList(null).size());
+        Assert.assertEquals(1, APIUtil.getRolesList("test").size());
+        Assert.assertEquals(2, APIUtil.getRolesList("test,test2").size());
+    }
 }

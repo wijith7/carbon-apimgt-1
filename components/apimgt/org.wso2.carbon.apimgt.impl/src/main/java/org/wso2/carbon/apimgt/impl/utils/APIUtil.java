@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.apimgt.impl.utils;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
@@ -7772,5 +7774,14 @@ public final class APIUtil {
 
     }
     
+    public static List<String> getRolesList(String roles) {
+        List<String> roleList;
+        if (roles != null) {
+            roleList = Lists.newArrayList(Splitter.on(",").trimResults().split(roles));
+        } else {
+            roleList = Collections.EMPTY_LIST;
+        }
+        return roleList;
+    }
     
 }
