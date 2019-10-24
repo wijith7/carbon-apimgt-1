@@ -2023,7 +2023,7 @@ public class APIUtilTest {
     
     @Test
     public void testGetRolesList() throws Exception {
-        Assert.assertEquals(0, APIUtil.getRolesList(null).size());
+        Assert.assertEquals(1, APIUtil.getRolesList(null).size());
         Assert.assertEquals(1, APIUtil.getRolesList("test").size());
         Assert.assertEquals(2, APIUtil.getRolesList("test,test2").size());
     }

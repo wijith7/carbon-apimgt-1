@@ -7779,7 +7779,7 @@ public final class APIUtil {
         if (roles != null) {
             roleList = Lists.newArrayList(Splitter.on(",").trimResults().split(roles));
         } else {
-            roleList = Collections.EMPTY_LIST;
+            roleList = Arrays.asList("");
         }
         return roleList;
     }
