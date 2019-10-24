@@ -202,7 +202,11 @@ public class RestApiPublisherUtils {
                         isMatched = true;
                     }
                     if (tenantRoleList != null && !APIUtil.compareRoleList(tenantRoleList, inputRole)) {
-                        return "Invalid user roles found in accessControlRole list";
+                        if(APIUtil.isRoleNameExist(userName, inputRole)) {
+                            return "";
+                        } else {
+                            return "Invalid user roles found in accessControlRole list";
+                        }
                     }
                 }
                 return isMatched ? "" : "This user does not have at least one role specified in API access control.";
