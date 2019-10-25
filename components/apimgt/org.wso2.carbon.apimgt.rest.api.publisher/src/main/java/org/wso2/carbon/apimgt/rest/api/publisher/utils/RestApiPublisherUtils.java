@@ -205,7 +205,7 @@ public class RestApiPublisherUtils {
                         isUserRoleExist = true;
                     }
                     if (tenantRoleList != null && !APIUtil.compareRoleList(tenantRoleList, inputRole)) {
-                        if(isUserRoleExist && APIUtil.isRoleNameExist(userName, inputRole)) {
+                        if (isUserRoleExist && APIUtil.isRoleNameExist(userName, inputRole)) {
                             return "";
                         } else if (!isUserRoleExist && !APIUtil.isRoleNameExist(userName, inputRole)) {
                             return "Invalid user roles found in accessControlRole list";
