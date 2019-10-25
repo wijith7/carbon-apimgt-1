@@ -7506,7 +7506,7 @@ public class ApiMgtDAO {
 
                         String roles = uriTemplate.getScope().getRoles();
                         //Adding scope bindings
-                        List<String> roleList = Lists.newArrayList(Splitter.on(",").trimResults().split(roles));
+                        List<String> roleList = APIUtil.getRolesList(roles);
                         for (String role : roleList) {
                             ps3.setInt(1, uriTemplate.getScope().getId());
                             ps3.setString(2, role);
@@ -7537,7 +7537,7 @@ public class ApiMgtDAO {
 
                         String roles = scope.getRoles();
                         //Adding scope bindings
-                        List<String> roleList = Lists.newArrayList(Splitter.on(",").trimResults().split(roles));
+                        List<String> roleList = APIUtil.getRolesList(roles);
                         for (String role : roleList) {
                             ps3.setInt(1, scope.getId());
                             ps3.setString(2, role);
