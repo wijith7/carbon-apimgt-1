@@ -3250,6 +3250,9 @@ public final class APIUtil {
                 }
             }
             if (registryResource != null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Store view roles for " + artifactPath + " : " + publisherAccessRoles.toString());
+                }
                 registryResource.setProperty(APIConstants.STORE_VIEW_ROLES, publisherAccessRoles.toString());
                 registry.put(artifactPath, registryResource);
             }
