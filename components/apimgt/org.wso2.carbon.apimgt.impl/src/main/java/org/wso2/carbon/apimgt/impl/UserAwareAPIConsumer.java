@@ -115,6 +115,13 @@ public class UserAwareAPIConsumer extends APIConsumerImpl {
         checkAccessControlPermission(identifier);
         return super.getAPI(identifier);
     }
+    
+    @Override
+    public API getAPIbyUUID(String uuid, String requestedTenantDomain) throws APIManagementException {
+        API api = super.getAPIbyUUID(uuid, requestedTenantDomain);
+        checkAccessControlPermission(api.getId());
+        return api;
+    }
 
     public void checkSubscribePermission() throws APIManagementException {
         APIUtil.checkPermission(username, APIConstants.Permissions.API_SUBSCRIBE);
