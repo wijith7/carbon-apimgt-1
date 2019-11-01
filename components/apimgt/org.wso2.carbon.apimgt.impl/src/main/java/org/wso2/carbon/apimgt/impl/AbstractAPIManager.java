@@ -461,21 +461,22 @@ public abstract class AbstractAPIManager implements APIManager {
      * @throws APIManagementException
      */
     public API getAPIbyUUID(String uuid, String requestedTenantDomain) throws APIManagementException {
+        boolean tenantFlowStarted = false;
         try {
             Registry registry;
-            if (requestedTenantDomain != null && !MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals
-                    (requestedTenantDomain)) {
-                int id = getTenantManager()
-                        .getTenantId(requestedTenantDomain);
-                registry = getRegistryService().getGovernanceSystemRegistry(id);
-            } else {
-                if (this.tenantDomain != null && !MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(this.tenantDomain)) {
-                    // at this point, requested tenant = carbon.super but logged in user is anonymous or tenant
-                    registry = getRegistryService().getGovernanceSystemRegistry(MultitenantConstants.SUPER_TENANT_ID);
+            if (requestedTenantDomain != null) {
+                int id = getTenantManager().getTenantId(requestedTenantDomain);
+                startTenantFlow(requestedTenantDomain);
+                tenantFlowStarted = true;
+                if (APIConstants.WSO2_ANONYMOUS_USER.equals(this.username)) {
+                    registry = getRegistryService().getGovernanceUserRegistry(this.username, id);
+                } else if (this.tenantDomain != null && !this.tenantDomain.equals(requestedTenantDomain)) {
+                    registry = getRegistryService().getGovernanceSystemRegistry(id);
                 } else {
-                    // both requested tenant and logged in user's tenant are carbon.super
                     registry = this.registry;
                 }
+            } else {
+                registry = this.registry;
             }
 
             GenericArtifactManager artifactManager = getAPIGenericArtifactManagerFromUtil(registry,
@@ -497,6 +498,10 @@ public abstract class AbstractAPIManager implements APIManager {
             String msg = "Failed to get API";
             log.error(msg, e);
             throw new APIManagementException(msg, e);
+        } finally {
+            if (tenantFlowStarted) {
+                endTenantFlow();
+            }
         }
     }
 
