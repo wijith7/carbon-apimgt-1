@@ -163,6 +163,7 @@ public class ThriftKeyValidatorClient {
         template.setResourceSandboxURI(dto.getResourceSandboxURI());
         template.setUriTemplate(dto.getUriTemplate());
         template.setThrottlingTier(dto.getThrottlingTier());
+        template.setThrottlingTiers(dto.getThrottlingTiers());
         template.setThrottlingConditions(dto.getThrottlingConditions());
         List<ConditionGroupDTO> conditionGroupsThrift = dto.getConditionGroups();
 

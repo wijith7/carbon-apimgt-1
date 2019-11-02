@@ -254,6 +254,7 @@ public class APIKeyValidationServiceImpl extends AbstractAdmin
         template.setUriTemplate(dto.getUriTemplate());
         template.setThrottlingTier(dto.getThrottlingTier());
         template.setThrottlingConditions(dto.getThrottlingConditions());
+        template.setThrottlingTiers(dto.getThrottlingTiers());
 
         // Converting ConditionGroupDTO s to the type compatible with thrift.
         ConditionGroupDTO[] conditionGroups = dto.getConditionGroups();
