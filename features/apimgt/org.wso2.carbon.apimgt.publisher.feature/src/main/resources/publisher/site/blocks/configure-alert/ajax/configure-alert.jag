@@ -76,7 +76,7 @@ include("/jagg/jagg.jag");
             } else if (action === 'getAPIs' && request.getMethod() == 'GET') {
                 mod = jagg.module("api");
                 var provider = jagg.getUser().username;
-                var result = mod.getAPIsByProvider(provider);
+                var result = mod.getAllAPIs(provider);
 
                 if (result.error) {
                     obj = {
