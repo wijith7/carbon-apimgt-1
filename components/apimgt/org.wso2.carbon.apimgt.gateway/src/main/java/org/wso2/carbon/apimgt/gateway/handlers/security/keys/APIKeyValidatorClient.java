@@ -199,6 +199,7 @@ public class APIKeyValidatorClient {
         template.setResourceSandboxURI(dto.getResourceSandboxURI());
         template.setUriTemplate(dto.getUriTemplate());
         template.setThrottlingTier(dto.getThrottlingTier());
+        template.setThrottlingTiers(java.util.Arrays.asList(dto.getThrottlingTiers()));
 
         ConditionGroupDTO[] xsdConditionGroups = dto.getConditionGroups();
         org.wso2.carbon.apimgt.api.dto.ConditionGroupDTO[] conditionGroups = new org.wso2.carbon.apimgt

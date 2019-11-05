@@ -58,6 +58,7 @@ struct URITemplate {
     7: optional list<string>  throttlingConditions;
     8: optional string applicableLevel;
     9: optional list<ConditionGroupDTO> conditionGroups;
+    10: optional list<string> throttlingTiers;
 }
 
 service APIKeyValidationService {

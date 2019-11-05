@@ -5906,6 +5906,8 @@ public class ApiMgtDAO {
                 String conditionGroupId = rs.getString("CONDITION_GROUP_ID");
                 String applicableLevel = rs.getString("APPLICABLE_LEVEL");
                 String policyConditionGroupId = "_condition_" + conditionGroupId;
+                boolean isContentAware = PolicyConstants.BANDWIDTH_TYPE.equals(
+                        rs.getString(ThrottlePolicyConstants.COLUMN_DEFAULT_QUOTA_POLICY_TYPE));
 
                 String key = httpVerb + ":" + urlPattern;
                 if (mapByHttpVerbURLPatternToId.containsKey(key)) {
@@ -5923,6 +5925,8 @@ public class ApiMgtDAO {
                     String script = null;
                     URITemplate uriTemplate = new URITemplate();
                     uriTemplate.setThrottlingTier(policyName);
+                    uriTemplate.setThrottlingTiers(policyName + PolicyConstants.THROTTLING_TIER_CONTENT_AWARE_SEPERATOR
+                            + isContentAware);
                     uriTemplate.setAuthType(authType);
                     uriTemplate.setHTTPVerb(httpVerb);
                     uriTemplate.setUriTemplate(urlPattern);

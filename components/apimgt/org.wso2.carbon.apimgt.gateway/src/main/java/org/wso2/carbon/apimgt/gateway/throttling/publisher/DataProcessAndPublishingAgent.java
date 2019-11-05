@@ -15,7 +15,9 @@ import org.wso2.carbon.apimgt.gateway.handlers.security.AuthenticationContext;
 import org.wso2.carbon.apimgt.gateway.handlers.throttling.APIThrottleConstants;
 import org.wso2.carbon.apimgt.gateway.internal.ServiceReferenceHolder;
 import org.wso2.carbon.apimgt.gateway.utils.GatewayUtils;
+import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.dto.ThrottleProperties;
+import org.wso2.carbon.apimgt.impl.dto.VerbInfoDTO;
 import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.databridge.agent.DataPublisher;
 
@@ -180,7 +182,9 @@ public class DataProcessAndPublishingAgent implements Runnable {
 
         //this parameter will be used to capture message size and pass it to calculation logic
         long messageSizeInBytes = 0;
-        if (authenticationContext.isContentAwareTierPresent()) {
+        VerbInfoDTO verbInfoDTO = (VerbInfoDTO) messageContext.getProperty(APIConstants.VERB_INFO_DTO);
+        if (authenticationContext.isContentAwareTierPresent() ||
+                (APIConstants.AUTH_NO_AUTHENTICATION.equals(verbInfoDTO.getAuthType()) && verbInfoDTO.isContentAware())) {
             //this request can match with with bandwidth policy. So we need to get message size.
             Object contentLength = null;
             if (transportHeaderMap != null) {
