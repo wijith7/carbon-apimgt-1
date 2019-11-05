@@ -230,7 +230,7 @@ public class JMSMessageListener implements MessageListener {
                     String condition = conditionChecker.substring(conditionChecker.lastIndexOf("_condition") + 1);
                     String resourceKey = context + ":" + version;
                     return new APICondition(resourceKey, condition);
-                } else {
+                } else if (conditionChecker.indexOf("_default") != -1) {
                     String version = conditionChecker.substring(0, conditionChecker.indexOf("_default"));
                     String condition = conditionChecker.substring(conditionChecker.lastIndexOf("_default") + 1);
                     String resourceKey = context + ":" + version;
