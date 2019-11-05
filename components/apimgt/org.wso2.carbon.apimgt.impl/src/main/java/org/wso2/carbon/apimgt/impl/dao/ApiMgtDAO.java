@@ -5856,6 +5856,7 @@ public class ApiMgtDAO {
                 uriTemplate.setAuthType(rs.getString("AUTH_SCHEME"));
                 uriTemplate.setUriTemplate(rs.getString("URL_PATTERN"));
                 uriTemplate.setThrottlingTier(rs.getString("THROTTLING_TIER"));
+                uriTemplate.setThrottlingTiers("");
                 InputStream mediationScriptBlob = rs.getBinaryStream("MEDIATION_SCRIPT");
                 if (mediationScriptBlob != null) {
                     script = APIMgtDBUtil.getStringFromInputStream(mediationScriptBlob);
