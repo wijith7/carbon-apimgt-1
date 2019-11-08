@@ -12,12 +12,17 @@ $(function() {
     function populateApiList() {
         $.get("../blocks/configure-alert/ajax/configure-alert.jag", {action: "getAPIs"}, function(data) {
             if (data && data.error == false) {
+                var list = "";
                 $.each(data.apis, function() {
-                    var apiId = this.name + '--' + this.version;
-                    apisElement.append($("<option />").val(apiId).text(apiId));
+                    var apiId = this.provider + '--' + this.name + '--' + this.version;
+                    var listText = this.name + '--' + this.version;
+                    //list of all the apis which is used to filterout the config returned from SP
+                    list = list + listText + ":";
+                    apisElement.append($("<option />").val(apiId).text(listText));
                 });
 
                 apisElement.selectpicker('refresh');
+                loadConfigInformation(list)
             }
         });
     }
@@ -55,8 +60,9 @@ $(function() {
 
             jagg.post("/site/blocks/configure-alert/ajax/configure-alert.jag", {
                 action: "configureAlert",
-                apiName: splitApi[0],
-                apiVersion: splitApi[1],
+                apiCreator: splitApi[0],
+                apiName: splitApi[1],
+                apiVersion: splitApi[2],
                 alertType: alertType,
                 threshold: threshold
             }, function(result) {
@@ -84,36 +90,38 @@ $(function() {
     });
 
     // Data table configuration for loading configured alert information
-    $('#configTable').datatables_extended({
-        "ajax": {
-            "url": jagg.url("/site/blocks/configure-alert/ajax/configure-alert.jag?action=getAlertConfigs&alertType=" + alertType),
-            "dataSrc": function (json) {
-                if (json.error) {
-                    return {};
-                }
+    function loadConfigInformation(apis) {
+            $('#configTable').datatables_extended({
+                "ajax": {
+                    "url": jagg.url("/site/blocks/configure-alert/ajax/configure-alert.jag?action=getAlertConfigs&alertType=" + alertType + "&list=" + apis),
+                    "dataSrc": function (json) {
+                        if (json.error) {
+                            return {};
+                        }
 
-                return json.list;
-            }
-        },
-        "columns": [
-            {"data": "apiName"},
-            {"data": "apiVersion"},
-            {"data": "value"},
-            {
-                "data": "action",
-                "render": function (data, type, rec, meta) {
+                        return json.list;
+                    }
+                },
+                "columns": [
+                    {"data": "apiName"},
+                    {"data": "apiVersion"},
+                    {"data": "value"},
+                    {
+                        "data": "action",
+                        "render": function (data, type, rec, meta) {
 
-                    return '<a href="#" title="' + i18n.t("Remove") + '" class="btn btn-sm deleteConfig"' +
-                            'data-name="' + rec.apiName + '" data-version="' + rec.apiVersion + '">' +
-                                '<span class="fw-stack">' +
-                                    '<i class="fw fw-ring fw-stack-2x"></i>' +
-                                    '<i class="fw fw-delete fw-stack-1x"></i>' +
-                                '</span>' +
-                                '<span class="hidden-xs">' + i18n.t("Remove") + '</span>' +
-                            '</a>';
-                }
-            }
-        ],
-    });
+                            return '<a href="#" title="' + i18n.t("Remove") + '" class="btn btn-sm deleteConfig"' +
+                                    'data-name="' + rec.apiName + '" data-version="' + rec.apiVersion + '">' +
+                                        '<span class="fw-stack">' +
+                                            '<i class="fw fw-ring fw-stack-2x"></i>' +
+                                            '<i class="fw fw-delete fw-stack-1x"></i>' +
+                                        '</span>' +
+                                        '<span class="hidden-xs">' + i18n.t("Remove") + '</span>' +
+                                    '</a>';
+                        }
+                    }
+                ],
+            });
+    }
 
 });

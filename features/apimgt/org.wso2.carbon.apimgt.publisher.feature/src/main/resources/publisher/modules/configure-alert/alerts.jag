@@ -5,7 +5,7 @@ var alertTypeMap = {
     "AbnormalBackendTime": "thresholdBackendTime"
 };
 
-var getPublisherAlertConfigs  = function (type) {
+var getPublisherAlertConfigs  = function (type, list) {
     var typeColName = alertTypeMap[type];
     var log = new Log();
 
@@ -16,20 +16,25 @@ var getPublisherAlertConfigs  = function (type) {
         var domainName = MultitenantUtils.getTenantDomain(username);
 
         var appName = "APIM_ALERT_CONFIGURATION"; 
-        var query =  "from ApiCreatorAlertConfiguration on apiCreator=='" 
-                    + username + "' and apiCreatorTenantDomain=='" + domainName + "' and "
+        var query =  "from ApiCreatorAlertConfiguration on apiCreatorTenantDomain=='" + domainName + "' and "
                     + typeColName +"!=0 select apiName,apiVersion,apiCreator,apiCreatorTenantDomain, " + typeColName + "; ";
 
         var result = APIUtil.executeQueryOnStreamProcessor(appName, query);
         var objArr = [];
 
         if(result != null ) {
+            var apiList = list != null ? list.split(":") : null;
             var parsedDataResult = JSON.parse(result);
 
             if(parsedDataResult.records != null) {              
                 var items = parsedDataResult.records;
                 for (var i = 0; i < items.length; i ++){
                     var record = items[i];
+                    apiId = record[0] + "--" + record[1];
+		    //filterout apis which are not visible for this user
+                    if(apiList && apiList.indexOf(apiId) === -1 ){
+                        continue;
+                    }
                     var obj =  {
                         "apiName": record[0],
                         "apiVersion" : record[1],
@@ -52,7 +57,7 @@ var getPublisherAlertConfigs  = function (type) {
     }
 };
 
-var addOrUpdatePublisherAlertConfigs  = function (apiName, apiVersion, type, value) {
+var addOrUpdatePublisherAlertConfigs  = function (apiCreator, apiName, apiVersion, type, value) {
     var log = new Log();
     var typeColName = alertTypeMap[type];
 
@@ -60,7 +65,7 @@ var addOrUpdatePublisherAlertConfigs  = function (apiName, apiVersion, type, val
         var thresholdResponseTime = 0;
         var thresholdBackendTime = 0;
         var APIUtil = org.wso2.carbon.apimgt.impl.utils.APIUtil;
-        var username = jagg.getUser().username;
+        var username = apiCreator;
         var MultitenantUtils = Packages.org.wso2.carbon.utils.multitenancy.MultitenantUtils;
         var domainName = MultitenantUtils.getTenantDomain(username);
         var appName = "APIM_ALERT_CONFIGURATION"; 
@@ -77,8 +82,10 @@ var addOrUpdatePublisherAlertConfigs  = function (apiName, apiVersion, type, val
             + username + "' as apiCreator, '" + domainName + "' as apiCreatorTenantDomain,"
             + parseInt(thresholdResponseTime) + "L as thresholdResponseTime,"
             + parseInt(thresholdBackendTime) + "L as thresholdBackendTime update or insert into ApiCreatorAlertConfiguration "
-            + conditionQuery + "on ApiCreatorAlertConfiguration.apiName == apiName "
-            + "and ApiCreatorAlertConfiguration.apiVersion == apiVersion";
+            + conditionQuery + "on ApiCreatorAlertConfiguration.apiName == apiName " 
+            + "and ApiCreatorAlertConfiguration.apiVersion == apiVersion "
+            + "and ApiCreatorAlertConfiguration.apiCreator == apiCreator " 
+            + "and ApiCreatorAlertConfiguration.apiCreatorTenantDomain == apiCreatorTenantDomain";
 
         var result = APIUtil.executeQueryOnStreamProcessor(appName, query);
         var objArr = [];
@@ -110,7 +117,7 @@ var deletePublisherAlertConfigs = function (apiName, apiVersion, type) {
         var appName = "APIM_ALERT_CONFIGURATION"; 
 
         var query = "select '"+apiName+"' as apiName, '"+apiVersion+"' as apiVersion, '"
-            + username + "' as apiCreator, '" + domainName + "' as apiCreatorTenantDomain,"
+            + domainName + "' as apiCreatorTenantDomain,"
             + "0L as "+typeColName+" "
             + "update ApiCreatorAlertConfiguration "
             + "set ApiCreatorAlertConfiguration."+typeColName+" = "+typeColName+" " 

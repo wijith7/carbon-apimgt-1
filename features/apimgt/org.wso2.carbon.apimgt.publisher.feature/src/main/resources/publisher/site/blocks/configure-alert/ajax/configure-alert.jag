@@ -15,12 +15,14 @@ include("/jagg/jagg.jag");
         } else {
             if (action === 'configureAlert' && request.getMethod() == 'POST') {
                 mod = jagg.module("configure-alert");
-                var apiName= request.getParameter("apiName");
-                var apiVersion= request.getParameter("apiVersion");
+                var apiCreator = request.getParameter("apiCreator");
+                var apiName = request.getParameter("apiName");
+                var apiVersion = request.getParameter("apiVersion");
                 var time = request.getParameter("threshold");
                 var type = request.getParameter("alertType");
+                var apiList = request.getParameter("apiList");
 
-                var result = mod.addOrUpdatePublisherAlertConfigs(apiName, apiVersion, type, time);
+                var result = mod.addOrUpdatePublisherAlertConfigs(apiCreator, apiName, apiVersion, type, time, apiList);
 
                 if (result.error) {
                     obj = {
@@ -38,7 +40,8 @@ include("/jagg/jagg.jag");
             } else if (action === 'getAlertConfigs' && request.getMethod() == 'GET') {
                 mod = jagg.module("configure-alert");
                 var type = request.getParameter("alertType");
-                var result = mod.getPublisherAlertConfigs(type);
+                var list = request.getParameter("list");
+                var result = mod.getPublisherAlertConfigs(type, list);
 
                 if (result.error) {
                     obj = {
@@ -76,7 +79,7 @@ include("/jagg/jagg.jag");
             } else if (action === 'getAPIs' && request.getMethod() == 'GET') {
                 mod = jagg.module("api");
                 var provider = jagg.getUser().username;
-                var result = mod.getAPIsByProvider(provider);
+                var result = mod.getAllAPIs(provider);
 
                 if (result.error) {
                     obj = {
